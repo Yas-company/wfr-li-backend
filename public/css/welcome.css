@@ -1,0 +1,106 @@
+:root {
+    direction: rtl;
+}
+
+.fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease-out;
+}
+
+.fade-in {
+    opacity: 0;
+    transition: all 0.8s ease-out;
+}
+
+.scale-up {
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all 0.8s ease-out;
+}
+
+.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.slide-in-right {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: all 0.8s ease-out;
+}
+
+.slide-in-left {
+    opacity: 0;
+    transform: translateX(30px);
+    transition: all 0.8s ease-out;
+}
+
+html {
+    direction: rtl;
+}
+
+body {
+    text-align: right;
+    font-family: 'Poppins', sans-serif;
+}
+
+.hero-section {
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 1) 40%, rgba(255, 255, 255, 0.8) 70%, rgba(255, 255, 255, 0.6) 100%), url('https://readdy.ai/api/search-image?query=Fresh%20food%20ingredients%2C%20fruits%2C%20vegetables%2C%20and%20packaged%20food%20products%20arranged%20on%20a%20clean%20surface%20with%20a%20delivery%20concept.%20The%20image%20should%20have%20a%20light%2C%20airy%20background%20on%20the%20left%20side%20that%20gradually%20transitions%20to%20show%20more%20food%20products%20on%20the%20right.%20The%20left%20side%20should%20be%20mostly%20white%20or%20very%20light%20colored%20for%20text%20overlay.&width=1200&height=600&seq=12345&orientation=landscape');
+    background-size: cover;
+    background-position: center;
+}
+
+.custom-input:focus {
+    outline: none;
+    border-color: #008080;
+}
+
+.custom-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+}
+
+.custom-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .switch-slider {
+    background-color: #008080;
+}
+
+input:checked + .switch-slider:before {
+    transform: translateX(24px);
+}
+
+:where([class^="ri-"])::before { 
+    content: "\f3c2"; 
+} 
