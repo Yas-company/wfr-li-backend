@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CategoryResource\Pages;
-use App\Filament\Resources\CategoryResource\RelationManagers;
+use App\Filament\Resources\CategoryResource\RelationManagers\ProductsRelationManager;
 use App\Models\Category;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -30,13 +30,13 @@ class CategoryResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name.en')
-                    ->label('English Name')
+                    ->label('الاسم بالانجليزية')
                     ->required(),
                 Forms\Components\TextInput::make('name.ar')
-                    ->label('Arabic Name')
+                    ->label('الاسم بالعربية')
                     ->required(),
                 Forms\Components\FileUpload::make('image')
-                    ->label('Image')
+                    ->label('الصورة')
                     ->image()
                     ->disk('public') // Store in storage/app/public
                     ->directory('categories') // Subdirectory for organization
@@ -45,7 +45,7 @@ class CategoryResource extends Resource
                     ->maxSize(2048) // Optional: Limit file size to 2MB
                     ->required(),
                 Forms\Components\Toggle::make('is_active')
-                    ->label('Active')
+                    ->label('الحالة')
                     ->default(false),
 
             ]);
@@ -57,18 +57,19 @@ class CategoryResource extends Resource
             ->columns([
                 // Display English name
                 Tables\Columns\TextColumn::make('name_en')
-                    ->label('English Name')
+                    ->label('الاسم بالانجليزية')
                     ->getStateUsing(fn($record) => $record->getTranslation('name', 'en'))
                     ->searchable(query: fn($query, $search) => $query->where('name->en', 'like', "%{$search}%")),
 
                 // Display Arabic name
                 Tables\Columns\TextColumn::make('name_ar')
-                    ->label('Arabic Name')
+                    ->label('الاسم بالعربية')
                     ->getStateUsing(fn($record) => $record->getTranslation('name', 'ar'))
                     ->searchable(query: fn($query, $search) => $query->where('name->ar', 'like', "%{$search}%")),
                 Tables\Columns\ImageColumn::make('image_url')
-                    ->label('Image'),
-                Tables\Columns\ToggleColumn::make('is_active'),
+                    ->label('الصورة'),
+                Tables\Columns\ToggleColumn::make('is_active')
+                    ->label('الحالة'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('is_active')
@@ -86,13 +87,13 @@ class CategoryResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array
     {
         return [
-            //
+            ProductsRelationManager::class,
         ];
     }
 

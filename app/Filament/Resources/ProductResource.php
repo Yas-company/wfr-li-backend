@@ -71,32 +71,38 @@ class ProductResource extends Resource
             ->columns([
                 // Display English name
                 Tables\Columns\TextColumn::make('name_en')
-                ->label('English Name')
+                ->label('الاسم بالانجليزية')
                 ->getStateUsing(fn($record) => $record->getTranslation('name', 'en'))
                 ->searchable(query: fn($query, $search) => $query->where('name->en', 'like', "%{$search}%")),
 
             // Display Arabic name
             Tables\Columns\TextColumn::make('name_ar')
-                ->label('Arabic Name')
+                ->label('الاسم بالعربية')
                 ->getStateUsing(fn($record) => $record->getTranslation('name', 'ar'))
                 ->searchable(query: fn($query, $search) => $query->where('name->ar', 'like', "%{$search}%")),
 
                 Tables\Columns\ImageColumn::make('image_url')
+                    ->label('الصورة')
                     ->square(),
                 Tables\Columns\TextColumn::make('price')
+                    ->label('السعر')
                     ->money()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stock_qty')
+                    ->label('الكمية')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('category.name')
+                    ->label('التصنيف')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('التاريخ')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('التاريخ')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -115,7 +121,7 @@ class ProductResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array
