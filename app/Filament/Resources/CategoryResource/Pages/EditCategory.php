@@ -22,4 +22,9 @@ class EditCategory extends EditRecord
                 ->icon('heroicon-o-trash'),
         ];
     }
+
+    public function getTitle(): string
+    {
+        return 'تعديل ' . $this->record->name;
+    }
 }

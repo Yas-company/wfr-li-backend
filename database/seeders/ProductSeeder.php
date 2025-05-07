@@ -34,7 +34,6 @@ class ProductSeeder extends Seeder
                     'en' => 'Fresh Organic Tomatoes',
                     'ar' => 'طماطم عضوية طازجة'
                 ],
-                'image' => 'products/tomatoes.jpg',
                 'price' => 4.99,
                 'stock_qty' => 200,
                 'category_id' => $vegetablesCategory->id
@@ -44,7 +43,6 @@ class ProductSeeder extends Seeder
                     'en' => 'Mixed Vegetables Pack',
                     'ar' => 'عبوة خضروات متنوعة'
                 ],
-                'image' => 'products/vegetables.jpg',
                 'price' => 6.99,
                 'stock_qty' => 75,
                 'category_id' => $vegetablesCategory->id
@@ -56,7 +54,6 @@ class ProductSeeder extends Seeder
                     'en' => 'Fresh Fruits Basket',
                     'ar' => 'سلة فواكه طازجة'
                 ],
-                'image' => 'products/fruits.jpg',
                 'price' => 19.99,
                 'stock_qty' => 40,
                 'category_id' => $fruitsCategory->id
@@ -68,7 +65,6 @@ class ProductSeeder extends Seeder
                     'en' => 'Fresh Milk',
                     'ar' => 'حليب طازج'
                 ],
-                'image' => 'products/milk.jpg',
                 'price' => 2.99,
                 'stock_qty' => 100,
                 'category_id' => $dairyCategory->id
@@ -78,7 +74,6 @@ class ProductSeeder extends Seeder
                     'en' => 'Organic Eggs (12 pieces)',
                     'ar' => 'بيض عضوي (12 قطعة)'
                 ],
-                'image' => 'products/eggs.jpg',
                 'price' => 5.99,
                 'stock_qty' => 80,
                 'category_id' => $dairyCategory->id
@@ -90,7 +85,6 @@ class ProductSeeder extends Seeder
                     'en' => 'Fresh Chicken Breast',
                     'ar' => 'صدور دجاج طازجة'
                 ],
-                'image' => 'products/chicken.jpg',
                 'price' => 12.99,
                 'stock_qty' => 50,
                 'category_id' => $meatCategory->id
@@ -100,7 +94,6 @@ class ProductSeeder extends Seeder
                     'en' => 'Fresh Fish Fillet',
                     'ar' => 'فيليه سمك طازج'
                 ],
-                'image' => 'products/fish.jpg',
                 'price' => 15.99,
                 'stock_qty' => 30,
                 'category_id' => $meatCategory->id
@@ -112,7 +105,6 @@ class ProductSeeder extends Seeder
                     'en' => 'Whole Grain Bread',
                     'ar' => 'خبز القمح الكامل'
                 ],
-                'image' => 'products/bread.jpg',
                 'price' => 3.99,
                 'stock_qty' => 150,
                 'category_id' => $bakeryCategory->id
