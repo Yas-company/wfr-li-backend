@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Http\Response;
 use App\Http\Resources\UserResource;
+use Illuminate\Validation\ValidationException;
 
 class BuyerAuthController extends Controller
 {
@@ -40,9 +41,20 @@ class BuyerAuthController extends Controller
         try {
             $user = $this->authService->register($request->validated());
             
+            // Generate and send OTP
+            $otp = $this->otpService->generateOtp($user->phone);
+            
+            // TODO: Send OTP via SMS service
+            // For testing, we'll just log it
+            Log::info('OTP generated for registration', [
+                'phone' => $user->phone,
+                'otp' => $otp
+            ]);
+            
             return $this->createdResponse([
-                'user' => $user,
-                'token' => $user->createToken('buyer-token')->plainTextToken
+                'user' => new UserResource($user),
+                'message' => __('messages.otp_sent'),
+                'requires_verification' => true
             ], __('messages.registration_successful'));
         } catch (\Exception $e) {
             Log::error('Buyer registration failed', [
@@ -51,6 +63,50 @@ class BuyerAuthController extends Controller
             ]);
 
             return $this->serverErrorResponse(__('messages.registration_failed'));
+        }
+    }
+
+    /**
+     * Verify OTP for registration or password reset
+     */
+    public function verifyOtp(VerifyOtpRequest $request): JsonResponse
+    {
+        try {
+            $isValid = $this->otpService->verifyOtp(
+                $request->validated('phone'),
+                $request->validated('otp')
+            );
+
+            if (!$isValid) {
+                return $this->errorResponse(
+                    message: __('messages.invalid_otp'),
+                    statusCode: Response::HTTP_UNPROCESSABLE_ENTITY
+                );
+            }
+
+            // Check if this is a registration verification
+            $user = User::where('phone', $request->validated('phone'))->first();
+            if ($user && !$user->is_verified) {
+                $user->update(['is_verified' => true]);
+                return $this->successResponse([
+                    'user' => new UserResource($user),
+                    'token' => $user->createToken('buyer-token')->plainTextToken
+                ], __('messages.registration_verified'));
+            }
+
+            // For password reset, just return success
+            return $this->successResponse(
+                message: __('messages.otp_verified')
+            );
+        } catch (\Exception $e) {
+            Log::error('OTP verification failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return $this->errorResponse(
+                message: __('messages.otp_verification_failed')
+            );
         }
     }
 
@@ -66,9 +122,15 @@ class BuyerAuthController extends Controller
             $user = $this->authService->login($request->validated());
             
             return $this->successResponse([
-                'user' => $user,
+                'user' => new UserResource($user),
                 'token' => $user->createToken('buyer-token')->plainTextToken
             ], __('messages.login_successful'));
+        } catch (ValidationException $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                errors: $e->errors(),
+                statusCode: Response::HTTP_UNPROCESSABLE_ENTITY
+            );
         } catch (\Exception $e) {
             Log::error('Buyer login failed', [
                 'error' => $e->getMessage(),
@@ -185,39 +247,6 @@ class BuyerAuthController extends Controller
 
             return $this->errorResponse(
                 message: __('messages.otp_send_failed')
-            );
-        }
-    }
-
-    /**
-     * Verify OTP for password reset
-     */
-    public function verifyOtp(VerifyOtpRequest $request): JsonResponse
-    {
-        try {
-            $isValid = $this->otpService->verifyOtp(
-                $request->validated('phone'),
-                $request->validated('otp')
-            );
-
-            if (!$isValid) {
-                return $this->errorResponse(
-                    message: __('messages.invalid_otp'),
-                    statusCode: Response::HTTP_UNPROCESSABLE_ENTITY
-                );
-            }
-
-            return $this->successResponse(
-                message: __('messages.otp_verified')
-            );
-        } catch (\Exception $e) {
-            Log::error('OTP verification failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            return $this->errorResponse(
-                message: __('messages.otp_verification_failed')
             );
         }
     }

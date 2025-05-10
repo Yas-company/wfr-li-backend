@@ -16,10 +16,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('phone')->unique();
-            $table->text('address');
-            $table->string('location');
-            $table->string('business_name');
-            $table->string('lic_id')->unique();
+            $table->text('address')->nullable();
+            $table->string('location')->nullable();
+            $table->string('business_name')->nullable();
+            $table->string('lic_id')->nullable()->unique();
             $table->string('email')->nullable()->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('role')->default(UserRole::VISITOR->value);

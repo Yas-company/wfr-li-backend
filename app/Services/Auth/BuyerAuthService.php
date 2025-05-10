@@ -4,6 +4,7 @@ namespace App\Services\Auth;
 
 use App\Enums\UserRole;
 use App\Models\User;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -45,7 +46,13 @@ class BuyerAuthService
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
             throw ValidationException::withMessages([
-                'phone' => ['The provided credentials are incorrect.'],
+                'phone' => [__('messages.invalid_credentials')],
+            ]);
+        }
+
+        if (!$user->is_verified) {
+            throw ValidationException::withMessages([
+                'phone' => [__('messages.account_not_verified')],
             ]);
         }
 
@@ -67,10 +74,10 @@ class BuyerAuthService
      * Get buyer profile
      *
      * @param User $user
-     * @return User
+     * @return UserResource
      */
-    public function getProfile(User $user): User
+    public function getProfile(User $user): UserResource
     {
-        return $user;
+        return new UserResource($user);
     }
 }
