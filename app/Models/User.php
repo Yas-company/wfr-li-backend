@@ -32,7 +32,8 @@ class User extends Authenticatable
         'role',
         'is_verified',
         'otp',
-        'otp_expiry'
+        'otp_expiry',
+        'country_code'
     ];
 
     protected $attributes = [
@@ -76,17 +77,6 @@ class User extends Authenticatable
     {
         return $this->role === UserRole::BUYER;
     }
-
-    public function isSupplier(): bool
-    {
-        return $this->role === UserRole::SUPPLIER;
-    }
-
-    public function isFactory(): bool
-    {
-        return $this->role === UserRole::FACTORY;
-    }
-
     public function isVerified(): bool
     {
         return $this->is_verified;
