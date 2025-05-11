@@ -18,6 +18,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Filament\Pages\Auth\Login;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -30,7 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->favicon(asset('images/favicon.jpeg'))
             ->brandLogo(asset('images/logo.jpeg'))
             ->brandLogoHeight('3.5rem')
-            ->login()
+            ->login(Login::class)
             ->colors([
                 'primary' => Color::Amber,
             ])
