@@ -25,6 +25,7 @@ class BuyerRegisterRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'unique:users'],
+            'country_code' => ['required'],
             'address' => ['required', 'string'],
             'location' => ['required', 'string'],
             'business_name' => ['required', 'string'],
@@ -50,6 +51,7 @@ class BuyerRegisterRequest extends FormRequest
             'name.required' => __('messages.validation.required.name'),
             'phone.required' => __('messages.validation.required.phone'),
             'phone.unique' => __('messages.validation.unique.phone'),
+            'country_code.required' => __('messages.validation.required.country_code'),
             'address.required' => __('messages.validation.required.address'),
             'location.required' => __('messages.validation.required.location'),
             'business_name.required' => __('messages.validation.required.business_name'),
