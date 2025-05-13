@@ -13,7 +13,9 @@ Route::get('/user', function (Request $request) {
 
 Route::get('/onboarding-screens', [OnboardingScreenController::class, 'index']);
 Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/categories/{category}', [CategoryController::class, 'show']);
 Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/{product}', [ProductController::class, 'show']);
 
 // Buyer Authentication Routes
 Route::prefix('buyer')->group(function () {

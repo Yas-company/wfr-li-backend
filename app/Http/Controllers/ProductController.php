@@ -14,4 +14,9 @@ class ProductController extends Controller
         $products = Product::with('category')->paginate(10);
         return ProductResource::collection($products);
     }
+
+    public function show(Product $product)
+    {
+        return new ProductResource($product);
+    }
 } 

@@ -96,4 +96,50 @@ class ProductControllerTest extends TestCase
         $this->assertEquals(1, $response->json('meta.current_page'));
         $this->assertEquals(2, $response->json('meta.last_page'));
     }
+
+    public function test_show_product_successfully()
+    {
+        $category = CategoryFactory::new()->create([
+            'name' => [
+                'en' => 'Vegetables',
+                'ar' => 'خضروات'
+            ],
+            'is_active' => true
+        ]);
+
+        $product = ProductFactory::new()->create([
+            'name' => [
+                'en' => 'Fresh Tomatoes',
+                'ar' => 'طماطم طازجة'
+            ],
+            'price' => 4.99,
+            'stock_qty' => 100,
+            'category_id' => $category->id,
+        ]);
+
+        $response = $this->getJson("/api/products/{$product->id}");
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'name',
+                    'image',
+                    'price',
+                    'stock_qty',
+                    'category' => [
+                        'id',
+                        'name',
+                        'is_active'
+                    ],
+                    'created_at',
+                    'updated_at'
+                ]
+            ]);
+
+        $this->assertEquals('طماطم طازجة', $response->json('data.name'));
+        $this->assertEquals(4.99, $response->json('data.price'));
+        $this->assertEquals(100, $response->json('data.stock_qty'));
+        $this->assertEquals($category->id, $response->json('data.category.id'));
+    }
 }

@@ -12,4 +12,10 @@ class CategoryController extends Controller
         $categories = Category::active()->get();
         return CategoryResource::collection($categories);
     }
+
+    public function show(Category $category)
+    {
+        $category->load('products');
+        return new CategoryResource($category);
+    }
 }
