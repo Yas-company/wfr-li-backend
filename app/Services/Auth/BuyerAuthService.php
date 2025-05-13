@@ -15,9 +15,36 @@ class BuyerAuthService
      *
      * @param array $data
      * @return User
+     * @throws ValidationException
      */
     public function register(array $data): User
     {
+        // Check if user with this phone number exists
+        $existingUser = User::where('phone', $data['phone'])->first();
+
+        if ($existingUser) {
+            if ($existingUser->is_verified) {
+                throw ValidationException::withMessages([
+                    'phone' => [__('messages.phone_already_registered')],
+                ]);
+            }
+
+            // Update existing unverified user
+            $existingUser->update([
+                'name' => $data['name'],
+                'address' => $data['address'],
+                'location' => $data['location'],
+                'business_name' => $data['business_name'],
+                'lic_id' => $data['lic_id'],
+                'email' => $data['email'] ?? null,
+                'password' => Hash::make($data['password']),
+                'role' => UserRole::BUYER,
+            ]);
+
+            return $existingUser;
+        }
+
+        // Create new user if no existing user found
         return User::create([
             'name' => $data['name'],
             'phone' => $data['phone'],

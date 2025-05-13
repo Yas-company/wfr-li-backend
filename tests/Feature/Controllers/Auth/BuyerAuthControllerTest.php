@@ -55,7 +55,8 @@ class BuyerAuthControllerTest extends TestCase
                         'created_at',
                         'updated_at'
                     ],
-                    'token'
+                    'message',
+                    'requires_verification'
                 ]
             ]);
 
@@ -114,9 +115,55 @@ class BuyerAuthControllerTest extends TestCase
      * @group auth
      * @group login
      */
-    public function test_buyer_can_login_with_valid_credentials(): void
+    public function test_buyer_cannot_login_with_invalid_credentials(): void
     {
         $user = $this->userFactory->create();
+
+        $response = $this->postJson("{$this->baseUrl}/login", [
+            'phone' => $user->phone,
+            'password' => 'wrong_password'
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'success' => false,
+                'message' => __('messages.invalid_credentials'),
+                'errors' => [
+                    'phone' => [__('messages.invalid_credentials')]
+                ]
+            ]);
+    }
+
+    /**
+     * @group buyer
+     * @group auth
+     * @group login
+     */
+    public function test_buyer_cannot_login_when_not_verified(): void
+    {
+        $user = $this->userFactory->create();
+
+        $response = $this->postJson("{$this->baseUrl}/login", [
+            'phone' => $user->phone,
+            'password' => 'Password123!'
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'success' => false,
+                'message' => __('messages.account_not_verified'),
+                'errors' => [
+                    'phone' => [__('messages.account_not_verified')]
+                ]
+            ]);
+    }
+
+
+    public function test_verified_buyer_can_login(): void
+    {
+        $user = $this->userFactory->create([
+            'is_verified' => true
+        ]);
 
         $response = $this->postJson("{$this->baseUrl}/login", [
             'phone' => $user->phone,
@@ -137,33 +184,19 @@ class BuyerAuthControllerTest extends TestCase
                         'name',
                         'phone',
                         'email',
-                        'role'
+                        'address',
+                        'location',
+                        'business_name',
+                        'lic_id',
+                        'role',
+                        'created_at',
+                        'updated_at'
                     ],
                     'token'
                 ]
             ]);
     }
 
-    /**
-     * @group buyer
-     * @group auth
-     * @group login
-     */
-    public function test_buyer_cannot_login_with_invalid_credentials(): void
-    {
-        $user = $this->userFactory->create();
-
-        $response = $this->postJson("{$this->baseUrl}/login", [
-            'phone' => $user->phone,
-            'password' => 'wrong_password'
-        ]);
-
-        $response->assertStatus(500)
-            ->assertJson([
-                'success' => false,
-                'message' => __('messages.login_failed')
-            ]);
-    }
 
     /**
      * @group buyer
@@ -218,6 +251,79 @@ class BuyerAuthControllerTest extends TestCase
                     'role' => 'buyer'
                 ]
             ]);
+    }
+
+    /**
+     * @group buyer
+     * @group auth
+     * @group registration
+     */
+    public function test_unverified_buyer_can_update_data_by_registering_again(): void
+    {
+        // Create initial unverified user
+        $initialUser = $this->userFactory->create([
+            'is_verified' => false,
+            'name' => 'Initial Name',
+            'email' => 'initial@email.com',
+            'phone' => '1234567890',
+            'address' => 'Initial Address',
+            'business_name' => 'Initial Business',
+            'lic_id' => 'INITIAL123'
+        ]);
+
+        // New registration data with same phone number
+        $newData = $this->getValidRegistrationData([
+            'phone' => $initialUser->phone,
+            'name' => 'New Name',
+            'email' => 'new@email.com',
+            'address' => 'New Address',
+            'business_name' => 'New Business',
+            'lic_id' => 'NEW123'
+        ]);
+
+        $response = $this->postJson("{$this->baseUrl}/register", $newData);
+
+        $response->assertStatus(201)
+            ->assertJson([
+                'success' => true,
+                'message' => __('messages.registration_successful')
+            ])
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    'user' => [
+                        'id',
+                        'name',
+                        'phone',
+                        'email',
+                        'address',
+                        'location',
+                        'business_name',
+                        'lic_id',
+                        'role',
+                        'created_at',
+                        'updated_at'
+                    ],
+                    'message',
+                    'requires_verification'
+                ]
+            ]);
+
+        // Assert that the user data was updated
+        $this->assertDatabaseHas('users', [
+            'id' => $initialUser->id, // Same user ID
+            'phone' => $initialUser->phone, // Same phone
+            'name' => 'New Name',
+            'email' => 'new@email.com',
+            'address' => 'New Address',
+            'business_name' => 'New Business',
+            'lic_id' => 'NEW123',
+            'is_verified' => false // Still unverified
+        ]);
+
+        // Assert that no new user was created
+        $this->assertDatabaseCount('users', 1);
     }
 
     /**

@@ -24,7 +24,19 @@ class BuyerRegisterRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', 'unique:users'],
+            'phone' => [
+                'required', 
+                'string',
+                function ($attribute, $value, $fail) {
+                    $exists = \App\Models\User::where('phone', $value)
+                        ->where('is_verified', true)
+                        ->exists();
+                    
+                    if ($exists) {
+                        $fail(__('messages.validation.unique.phone'));
+                    }
+                }
+            ],
             'country_code' => ['required'],
             'address' => ['required', 'string'],
             'location' => ['required', 'string'],
