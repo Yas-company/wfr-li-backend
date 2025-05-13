@@ -14,7 +14,8 @@ class FactorySeeder extends Seeder
      */
     public function run(): void
     {
-        Factory::updateOrCreate([
+        Factory::updateOrCreate(
+            ['id' => 1],[
             'name' => [
                 'en' => 'Test Factory',
                 'ar' => 'مصنع التجربة'

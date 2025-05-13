@@ -82,10 +82,18 @@ class SupplierSeeder extends Seeder
             ];
 
             foreach ($suppliers as $supplierData) {
-                Supplier::updateOrCreate([
-                    ...$supplierData,
-                    'factory_id' => $factory->id,
-                ]);
+                Supplier::updateOrCreate(
+                    ['email' => $supplierData['email']],
+                    [
+                        'name' => $supplierData['name'],
+                        'phone' => $supplierData['phone'],
+                        'address' => $supplierData['address'],
+                        'location' => $supplierData['location'],
+                        'password' => $supplierData['password'],
+                        'is_verified' => $supplierData['is_verified'],
+                        'factory_id' => $factory->id,
+                    ]
+                );
             }
         }
     }

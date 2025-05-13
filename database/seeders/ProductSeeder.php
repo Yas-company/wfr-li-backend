@@ -14,25 +14,50 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        $categories = Category::all();
         $factory = Factory::first();
 
-        if ($categories->isEmpty()) {
-            $this->command->info('No categories found. Please run CategorySeeder first.');
-            return;
-        }
-
         if (!$factory) {
-            $this->command->info('No factory found. Please run FactorySeeder first.');
+            if ($this->command) {
+                $this->command->info('No factory found. Please run FactorySeeder first.');
+            }
             return;
         }
 
-        // Get category IDs
-        $vegetablesCategory = Category::where('name->en', 'Vegetables')->first();
-        $fruitsCategory = Category::where('name->en', 'Fruits')->first();
-        $dairyCategory = Category::where('name->en', 'Dairy Products')->first();
-        $meatCategory = Category::where('name->en', 'Meat & Poultry')->first();
-        $bakeryCategory = Category::where('name->en', 'Bakery & Bread')->first();
+        // Create categories if they don't exist
+        $categories = [
+            'Vegetables' => [
+                'en' => 'Vegetables',
+                'ar' => 'خضروات'
+            ],
+            'Fruits' => [
+                'en' => 'Fruits',
+                'ar' => 'فواكه'
+            ],
+            'Dairy Products' => [
+                'en' => 'Dairy Products',
+                'ar' => 'منتجات الألبان'
+            ],
+            'Meat & Poultry' => [
+                'en' => 'Meat & Poultry',
+                'ar' => 'اللحوم والدواجن'
+            ],
+            'Bakery & Bread' => [
+                'en' => 'Bakery & Bread',
+                'ar' => 'المخبوزات والخبز'
+            ]
+        ];
+
+        $categoryIds = [];
+        foreach ($categories as $key => $name) {
+            $category = Category::updateOrCreate(
+                ['name->en' => $name['en']],
+                [
+                    'name' => $name,
+                    'is_active' => true
+                ]
+            );
+            $categoryIds[$key] = $category->id;
+        }
 
         $products = [
             // Vegetables
@@ -43,7 +68,7 @@ class ProductSeeder extends Seeder
                 ],
                 'price' => 4.99,
                 'stock_qty' => 200,
-                'category_id' => $vegetablesCategory->id,
+                'category_id' => $categoryIds['Vegetables'],
                 'factory_id' => $factory->id
             ],
             [
@@ -53,7 +78,7 @@ class ProductSeeder extends Seeder
                 ],
                 'price' => 6.99,
                 'stock_qty' => 75,
-                'category_id' => $vegetablesCategory->id,
+                'category_id' => $categoryIds['Vegetables'],
                 'factory_id' => $factory->id
             ],
 
@@ -65,7 +90,7 @@ class ProductSeeder extends Seeder
                 ],
                 'price' => 19.99,
                 'stock_qty' => 40,
-                'category_id' => $fruitsCategory->id,
+                'category_id' => $categoryIds['Fruits'],
                 'factory_id' => $factory->id
             ],
 
@@ -77,7 +102,7 @@ class ProductSeeder extends Seeder
                 ],
                 'price' => 2.99,
                 'stock_qty' => 100,
-                'category_id' => $dairyCategory->id,
+                'category_id' => $categoryIds['Dairy Products'],
                 'factory_id' => $factory->id
             ],
             [
@@ -87,7 +112,7 @@ class ProductSeeder extends Seeder
                 ],
                 'price' => 5.99,
                 'stock_qty' => 80,
-                'category_id' => $dairyCategory->id,
+                'category_id' => $categoryIds['Dairy Products'],
                 'factory_id' => $factory->id
             ],
 
@@ -99,7 +124,7 @@ class ProductSeeder extends Seeder
                 ],
                 'price' => 12.99,
                 'stock_qty' => 50,
-                'category_id' => $meatCategory->id,
+                'category_id' => $categoryIds['Meat & Poultry'],
                 'factory_id' => $factory->id
             ],
             [
@@ -109,7 +134,7 @@ class ProductSeeder extends Seeder
                 ],
                 'price' => 15.99,
                 'stock_qty' => 30,
-                'category_id' => $meatCategory->id,
+                'category_id' => $categoryIds['Meat & Poultry'],
                 'factory_id' => $factory->id
             ],
 
@@ -121,13 +146,16 @@ class ProductSeeder extends Seeder
                 ],
                 'price' => 3.99,
                 'stock_qty' => 150,
-                'category_id' => $bakeryCategory->id,
+                'category_id' => $categoryIds['Bakery & Bread'],
                 'factory_id' => $factory->id
             ]
         ];
 
         foreach ($products as $product) {
-            Product::updateOrCreate($product);
+            Product::updateOrCreate(
+                ['name->en' => $product['name']['en']],
+                $product
+            );
         }
     }
 }
