@@ -20,36 +20,60 @@ class SupplierSeeder extends Seeder
         if ($factory) {
             $suppliers = [
                 [
-                    'name' => 'Supplier One',
+                    'name' => [
+                        'en' => 'Supplier One',
+                        'ar' => 'المورد الأول'
+                    ],
                     'phone' => '9876543210',
-                    'address' => '123 Test Street, Test City',
+                    'address' => [
+                        'en' => '123 Test Street, Test City',
+                        'ar' => '123 شارع التجربة، مدينة التجربة'
+                    ],
                     'location' => 'Test City',
                     'email' => 'supplier1@test.com',
                     'password' => Hash::make('password'),
                     'is_verified' => true,
                 ],
                 [
-                    'name' => 'Supplier Two',
+                    'name' => [
+                        'en' => 'Supplier Two',
+                        'ar' => 'المورد الثاني'
+                    ],
                     'phone' => '9876543211',
-                    'address' => '456 Test Avenue, Test City',
+                    'address' => [
+                        'en' => '456 Test Avenue, Test City',
+                        'ar' => '456 شارع التجربة، مدينة التجربة'
+                    ],
                     'location' => 'Test City',
                     'email' => 'supplier2@test.com',
                     'password' => Hash::make('password'),
                     'is_verified' => true,
                 ],
                 [
-                    'name' => 'Supplier Three',
+                    'name' => [
+                        'en' => 'Supplier Three',
+                        'ar' => 'المورد الثالث'
+                    ],
                     'phone' => '9876543212',
-                    'address' => '789 Test Road, Test City',
+                    'address' => [
+                        'en' => '789 Test Road, Test City',
+                        'ar' => '789 شارع التجربة، مدينة التجربة'
+                    ],
                     'location' => 'Test City',
                     'email' => 'supplier3@test.com',
                     'password' => Hash::make('password'),
                     'is_verified' => true,
                 ],
                 [
-                    'name' => 'Supplier Four',
+                    'name' => [
+                        'en' => 'Supplier Four',
+                        'ar' => 'المورد الرابع'
+                    ],
                     'phone' => '9876543213',
-                    'address' => '321 Test Lane, Test City',
+                    'address' => [
+                        'en' => '321 Test Lane, Test City',
+                        'ar' => '321 شارع التجربة، مدينة التجربة'
+                    ],
                     'location' => 'Test City',
                     'email' => 'supplier4@test.com',
                     'password' => Hash::make('password'),
@@ -58,7 +82,7 @@ class SupplierSeeder extends Seeder
             ];
 
             foreach ($suppliers as $supplierData) {
-                Supplier::create([
+                Supplier::updateOrCreate([
                     ...$supplierData,
                     'factory_id' => $factory->id,
                 ]);

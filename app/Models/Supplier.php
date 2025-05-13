@@ -36,4 +36,10 @@ class Supplier extends Model
     {
         return $this->belongsTo(Factory::class);
     }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'product_supplier')
+            ->withTimestamps();
+    }
 }

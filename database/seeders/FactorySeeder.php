@@ -14,8 +14,11 @@ class FactorySeeder extends Seeder
      */
     public function run(): void
     {
-        Factory::create([
-            'name' => 'Test Factory',
+        Factory::updateOrCreate([
+            'name' => [
+                'en' => 'Test Factory',
+                'ar' => 'مصنع التجربة'
+            ],
             'phone' => '1234567890',
             'number' => 'FACT-0001',
             'email' => 'factory@test.com',

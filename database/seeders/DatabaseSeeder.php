@@ -19,8 +19,8 @@ class DatabaseSeeder extends Seeder
             OnboardingScreenSeeder::class,
             UserSeeder::class,
             CategorySeeder::class,
-            ProductSeeder::class,
             FactorySeeder::class,
+            ProductSeeder::class,
             SupplierSeeder::class,
         ]);
     }

@@ -38,4 +38,9 @@ class Factory extends Authenticatable
     {
         return $this->hasMany(Supplier::class);
     }
+
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class);
+    }
 }

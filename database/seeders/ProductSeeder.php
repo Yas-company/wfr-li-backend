@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Factory;
 use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder
@@ -14,9 +15,15 @@ class ProductSeeder extends Seeder
     public function run(): void
     {
         $categories = Category::all();
+        $factory = Factory::first();
 
         if ($categories->isEmpty()) {
             $this->command->info('No categories found. Please run CategorySeeder first.');
+            return;
+        }
+
+        if (!$factory) {
+            $this->command->info('No factory found. Please run FactorySeeder first.');
             return;
         }
 
@@ -36,7 +43,8 @@ class ProductSeeder extends Seeder
                 ],
                 'price' => 4.99,
                 'stock_qty' => 200,
-                'category_id' => $vegetablesCategory->id
+                'category_id' => $vegetablesCategory->id,
+                'factory_id' => $factory->id
             ],
             [
                 'name' => [
@@ -45,7 +53,8 @@ class ProductSeeder extends Seeder
                 ],
                 'price' => 6.99,
                 'stock_qty' => 75,
-                'category_id' => $vegetablesCategory->id
+                'category_id' => $vegetablesCategory->id,
+                'factory_id' => $factory->id
             ],
 
             // Fruits
@@ -56,7 +65,8 @@ class ProductSeeder extends Seeder
                 ],
                 'price' => 19.99,
                 'stock_qty' => 40,
-                'category_id' => $fruitsCategory->id
+                'category_id' => $fruitsCategory->id,
+                'factory_id' => $factory->id
             ],
 
             // Dairy Products
@@ -67,7 +77,8 @@ class ProductSeeder extends Seeder
                 ],
                 'price' => 2.99,
                 'stock_qty' => 100,
-                'category_id' => $dairyCategory->id
+                'category_id' => $dairyCategory->id,
+                'factory_id' => $factory->id
             ],
             [
                 'name' => [
@@ -76,7 +87,8 @@ class ProductSeeder extends Seeder
                 ],
                 'price' => 5.99,
                 'stock_qty' => 80,
-                'category_id' => $dairyCategory->id
+                'category_id' => $dairyCategory->id,
+                'factory_id' => $factory->id
             ],
 
             // Meat & Poultry
@@ -87,7 +99,8 @@ class ProductSeeder extends Seeder
                 ],
                 'price' => 12.99,
                 'stock_qty' => 50,
-                'category_id' => $meatCategory->id
+                'category_id' => $meatCategory->id,
+                'factory_id' => $factory->id
             ],
             [
                 'name' => [
@@ -96,7 +109,8 @@ class ProductSeeder extends Seeder
                 ],
                 'price' => 15.99,
                 'stock_qty' => 30,
-                'category_id' => $meatCategory->id
+                'category_id' => $meatCategory->id,
+                'factory_id' => $factory->id
             ],
 
             // Bakery & Bread
@@ -107,7 +121,8 @@ class ProductSeeder extends Seeder
                 ],
                 'price' => 3.99,
                 'stock_qty' => 150,
-                'category_id' => $bakeryCategory->id
+                'category_id' => $bakeryCategory->id,
+                'factory_id' => $factory->id
             ]
         ];
 

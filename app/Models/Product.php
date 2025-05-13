@@ -26,6 +26,17 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function factory()
+    {
+        return $this->belongsTo(Factory::class);
+    }
+
+    public function suppliers()
+    {
+        return $this->belongsToMany(Supplier::class, 'product_supplier')
+            ->withTimestamps();
+    }
+
     public function getImageUrlAttribute()
     {
         if (!$this->image) {

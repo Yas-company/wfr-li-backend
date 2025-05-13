@@ -50,7 +50,7 @@ class ProductResource extends Resource
                         Forms\Components\TextInput::make('price')
                             ->required()
                             ->numeric()
-                            ->prefix('$')
+                            ->prefix('ر.س')
                             ->minValue(0),
                         Forms\Components\TextInput::make('stock_qty')
                             ->required()
@@ -58,6 +58,11 @@ class ProductResource extends Resource
                             ->minValue(0),
                         Forms\Components\Select::make('category_id')
                             ->relationship('category', 'name')
+                            ->required()
+                            ->searchable()
+                            ->preload(),
+                        Forms\Components\Select::make('factory_id')
+                            ->relationship('factory', 'name')
                             ->required()
                             ->searchable()
                             ->preload(),
@@ -69,6 +74,10 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('factory.name')
+                    ->label('المصنع')
+                    ->sortable(),
+                
                 // Display English name
                 Tables\Columns\TextColumn::make('name_en')
                 ->label('الاسم بالانجليزية')
@@ -86,7 +95,7 @@ class ProductResource extends Resource
                     ->square(),
                 Tables\Columns\TextColumn::make('price')
                     ->label('السعر')
-                    ->money()
+                    ->money('SAR')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stock_qty')
                     ->label('الكمية')
