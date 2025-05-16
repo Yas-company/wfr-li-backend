@@ -13,6 +13,19 @@ return [
     'validation_failed' => 'فشل التحقق',
     'server_error' => 'خطأ في الخادم',
 
+    // Cart Messages
+    'cart' => [
+        'added' => 'تمت إضافة المنتج إلى السلة بنجاح',
+        'removed' => 'تمت إزالة المنتج من السلة بنجاح',
+        'updated' => 'تم تحديث كمية السلة بنجاح',
+        'empty' => 'السلة فارغة',
+        'not_found' => 'لم يتم العثور على السلة',
+        'item_not_found' => 'لم يتم العثور على عنصر السلة',
+        'invalid_quantity' => 'الكمية غير صالحة',
+        'product_not_found' => 'لم يتم العثور على المنتج',
+        'insufficient_stock' => 'الكمية غير متوفرة في المخزون',
+    ],
+
     // Auth Messages
     'registration_successful' => 'تم التسجيل بنجاح',
     'registration_failed' => 'فشل التسجيل',
@@ -38,6 +51,7 @@ return [
     'invalid_otp' => 'رمز التحقق غير صحيح أو منتهي الصلاحية',
     'otp_expired' => 'رمز التحقق منتهي الصلاحية',
     'registration_verified' => 'تم التحقق من التسجيل بنجاح',
+
     // Password Reset Messages
     'password_reset_successful' => 'تم إعادة تعيين كلمة المرور بنجاح',
     'password_reset_failed' => 'فشل في إعادة تعيين كلمة المرور',
@@ -56,7 +70,9 @@ return [
             'password' => 'كلمة المرور مطلوبة',
             'otp' => 'يرجى إدخال رمز التحقق',
             'current_password' => 'يرجى إدخال كلمة المرور الحالية',
-            'password_confirmation' => 'يرجى تأكيد كلمة المرور'
+            'password_confirmation' => 'يرجى تأكيد كلمة المرور',
+            'product_id' => 'معرف المنتج مطلوب',
+            'quantity' => 'الكمية مطلوبة',
         ],
         'unique' => [
             'phone' => 'رقم الهاتف مسجل مسبقاً',
@@ -75,7 +91,14 @@ return [
             'otp' => 'يجب أن يتكون رمز التحقق من 6 أرقام'
         ],
         'exists' => [
-            'phone' => 'رقم الهاتف غير مسجل'
-        ]
+            'phone' => 'رقم الهاتف غير مسجل',
+            'product' => 'لم يتم العثور على المنتج',
+        ],
+        'integer' => [
+            'quantity' => 'يجب أن تكون الكمية رقماً',
+        ],
+        'min' => [
+            'quantity' => 'يجب أن تكون الكمية 1 على الأقل',
+        ],
     ],
 ]; 

@@ -4,6 +4,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Auth\BuyerAuthController;
 use App\Http\Controllers\OnboardingScreenController;
+use App\Http\Controllers\CartController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +28,12 @@ Route::prefix('buyer')->group(function () {
         Route::post('/logout', [BuyerAuthController::class, 'logout']);
         Route::get('/me', [BuyerAuthController::class, 'me']);
         Route::post('/change-password', [BuyerAuthController::class, 'changePassword']);
+
+        // Cart Routes
+        Route::get('/cart', [CartController::class, 'getCart']);
+        Route::post('/cart/add', [CartController::class, 'addToCart']);
+        Route::delete('/cart/items/{cartItem}', [CartController::class, 'removeFromCart']);
+        Route::patch('/cart/items/{cartItem}/quantity', [CartController::class, 'updateQuantity']);
     });
 
     // Password Reset Routes
