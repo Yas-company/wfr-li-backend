@@ -96,4 +96,9 @@ class User extends Authenticatable
     {
         return $query->where('is_verified', false);
     }
+
+    public function cart()
+    {
+        return $this->hasOne(Cart::class);
+    }
 }
