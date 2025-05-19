@@ -41,7 +41,7 @@ class BuyerRegisterRequest extends FormRequest
             'address' => ['required', 'string'],
             'location' => ['required', 'string'],
             'business_name' => ['required', 'string'],
-            'lic_id' => ['required', 'string', 'unique:users'],
+            'lic_id' => ['nullable', 'string', 'unique:users'],
             'email' => ['nullable', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Password::min(8)
                 ->letters()
