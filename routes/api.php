@@ -34,6 +34,11 @@ Route::prefix('buyer')->group(function () {
         Route::post('/cart/add', [CartController::class, 'addToCart']);
         Route::delete('/cart/items/{cartItem}', [CartController::class, 'removeFromCart']);
         Route::patch('/cart/items/{cartItem}/quantity', [CartController::class, 'updateQuantity']);
+
+        // Favorites Routes
+        Route::get('/favorites', [\App\Http\Controllers\FavoritesController::class, 'index']);
+        Route::post('/favorites', [\App\Http\Controllers\FavoritesController::class, 'store']);
+        Route::delete('/favorites/{product}', [\App\Http\Controllers\FavoritesController::class, 'destroy']);
     });
 
     // Password Reset Routes

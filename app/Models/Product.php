@@ -49,4 +49,9 @@ class Product extends Model
 
         return asset('storage/' . $this->image);
     }
+
+    public function favoritedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
+    }
 }
