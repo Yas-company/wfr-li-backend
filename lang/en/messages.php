@@ -101,4 +101,8 @@ return [
             'quantity' => 'Quantity must be at least 1',
         ],
     ],
+
+    // Favorites Messages
+    'added_to_favorites' => 'Added to favorites',
+    'removed_from_favorites' => 'Removed from favorites',
 ]; 
