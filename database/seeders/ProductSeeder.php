@@ -23,137 +23,164 @@ class ProductSeeder extends Seeder
             return;
         }
 
-        // Create categories if they don't exist
+        // Fetch categories by English name
         $categories = [
-            'Vegetables' => [
-                'en' => 'Vegetables',
-                'ar' => 'خضروات'
-            ],
-            'Fruits' => [
-                'en' => 'Fruits',
-                'ar' => 'فواكه'
-            ],
-            'Dairy Products' => [
-                'en' => 'Dairy Products',
-                'ar' => 'منتجات الألبان'
-            ],
-            'Meat & Poultry' => [
-                'en' => 'Meat & Poultry',
-                'ar' => 'اللحوم والدواجن'
-            ],
-            'Bakery & Bread' => [
-                'en' => 'Bakery & Bread',
-                'ar' => 'المخبوزات والخبز'
-            ]
+            'Rice & Grains' => Category::where('name->en', 'Rice & Grains')->first(),
+            'Oils & Ghee' => Category::where('name->en', 'Oils & Ghee')->first(),
+            'Meat & Poultry' => Category::where('name->en', 'Meat & Poultry')->first(),
+            'Vegetables' => Category::where('name->en', 'Vegetables')->first(),
+            'Canned Food & Tuna' => Category::where('name->en', 'Canned Food & Tuna')->first(),
+            'Juices & Drinks' => Category::where('name->en', 'Juices & Drinks')->first(),
+            'Coffee & Tea' => Category::where('name->en', 'Coffee & Tea')->first(),
+            'Dairy Products' => Category::where('name->en', 'Dairy Products')->first(),
         ];
 
-        $categoryIds = [];
-        foreach ($categories as $key => $name) {
-            $category = Category::updateOrCreate(
-                ['name->en' => $name['en']],
-                [
-                    'name' => $name,
-                    'is_active' => true
-                ]
-            );
-            $categoryIds[$key] = $category->id;
-        }
-
         $products = [
-            // Vegetables
             [
-                'name' => [
-                    'en' => 'Fresh Organic Tomatoes',
-                    'ar' => 'طماطم عضوية طازجة'
-                ],
-                'price' => 4.99,
-                'stock_qty' => 200,
-                'category_id' => $categoryIds['Vegetables'],
-                'factory_id' => $factory->id
+                'id' => 1,
+                'name' => [ 'en' => 'Al Diyaf Basmati Rice 5kg', 'ar' => 'أرز الضياف بسمتي هندي 5 كجم' ],
+                'description' => [ 'en' => 'Basmati rice with long grains from India', 'ar' => 'أرز بسمتي أبيض طويل الحبة من الهند' ],
+                'stock_qty' => 20,
+                'price' => 48,
+                'price_before_discount' => 55,
+                'category_id' => $categories['Rice & Grains']->id,
+                'factory_id' => $factory->id,
             ],
             [
-                'name' => [
-                    'en' => 'Mixed Vegetables Pack',
-                    'ar' => 'عبوة خضروات متنوعة'
-                ],
-                'price' => 6.99,
-                'stock_qty' => 75,
-                'category_id' => $categoryIds['Vegetables'],
-                'factory_id' => $factory->id
+                'id' => 2,
+                'name' => [ 'en' => 'Premium Virgin Olive Oil 500ml', 'ar' => 'زيت زيتون صافي بكر ممتاز 500 مل' ],
+                'description' => [ 'en' => 'Premium extra virgin olive oil produced by Masane company', 'ar' => 'زيت زيتون طبيعي بكر ممتاز من إنتاج شركة مصانع' ],
+                'stock_qty' => 15,
+                'price' => 70,
+                'price_before_discount' => 80,
+                'category_id' => $categories['Oils & Ghee']->id,
+                'factory_id' => $factory->id,
             ],
-
-            // Fruits
             [
-                'name' => [
-                    'en' => 'Fresh Fruits Basket',
-                    'ar' => 'سلة فواكه طازجة'
-                ],
-                'price' => 19.99,
+                'id' => 3,
+                'name' => [ 'en' => 'Aldeyra Whole Chicken 1100g', 'ar' => 'دجاجة كاملة الديرة 1100 جرام' ],
+                'description' => [ 'en' => 'Premium fresh chicken slaughtered according to Islamic law', 'ar' => 'دجاج طازج ممتاز مذبوح حسب الشريعة الإسلامية' ],
+                'stock_qty' => 25,
+                'price' => 32,
+                'price_before_discount' => 38,
+                'category_id' => $categories['Meat & Poultry']->id,
+                'factory_id' => $factory->id,
+            ],
+            [
+                'id' => 4,
+                'name' => [ 'en' => 'Fresh Cucumber', 'ar' => 'خيار طازج' ],
+                'description' => [ 'en' => 'Fresh green cucumber from local farms', 'ar' => 'خيار أخضر طازج من مزارع محلية' ],
                 'stock_qty' => 40,
-                'category_id' => $categoryIds['Fruits'],
-                'factory_id' => $factory->id
-            ],
-
-            // Dairy Products
-            [
-                'name' => [
-                    'en' => 'Fresh Milk',
-                    'ar' => 'حليب طازج'
-                ],
-                'price' => 2.99,
-                'stock_qty' => 100,
-                'category_id' => $categoryIds['Dairy Products'],
-                'factory_id' => $factory->id
+                'price' => 5,
+                'price_before_discount' => 6,
+                'category_id' => $categories['Vegetables']->id,
+                'factory_id' => $factory->id,
             ],
             [
-                'name' => [
-                    'en' => 'Organic Eggs (12 pieces)',
-                    'ar' => 'بيض عضوي (12 قطعة)'
-                ],
-                'price' => 5.99,
-                'stock_qty' => 80,
-                'category_id' => $categoryIds['Dairy Products'],
-                'factory_id' => $factory->id
-            ],
-
-            // Meat & Poultry
-            [
-                'name' => [
-                    'en' => 'Fresh Chicken Breast',
-                    'ar' => 'صدور دجاج طازجة'
-                ],
-                'price' => 12.99,
-                'stock_qty' => 50,
-                'category_id' => $categoryIds['Meat & Poultry'],
-                'factory_id' => $factory->id
+                'id' => 5,
+                'name' => [ 'en' => 'Fresh Tomato', 'ar' => 'طماطم طازجة' ],
+                'description' => [ 'en' => 'Red, ripe, and fresh tomatoes from local farms', 'ar' => 'طماطم حمراء، ناضجة وطازجة من مزارع محلية' ],
+                'stock_qty' => 35,
+                'price' => 4,
+                'price_before_discount' => 5,
+                'category_id' => $categories['Vegetables']->id,
+                'factory_id' => $factory->id,
             ],
             [
-                'name' => [
-                    'en' => 'Fresh Fish Fillet',
-                    'ar' => 'فيليه سمك طازج'
-                ],
-                'price' => 15.99,
+                'id' => 6,
+                'name' => [ 'en' => 'Noor Sunflower Oil 1.5L', 'ar' => 'زيت نور دوار الشمس 1.5 لتر' ],
+                'description' => [ 'en' => 'Pure sunflower oil fortified with vitamin D', 'ar' => 'زيت دوار الشمس نقي مدعم بفيتامين د' ],
+                'stock_qty' => 20,
+                'price' => 30,
+                'price_before_discount' => 35,
+                'category_id' => $categories['Oils & Ghee']->id,
+                'factory_id' => $factory->id,
+            ],
+            [
+                'id' => 7,
+                'name' => [ 'en' => 'Tuna 750g', 'ar' => 'تونة 750 جم' ],
+                'description' => [ 'en' => 'Premium tuna and avocado cream from the best types', 'ar' => 'كريمة التونة والأفوكادو المميزة من أفضل الأنواع' ],
+                'stock_qty' => 18,
+                'price' => 52,
+                'price_before_discount' => 60,
+                'category_id' => $categories['Canned Food & Tuna']->id,
+                'factory_id' => $factory->id,
+            ],
+            [
+                'id' => 8,
+                'name' => [ 'en' => 'Mazza Basmati Calrose Rice', 'ar' => 'أرز مزة بسمتي كالروز' ],
+                'description' => [ 'en' => 'High quality medium grain Calrose rice', 'ar' => 'أرز كالروز متوسط الحبة عالي الجودة' ],
                 'stock_qty' => 30,
-                'category_id' => $categoryIds['Meat & Poultry'],
-                'factory_id' => $factory->id
+                'price' => 35,
+                'price_before_discount' => 40,
+                'category_id' => $categories['Rice & Grains']->id,
+                'factory_id' => $factory->id,
             ],
-
-            // Bakery & Bread
             [
-                'name' => [
-                    'en' => 'Whole Grain Bread',
-                    'ar' => 'خبز القمح الكامل'
-                ],
-                'price' => 3.99,
-                'stock_qty' => 150,
-                'category_id' => $categoryIds['Bakery & Bread'],
-                'factory_id' => $factory->id
-            ]
+                'id' => 9,
+                'name' => [ 'en' => 'Premium Virgin Olive Oil 500ml (Extra)', 'ar' => 'زيت زيتون صافي بكر ممتاز 500 مل (نسخة إضافية)' ],
+                'description' => [ 'en' => 'Premium extra virgin olive oil produced by Masane company', 'ar' => 'زيت زيتون طبيعي بكر ممتاز من إنتاج شركة مصانع' ],
+                'stock_qty' => 10,
+                'price' => 70,
+                'price_before_discount' => 80,
+                'category_id' => $categories['Oils & Ghee']->id,
+                'factory_id' => $factory->id,
+            ],
+            [
+                'id' => 10,
+                'name' => [ 'en' => 'Al Diyaf Basmati Rice 5kg (Extra)', 'ar' => 'أرز الضياف بسمتي هندي 5 كجم (نسخة إضافية)' ],
+                'description' => [ 'en' => 'Basmati rice with long grains from India', 'ar' => 'أرز بسمتي أبيض طويل الحبة من الهند' ],
+                'stock_qty' => 10,
+                'price' => 48,
+                'price_before_discount' => 55,
+                'category_id' => $categories['Rice & Grains']->id,
+                'factory_id' => $factory->id,
+            ],
+            [
+                'id' => 11,
+                'name' => [ 'en' => 'Al Rabie Orange Drink', 'ar' => 'شراب البرتقال الربيع' ],
+                'description' => [ 'en' => 'Natural orange drink free from preservatives and artificial colors, rich in flavor', 'ar' => 'شراب برتقال طبيعي خالي من المواد الحافظة والألوان الاصطناعية غني بالنكهة' ],
+                'stock_qty' => 25,
+                'price' => 6,
+                'price_before_discount' => 8,
+                'category_id' => $categories['Juices & Drinks']->id,
+                'factory_id' => $factory->id,
+            ],
+            [
+                'id' => 12,
+                'name' => [ 'en' => 'Classic Coffee 200g', 'ar' => 'قهوة كلاسيك 200 جم' ],
+                'description' => [ 'en' => 'High quality instant coffee', 'ar' => 'قهوة سريعة التحضير مكونة عالية الجودة' ],
+                'stock_qty' => 12,
+                'price' => 38,
+                'price_before_discount' => 45,
+                'category_id' => $categories['Coffee & Tea']->id,
+                'factory_id' => $factory->id,
+            ],
+            [
+                'id' => 13,
+                'name' => [ 'en' => 'Season Mango Juice', 'ar' => 'عصير مانجو سيزن' ],
+                'description' => [ 'en' => 'Natural mango drink with a nutritional formula rich in vitamins and minerals', 'ar' => 'شراب مانجو طبيعي تركيبة غذائية مدعمة بالفيتامينات والمعادن' ],
+                'stock_qty' => 18,
+                'price' => 7,
+                'price_before_discount' => 9,
+                'category_id' => $categories['Juices & Drinks']->id,
+                'factory_id' => $factory->id,
+            ],
+            [
+                'id' => 14,
+                'name' => [ 'en' => 'Luna Powdered Milk', 'ar' => 'حليب مجفف لونا' ],
+                'description' => [ 'en' => 'High quality powdered milk rich in calcium and vitamins', 'ar' => 'حليب مجفف عالي الجودة غني بالكالسيوم والفيتامينات' ],
+                'stock_qty' => 20,
+                'price' => 26,
+                'price_before_discount' => 30,
+                'category_id' => $categories['Dairy Products']->id,
+                'factory_id' => $factory->id,
+            ],
         ];
 
         foreach ($products as $product) {
             Product::updateOrCreate(
-                ['name->en' => $product['name']['en']],
+                ['id' => $product['id']],
                 $product
             );
         }

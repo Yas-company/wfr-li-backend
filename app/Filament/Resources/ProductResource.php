@@ -38,6 +38,14 @@ class ProductResource extends Resource
                             ->label('Name (Arabic)')
                             ->required()
                             ->maxLength(255),
+                        Forms\Components\Textarea::make('description.en')
+                            ->label('Description (English)')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Textarea::make('description.ar')
+                            ->label('Description (Arabic)')
+                            ->required()
+                            ->maxLength(255),
                             Forms\Components\FileUpload::make('image')
                             ->label('Image')
                             ->image()
@@ -47,6 +55,11 @@ class ProductResource extends Resource
                             ->imageEditor() // Optional: Enable image cropping/editing
                             ->maxSize(2048) // Optional: Limit file size to 2MB
                             ->required(),
+                            Forms\Components\TextInput::make('price_before_discount')
+                            ->required()
+                            ->numeric()
+                            ->prefix('ر.س')
+                            ->minValue(0),
                         Forms\Components\TextInput::make('price')
                             ->required()
                             ->numeric()
@@ -90,9 +103,24 @@ class ProductResource extends Resource
                 ->getStateUsing(fn($record) => $record->getTranslation('name', 'ar'))
                 ->searchable(query: fn($query, $search) => $query->where('name->ar', 'like', "%{$search}%")),
 
+
+                Tables\Columns\TextColumn::make('description_en')
+                    ->label('الوصف بالانجليزية')
+                    ->getStateUsing(fn($record) => $record->getTranslation('description', 'en'))
+                    ->searchable(query: fn($query, $search) => $query->where('description->en', 'like', "%{$search}%")),
+
+                Tables\Columns\TextColumn::make('description_ar')
+                    ->label('الوصف بالعربية')
+                    ->getStateUsing(fn($record) => $record->getTranslation('description', 'ar'))
+                    ->searchable(query: fn($query, $search) => $query->where('description->ar', 'like', "%{$search}%")),
+
                 Tables\Columns\ImageColumn::make('image_url')
                     ->label('الصورة')
                     ->square(),
+                Tables\Columns\TextColumn::make('price_before_discount')
+                    ->label('السعر قبل الخصم')
+                    ->money('SAR')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('price')
                     ->label('السعر')
                     ->money('SAR')

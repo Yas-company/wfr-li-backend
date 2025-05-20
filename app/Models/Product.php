@@ -13,12 +13,14 @@ class Product extends Model
 
     protected $guarded = [];
 
-    public $translatable = ['name'];
+    public $translatable = ['name', 'description'];
 
     protected $casts = [
         'name' => 'array',
         'price' => 'decimal:2',
-        'stock_qty' => 'integer'
+        'stock_qty' => 'integer',
+        'price_before_discount' => 'decimal:2',
+        'description' => 'array'
     ];
 
     protected $with = ['category'];
