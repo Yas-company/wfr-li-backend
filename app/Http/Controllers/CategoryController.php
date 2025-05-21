@@ -10,7 +10,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::active()->get();
+        $categories = Category::active()->paginate(10);
         return CategoryResource::collection($categories);
     }
 
