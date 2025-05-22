@@ -18,6 +18,7 @@ class ProductResource extends JsonResource
             'description' => $this->description,
             'stock_qty' => $this->stock_qty,
             'category' => new CategoryResource($this->whenLoaded('category')),
+            'is_favorite' => $request->user() ? $this->favoritedByUsers()->where('user_id', $request->user()->id)->exists() : false,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
