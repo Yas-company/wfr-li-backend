@@ -306,7 +306,7 @@
                         </div>
                         <div class="p-4">
                             <h3 class="text-lg font-semibold text-gray-800 mb-1">
-                                {{ $category->name }}
+                                {{ $category->getTranslation('name', app()->getLocale()) }}
                             </h3>
                             <p class="text-sm text-gray-600 font-normal">
                                 {{ $category->description ?? '' }}
