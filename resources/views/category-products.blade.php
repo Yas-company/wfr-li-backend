@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $category->getTranslation('name', 'ar') }} - تزود</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#008080",
+                        secondary: "#FFA500"
+                    },
+                    borderRadius: {
+                        button: "8px",
+                    },
+                },
+            },
+        };
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" />
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <a href="/" class="flex items-center">
+                    <img src="{{ asset('images/logo.jpeg') }}" alt="Tzwad Logo" class="h-16" />
+                </a>
+                <a href="/" class="text-primary hover:text-secondary transition-colors">
+                    <i class="ri-arrow-right-line"></i>
+                    العودة للرئيسية
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Category Products Section -->
+    <section class="py-12">
+        <div class="container mx-auto px-6">
+            <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">
+                {{ $category->getTranslation('name', 'ar') }}
+            </h1>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                @foreach($products as $product)
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
+                        <div class="h-48 overflow-hidden">
+                            <img src="{{ $product->image_url }}" 
+                                 alt="{{ $product->getTranslation('name', 'ar') }}"
+                                 class="w-full h-full object-cover" />
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">
+                                {{ $product->getTranslation('name', 'ar') }}
+                            </h3>
+                            <p class="text-sm text-gray-600 mb-4">
+                                {{ $product->getTranslation('description', 'ar') }}
+                            </p>
+                            <div class="flex items-center justify-between">
+                                @if($product->price_before_discount && $product->price_before_discount > $product->price)
+                                    <span class="text-gray-400 line-through text-base mr-2">
+                                        {{ number_format($product->price_before_discount, 2) }} ريال
+                                    </span>
+                                @endif
+                                <span class="text-primary font-bold text-lg">
+                                    {{ number_format($product->price, 2) }} ريال
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-8">
+                {{ $products->links() }}
+            </div>
+        </div>
+    </section>
+</body>
+</html> 

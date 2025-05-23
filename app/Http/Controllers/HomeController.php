@@ -12,4 +12,10 @@ class HomeController extends Controller
         $categories = Category::paginate(8);
         return view('welcome', compact('categories'));
     }
+
+    public function categoryProducts(Category $category)
+    {
+        $products = $category->products()->paginate(12);
+        return view('category-products', compact('category', 'products'));
+    }
 }

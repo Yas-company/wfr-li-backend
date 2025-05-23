@@ -12,7 +12,7 @@ class Category extends Model
 
     protected $guarded = [];
 
-    public $translatable = ['name'];
+    public $translatable = ['name' , 'description'];
 
     protected $casts = [
         'is_active' => 'boolean',

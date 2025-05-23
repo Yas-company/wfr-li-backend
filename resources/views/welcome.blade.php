@@ -298,21 +298,20 @@
             </div>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 @foreach($categories as $category)
-                    <div class="bg-white rounded shadow-sm overflow-hidden border border-gray-100 scale-up">
-                        <div class="h-48 overflow-hidden">
-                            <img src="{{ $category->image_url ?? asset('images/logo.jpeg') }}"
-                                 alt="{{ $category->name }}"
-                                 class="w-full h-full object-cover object-top" />
+                    <a href="{{ route('category.products', $category->id) }}" class="block hover:shadow-lg transition-shadow duration-300">
+                        <div class="bg-white rounded shadow-sm overflow-hidden border border-gray-100 scale-up">
+                            <div class="h-48 overflow-hidden">
+                                <img src="{{ $category->image_url ?? asset('images/logo.jpeg') }}"
+                                     alt="{{ $category->getTranslation('name', 'ar') }}"
+                                     class="w-full h-full object-cover object-top" />
+                            </div>
+                            <div class="p-4">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-1">
+                                    {{ $category->getTranslation('name', 'ar') }}
+                                </h3>
+                            </div>
                         </div>
-                        <div class="p-4">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-1">
-                                {{ $category->getTranslation('name', app()->getLocale()) }}
-                            </h3>
-                            <p class="text-sm text-gray-600 font-normal">
-                                {{ $category->description ?? '' }}
-                            </p>
-                        </div>
-                    </div>
+                    </a>
                 @endforeach
             </div>
         </div>
