@@ -60,11 +60,11 @@ class Product extends Model
         // Search
         if (!empty($params['q'])) {
             $search = $params['q'];
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name->en', 'LIKE', "%{$search}%")
-                  ->orWhere('name->ar', 'LIKE', "%{$search}%")
-                  ->orWhere('description->en', 'LIKE', "%{$search}%")
-                  ->orWhere('description->ar', 'LIKE', "%{$search}%");
+                    ->orWhere('name->ar', 'LIKE', "%{$search}%")
+                    ->orWhere('description->en', 'LIKE', "%{$search}%")
+                    ->orWhere('description->ar', 'LIKE', "%{$search}%");
             });
         }
 
@@ -82,5 +82,15 @@ class Product extends Model
         }
 
         return $query;
+    }
+
+    public function related($limit = 6)
+    {
+        return self::where('category_id', $this->category_id)
+            ->where('id', '!=', $this->id)
+            ->with('category')
+            ->inRandomOrder()
+            ->limit($limit)
+            ->get();
     }
 }

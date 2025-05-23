@@ -18,6 +18,7 @@ Route::get('/categories/{category}', [CategoryController::class, 'show']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/filter', [ProductController::class, 'filter']);
 Route::get('/products/{product}', [ProductController::class, 'show']);
+Route::get('/products/{product}/related', [ProductController::class, 'related']);
 
 // Buyer Authentication Routes
 Route::prefix('buyer')->group(function () {

@@ -28,4 +28,10 @@ class ProductController extends Controller
 
         return ProductResource::collection($products);
     }
+
+    public function related(Product $product)
+    {
+        $related = $product->related();
+        return ProductResource::collection($related);
+    }
 } 
