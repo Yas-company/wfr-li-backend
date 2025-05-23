@@ -54,4 +54,33 @@ class Product extends Model
     {
         return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
     }
+
+    public function scopeFilterAndSearch($query, $params)
+    {
+        // Search
+        if (!empty($params['q'])) {
+            $search = $params['q'];
+            $query->where(function($q) use ($search) {
+                $q->where('name->en', 'LIKE', "%{$search}%")
+                  ->orWhere('name->ar', 'LIKE', "%{$search}%")
+                  ->orWhere('description->en', 'LIKE', "%{$search}%")
+                  ->orWhere('description->ar', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Filter by category
+        if (!empty($params['category_id'])) {
+            $query->where('category_id', $params['category_id']);
+        }
+
+        // Filter by price range
+        if (!empty($params['min_price'])) {
+            $query->where('price', '>=', $params['min_price']);
+        }
+        if (!empty($params['max_price'])) {
+            $query->where('price', '<=', $params['max_price']);
+        }
+
+        return $query;
+    }
 }

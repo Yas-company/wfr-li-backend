@@ -19,4 +19,13 @@ class ProductController extends Controller
     {
         return new ProductResource($product);
     }
+
+    public function filter(Request $request)
+    {
+        $products = Product::filterAndSearch($request->all())
+            ->with('category')
+            ->get();
+
+        return ProductResource::collection($products);
+    }
 } 
