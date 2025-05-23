@@ -58,7 +58,7 @@
             </nav>
             <div class="flex items-center gap-4">
                 <button
-                    class="px-6 py-2 bg-primary text-white hover:bg-opacity-90 transition-colors !rounded-button whitespace-nowrap flex items-center gap-2">
+                    class="px-8 py-3 bg-primary text-white font-bold text-lg hover:bg-secondary transition-colors rounded-full shadow-lg hidden">
                     <i class="ri-download-2-line"></i>
                     تحميل التطبيق
                 </button>
@@ -80,7 +80,7 @@
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center mb-4">
                     <button
-                        class="px-8 py-3 bg-primary text-white font-bold text-lg hover:bg-secondary transition-colors rounded-full shadow-lg">
+                        class="px-8 py-3 bg-primary text-white font-bold text-lg hover:bg-secondary transition-colors rounded-full shadow-lg hidden">
                         <i class="ri-download-2-line"></i>
                         تحميل التطبيق
                     </button>
@@ -285,12 +285,12 @@
             </div>
         </div>
     </section>
-    <!-- Product Categories -->
+    <!-- Categories -->
     <section id="products" class="py-16" data-aos="fade-up">
         <div class="container mx-auto px-6">
             <div class="text-center mb-12 fade-up">
                 <h2 class="text-3xl font-bold text-gray-800 mb-3">
-                    فئات المنتجات
+                    تصنيفاتنا
                 </h2>
                 <p class="text-base text-gray-600 max-w-2xl mx-auto font-medium">
                     تصفح من خلال مجموعة واسعة من فئات المنتجات الغذائية للعثور على ما تحتاجه بالضبط.
@@ -329,7 +329,7 @@
                 </p>
                 <div class="flex flex-col sm:flex-row justify-center gap-4">
                     <button
-                        class="px-8 py-3 bg-primary text-white font-medium hover:bg-opacity-90 transition-colors !rounded-button whitespace-nowrap flex items-center justify-center gap-2">
+                        class="px-8 py-3 bg-primary text-white font-medium hover:bg-opacity-90 transition-colors !rounded-button whitespace-nowrap flex items-center justify-center gap-2 hidden">
                         <i class="ri-download-2-line"></i>
                         تثبيت التطبيق
                     </button>
