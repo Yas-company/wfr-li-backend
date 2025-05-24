@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             OnboardingScreenSeeder::class,
+            PageSeeder::class,
             UserSeeder::class,
             CategorySeeder::class,
             FactorySeeder::class,
