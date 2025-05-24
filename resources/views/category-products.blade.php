@@ -1,44 +1,9 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $category->getTranslation('name', 'ar') }} - تزود</title>
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#008080",
-                        secondary: "#FFA500"
-                    },
-                    borderRadius: {
-                        button: "8px",
-                    },
-                },
-            },
-        };
-    </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" />
-</head>
-<body class="bg-gray-50">
-    <!-- Header -->
-    <header class="bg-white shadow-sm">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex items-center justify-between">
-                <a href="/" class="flex items-center">
-                    <img src="{{ asset('images/logo.jpeg') }}" alt="Tzwad Logo" class="h-16" />
-                </a>
-                <a href="/" class="text-primary hover:text-secondary transition-colors">
-                    <i class="ri-arrow-right-line"></i>
-                    العودة للرئيسية
-                </a>
-            </div>
-        </div>
-    </header>
+@extends('layouts.app')
 
-    <!-- Category Products Section -->
+@section('title', $category->getTranslation('name', 'ar') . ' - تزود')
+@section('body-class', 'bg-gray-50')
+
+@section('content')
     <section class="py-12">
         <div class="container mx-auto px-6">
             <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">
@@ -81,5 +46,4 @@
             </div>
         </div>
     </section>
-</body>
-</html> 
+@endsection 
