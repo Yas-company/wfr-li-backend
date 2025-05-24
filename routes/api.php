@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Auth\BuyerAuthController;
+use App\Http\Controllers\Auth\SupplierAuthController;
 use App\Http\Controllers\OnboardingScreenController;
 use App\Http\Controllers\CartController;
 use Illuminate\Http\Request;
@@ -47,4 +48,15 @@ Route::prefix('buyer')->group(function () {
     Route::post('forgot-password', [BuyerAuthController::class, 'forgotPassword']);
     Route::post('verify-otp', [BuyerAuthController::class, 'verifyOtp']);
     Route::post('reset-password', [BuyerAuthController::class, 'resetPassword']);
+});
+
+// Supplier Authentication Routes
+Route::prefix('supplier')->group(function () {
+    Route::post('/login', [SupplierAuthController::class, 'login']);
+    
+    // Protected Routes
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/logout', [SupplierAuthController::class, 'logout']);
+        Route::get('/me', [SupplierAuthController::class, 'me']);
+    });
 });
