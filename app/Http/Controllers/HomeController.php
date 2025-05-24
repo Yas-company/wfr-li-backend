@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Page;
 
 class HomeController extends Controller
 {
@@ -17,5 +18,11 @@ class HomeController extends Controller
     {
         $products = $category->products()->paginate(12);
         return view('category-products', compact('category', 'products'));
+    }
+
+    public function page($slug)
+    {
+        $page = Page::where('slug', $slug)->firstOrFail();
+        return view('pages.show', compact('page'));
     }
 }
