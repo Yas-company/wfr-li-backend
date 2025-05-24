@@ -4,12 +4,11 @@
 @section('body-class', 'bg-gray-50')
 
 @section('content')
-    <section class="py-12">
-        <div class="container mx-auto px-6">
-            <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">
+    <section class="pt-24 pb-16">
+        <div class="container mx-auto px-6 py-12">
+            <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center logo-font">
                 {{ $category->getTranslation('name', 'ar') }}
             </h1>
-
             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 @foreach($products as $product)
                     <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
