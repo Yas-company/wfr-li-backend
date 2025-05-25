@@ -18,7 +18,8 @@ class Supplier extends Model
         'name',
         'phone',
         'address',
-        'location',
+        'latitude',
+        'longitude',
         'factory_id',
         'email',
         'password',
@@ -33,6 +34,8 @@ class Supplier extends Model
 
     protected $casts = [
         'is_verified' => 'boolean',
+        'latitude' => 'decimal:8',
+        'longitude' => 'decimal:8'
     ];
 
     public function factory(): BelongsTo

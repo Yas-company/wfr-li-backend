@@ -42,6 +42,11 @@ Route::prefix('buyer')->group(function () {
         Route::get('/favorites', [\App\Http\Controllers\FavoritesController::class, 'index']);
         Route::post('/favorites', [\App\Http\Controllers\FavoritesController::class, 'store']);
         Route::delete('/favorites/{product}', [\App\Http\Controllers\FavoritesController::class, 'destroy']);
+
+                
+        // Supplier location routes
+        Route::post('/suppliers/nearest', [App\Http\Controllers\Api\SupplierController::class, 'nearest']);
+        Route::post('/suppliers/nearby', [App\Http\Controllers\Api\SupplierController::class, 'nearby']);
     });
 
     // Password Reset Routes

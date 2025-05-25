@@ -40,6 +40,7 @@ class BuyerAuthController extends Controller
     {
         try {
             $user = $this->authService->register($request->validated());
+
             
             // Generate and send OTP
             $otp = $this->otpService->generateOtp($user->phone);

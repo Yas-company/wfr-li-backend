@@ -36,7 +36,8 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'role' => 'buyer',
             'address' => $this->faker->address(),
-            'location' => $this->faker->city(),
+            'latitude' => $this->faker->latitude(24.5, 25.0), // Riyadh area
+            'longitude' => $this->faker->longitude(46.5, 47.0), // Riyadh area
             'business_name' => $this->faker->company(),
             'lic_id' => $this->faker->unique()->numerify('LIC-####'),
         ];

@@ -53,10 +53,18 @@ class SupplierResource extends Resource
                     ->required()
                     ->maxLength(65535)
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('location')
-                    ->label('الموقع')
+                Forms\Components\TextInput::make('latitude')
+                    ->label('خط العرض')
                     ->required()
-                    ->maxLength(255),
+                    ->numeric()
+                    ->minValue(-90)
+                    ->maxValue(90),
+                Forms\Components\TextInput::make('longitude')
+                    ->label('خط الطول')
+                    ->required()
+                    ->numeric()
+                    ->minValue(-180)
+                    ->maxValue(180),
                 Forms\Components\TextInput::make('email')
                     ->label('البريد الإلكتروني')
                     ->email()
@@ -96,8 +104,11 @@ class SupplierResource extends Resource
                 Tables\Columns\TextColumn::make('phone')
                     ->label('الهاتف')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('location')
-                    ->label('الموقع')
+                Tables\Columns\TextColumn::make('latitude')
+                    ->label('خط العرض')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('longitude')
+                    ->label('خط الطول')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->label('البريد الإلكتروني')
