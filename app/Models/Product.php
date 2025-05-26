@@ -55,6 +55,13 @@ class Product extends Model
         return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
     }
 
+    public function getIsFavoriteAttribute()
+    {
+        $user = auth()->user();
+        if (!$user) return false;
+        return $this->favoritedByUsers()->where('user_id', $user->id)->exists();
+    }
+
     public function scopeFilterAndSearch($query, $params)
     {
         // Search
