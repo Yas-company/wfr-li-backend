@@ -100,4 +100,14 @@ class Product extends Model
             ->limit($limit)
             ->get();
     }
+
+    public function getCartQuantityAttribute()
+    {
+        $user = auth()->user();
+        if (!$user || !$user->cart) {
+            return 0;
+        }
+        $cartItem = $user->cart->items->where('product_id', $this->id)->first();
+        return $cartItem ? $cartItem->quantity : 0;
+    }
 }

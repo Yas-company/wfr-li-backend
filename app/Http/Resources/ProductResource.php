@@ -21,6 +21,7 @@ class ProductResource extends JsonResource
             'is_favorite' => $this->is_favorite,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'cart_quantity' => $this->cart_quantity,
         ];
     }
 } 
