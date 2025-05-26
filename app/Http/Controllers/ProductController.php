@@ -24,7 +24,7 @@ class ProductController extends Controller
     {
         $products = Product::filterAndSearch($request->all())
             ->with('category')
-            ->get();
+            ->paginate(10);
 
         return ProductResource::collection($products);
     }
