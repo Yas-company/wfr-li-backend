@@ -105,4 +105,8 @@ return [
     // Favorites Messages
     'added_to_favorites' => 'تمت الإضافة إلى المفضلة',
     'removed_from_favorites' => 'تمت الإزالة من المفضلة',
+
+    // Account Deletion Messages
+    'account_deleted_successfully' => 'تم حذف الحساب بنجاح',
+    'account_delete_failed' => 'فشل في حذف الحساب',
 ]; 

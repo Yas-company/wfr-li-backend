@@ -25,12 +25,13 @@ Route::get('/products/{product}/related', [ProductController::class, 'related'])
 Route::prefix('buyer')->group(function () {
     Route::post('/register', [BuyerAuthController::class, 'register']);
     Route::post('/login', [BuyerAuthController::class, 'login']);
-    
+
     // Protected Routes
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [BuyerAuthController::class, 'logout']);
         Route::get('/me', [BuyerAuthController::class, 'me']);
         Route::post('/change-password', [BuyerAuthController::class, 'changePassword']);
+        Route::delete('/delete-account', [App\Http\Controllers\Auth\BuyerAuthController::class, 'destroy']);
 
         // Cart Routes
         Route::get('/cart', [CartController::class, 'getCart']);
@@ -53,7 +54,7 @@ Route::prefix('buyer')->group(function () {
 // Supplier Authentication Routes
 Route::prefix('supplier')->group(function () {
     Route::post('/login', [SupplierAuthController::class, 'login']);
-    
+
     // Protected Routes
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [SupplierAuthController::class, 'logout']);

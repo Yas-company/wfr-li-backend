@@ -105,4 +105,8 @@ return [
     // Favorites Messages
     'added_to_favorites' => 'Added to favorites',
     'removed_from_favorites' => 'Removed from favorites',
+
+    // Account Deletion Messages
+    'account_deleted_successfully' => 'Account deleted successfully',
+    'account_delete_failed' => 'Failed to delete account',
 ]; 

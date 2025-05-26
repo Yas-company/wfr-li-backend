@@ -289,4 +289,31 @@ class BuyerAuthController extends Controller
             );
         }
     }
+
+    /**
+     * Delete the authenticated buyer's account
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function destroy(Request $request): JsonResponse
+    {
+        try {
+            $user = $request->user();
+            $user->delete();
+
+            return $this->successResponse(
+                message: __('messages.account_deleted_successfully')
+            );
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete buyer account', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return $this->errorResponse(
+                message: __('messages.account_delete_failed')
+            );
+        }
+    }
 }
