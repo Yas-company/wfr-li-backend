@@ -28,58 +28,85 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Product Information')
-                    ->schema([
-                        Forms\Components\TextInput::make('name.en')
-                            ->label('Name (English)')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('name.ar')
-                            ->label('Name (Arabic)')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\Textarea::make('description.en')
-                            ->label('Description (English)')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\Textarea::make('description.ar')
-                            ->label('Description (Arabic)')
-                            ->required()
-                            ->maxLength(255),
-                            Forms\Components\FileUpload::make('image')
-                            ->label('Image')
-                            ->image()
-                            ->disk('public') // Store in storage/app/public
-                            ->directory('products') // Subdirectory for organization
-                            ->visibility('public')
-                            ->imageEditor() // Optional: Enable image cropping/editing
-                            ->maxSize(2048) // Optional: Limit file size to 2MB
-                            ->required(),
-                            Forms\Components\TextInput::make('price_before_discount')
-                            ->required()
-                            ->numeric()
-                            ->prefix('ر.س')
-                            ->minValue(0),
-                        Forms\Components\TextInput::make('price')
-                            ->required()
-                            ->numeric()
-                            ->prefix('ر.س')
-                            ->minValue(0),
-                        Forms\Components\TextInput::make('stock_qty')
-                            ->required()
-                            ->numeric()
-                            ->minValue(0),
-                        Forms\Components\Select::make('category_id')
-                            ->relationship('category', 'name')
-                            ->required()
-                            ->searchable()
-                            ->preload(),
-                        Forms\Components\Select::make('factory_id')
-                            ->relationship('factory', 'name')
-                            ->required()
-                            ->searchable()
-                            ->preload(),
-                    ])->columns(2)
+                Forms\Components\Tabs::make('تفاصيل المنتج')
+                    ->tabs([
+                        Forms\Components\Tabs\Tab::make('المعلومات الأساسية')
+                            ->icon('heroicon-o-information-circle')
+                            ->schema([
+                                Forms\Components\TextInput::make('name.en')
+                                    ->label('الاسم (بالانجليزية)')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('name.ar')
+                                    ->label('الاسم (بالعربية)')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\Textarea::make('description.en')
+                                    ->label('الوصف (بالانجليزية)')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\Textarea::make('description.ar')
+                                    ->label('الوصف (بالعربية)')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\FileUpload::make('image')
+                                    ->label('الصورة')
+                                    ->image()
+                                    ->disk('public')
+                                    ->directory('products')
+                                    ->visibility('public')
+                                    ->imageEditor()
+                                    ->maxSize(2048)
+                                    ->required(),
+                            ])->columns(2),
+
+                        Forms\Components\Tabs\Tab::make('السعر والمخزون')
+                            ->icon('heroicon-o-currency-dollar')
+                            ->schema([
+                                Forms\Components\TextInput::make('price_before_discount')
+                                    ->label('السعر قبل الخصم')
+                                    ->required()
+                                    ->numeric()
+                                    ->prefix('ر.س')
+                                    ->minValue(0),
+                                Forms\Components\TextInput::make('price')
+                                    ->label('السعر')
+                                    ->required()
+                                    ->numeric()
+                                    ->prefix('ر.س')
+                                    ->minValue(0),
+                                Forms\Components\TextInput::make('stock_qty')
+                                    ->label('الكمية المتوفرة')
+                                    ->required()
+                                    ->numeric()
+                                    ->minValue(0),
+                            ])->columns(2),
+
+                        Forms\Components\Tabs\Tab::make('التصنيفات والموردين')
+                            ->icon('heroicon-o-tag')
+                            ->schema([
+                                Forms\Components\Select::make('category_id')
+                                    ->label('التصنيف')
+                                    ->relationship('category', 'name')
+                                    ->required()
+                                    ->searchable()
+                                    ->preload(),
+                                Forms\Components\Select::make('factory_id')
+                                    ->label('المصنع')
+                                    ->relationship('factory', 'name')
+                                    ->required()
+                                    ->searchable()
+                                    ->preload(),
+                                Forms\Components\Select::make('suppliers')
+                                    ->label('الموردين')
+                                    ->relationship('suppliers', 'name')
+                                    ->multiple()
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+                            ])->columns(2),
+                    ])
+                    ->columnSpanFull(),
             ]);
     }
 
