@@ -18,14 +18,15 @@ class Supplier extends Model
         'name',
         'phone',
         'address',
-        'location',
+        'latitude',
+        'longitude',
         'factory_id',
         'email',
         'password',
         'is_verified',
     ];
 
-    public $translatable = ['name', 'address'];
+    public $translatable = ['name'];
 
     protected $hidden = [
         'password',
@@ -33,6 +34,8 @@ class Supplier extends Model
 
     protected $casts = [
         'is_verified' => 'boolean',
+        'latitude' => 'decimal:8',
+        'longitude' => 'decimal:8'
     ];
 
     public function factory(): BelongsTo
@@ -45,4 +48,19 @@ class Supplier extends Model
         return $this->belongsToMany(Product::class, 'product_supplier')
             ->withTimestamps();
     }
+
+    public static function extractLatLngFromLink($link)
+{
+    // Google Maps
+    if (preg_match('/@(-?\d+\.\d+),(-?\d+\.\d+)/', $link, $matches)) {
+        return [$matches[1], $matches[2]];
+    } elseif (preg_match('/\/place\/(-?\d+\.\d+),(-?\d+\.\d+)/', $link, $matches)) {
+        return [$matches[1], $matches[2]];
+    }
+    // Apple Maps
+    elseif (preg_match('/coordinate=([\d\.\-]+),([\d\.\-]+)/', $link, $matches)) {
+        return [$matches[1], $matches[2]];
+    }
+    return [null, null];
+}
 }

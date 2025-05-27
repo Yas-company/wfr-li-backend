@@ -24,7 +24,8 @@ class User extends Authenticatable
         'name',
         'phone',
         'address',
-        'location',
+        'latitude',
+        'longitude',
         'business_name',
         'lic_id',
         'email',
@@ -60,7 +61,9 @@ class User extends Authenticatable
         'password' => 'hashed',
         'role' => UserRole::class,
         'is_verified' => 'boolean',
-        'otp_expiry' => 'datetime'
+        'otp_expiry' => 'datetime',
+        'latitude' => 'decimal:8',
+        'longitude' => 'decimal:8'
     ];
 
     public function isVisitor(): bool

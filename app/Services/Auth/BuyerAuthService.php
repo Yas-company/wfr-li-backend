@@ -33,7 +33,8 @@ class BuyerAuthService
             $existingUser->update([
                 'name' => $data['name'],
                 'address' => $data['address'],
-                'location' => $data['location'],
+                'latitude' => $data['latitude'],
+                'longitude' => $data['longitude'],
                 'business_name' => $data['business_name'],
                 'lic_id' => $data['lic_id'],
                 'email' => $data['email'] ?? null,
@@ -48,8 +49,10 @@ class BuyerAuthService
         return User::create([
             'name' => $data['name'],
             'phone' => $data['phone'],
+            'country_code' => $data['country_code'],
             'address' => $data['address'],
-            'location' => $data['location'],
+            'latitude' => $data['latitude'],
+            'longitude' => $data['longitude'],
             'business_name' => $data['business_name'],
             'lic_id' => $data['lic_id'],
             'email' => $data['email'] ?? null,

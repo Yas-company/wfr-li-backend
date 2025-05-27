@@ -11,7 +11,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,50 +28,77 @@ class SupplierResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('factory_id')
-                    ->label('المصنع')
-                    ->relationship('factory', 'name')
-                    ->required()
-                    ->searchable()
-                    ->preload(),
-                Forms\Components\TextInput::make('name.en')
-                    ->label('Name (English)')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('name.ar')
-                    ->label('Name (Arabic)')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('phone')
-                    ->label('الهاتف')
-                    ->tel()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('address')
-                    ->label('العنوان')
-                    ->required()
-                    ->maxLength(65535)
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('location')
-                    ->label('الموقع')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->label('البريد الإلكتروني')
-                    ->email()
-                    ->required()
-                    ->unique(ignoreRecord: true)
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('password')
-                    ->label('كلمة المرور')
-                    ->password()
-                    ->required()
-                    ->dehydrateStateUsing(fn($state) => Hash::make($state))
-                    ->dehydrated(fn($state) => filled($state))
-                    ->required(fn(string $context): bool => $context === 'create')
-                    ->maxLength(255),
-                Forms\Components\Toggle::make('is_verified')
-                    ->required(),
+                Forms\Components\Section::make('معلومات المورد')
+                    ->schema([
+                        Forms\Components\Select::make('factory_id')
+                            ->label('المصنع')
+                            ->relationship('factory', 'name')
+                            ->required()
+                            ->searchable()
+                            ->preload(),
+                        Forms\Components\TextInput::make('name.en')
+                            ->label('الاسم بالانجليزية')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('name.ar')
+                            ->label('الاسم بالعربية')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('phone')
+                            ->label('الهاتف')
+                            ->tel()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('email')
+                            ->label('البريد الإلكتروني')
+                            ->email()
+                            ->required()
+                            ->unique(ignoreRecord: true)
+                            ->maxLength(255),
+                        Forms\Components\Textarea::make('address')
+                            ->label('العنوان')
+                            ->required()
+                            ->maxLength(65535)
+                            ->columnSpanFull(),
+                    ])->columns(2),
+                Forms\Components\Section::make('الموقع')
+                    ->schema([
+                        Forms\Components\TextInput::make('location_link')
+                        ->label('Location Link')
+                        ->placeholder('Paste Google Maps or Apple Maps link here')
+                        ->reactive()
+                        ->afterStateUpdated(function ($state, callable $set) {
+                            [$lat, $lng] = Supplier::extractLatLngFromLink($state);
+                            if ($lat && $lng) {
+                                $set('latitude', $lat);
+                                $set('longitude', $lng);
+                            }
+                        }),
+                        Forms\Components\TextInput::make('latitude')
+                            ->label('خط العرض')
+                            ->numeric()
+                            ->minValue(-90)
+                            ->maxValue(90),
+                        Forms\Components\TextInput::make('longitude')
+                            ->label('خط الطول')
+                            ->numeric()
+                            ->minValue(-180)
+                            ->maxValue(180),
+                    ])->columns(3),
+                Forms\Components\Section::make('الأمان')
+                    ->schema([
+                        Forms\Components\TextInput::make('password')
+                            ->label('كلمة المرور')
+                            ->password()
+                            ->required()
+                            ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                            ->dehydrated(fn($state) => filled($state))
+                            ->required(fn(string $context): bool => $context === 'create')
+                            ->maxLength(255),
+                        Forms\Components\Toggle::make('is_verified')
+                            ->label('تم التحقق')
+                            ->required(),
+                    ])->columns(2),
             ]);
     }
 
@@ -96,8 +122,11 @@ class SupplierResource extends Resource
                 Tables\Columns\TextColumn::make('phone')
                     ->label('الهاتف')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('location')
-                    ->label('الموقع')
+                Tables\Columns\TextColumn::make('latitude')
+                    ->label('خط العرض')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('longitude')
+                    ->label('خط الطول')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->label('البريد الإلكتروني')
