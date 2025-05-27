@@ -64,24 +64,16 @@ class SupplierResource extends Resource
                 Forms\Components\Section::make('الموقع')
                     ->schema([
                         Forms\Components\TextInput::make('location_link')
-                            ->label('Location Link')
-                            ->placeholder('Paste Google Maps or Apple Maps link here')
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                // Google Maps
-                                if (preg_match('/@(-?\\d+\\.\\d+),(-?\\d+\\.\\d+)/', $state, $matches)) {
-                                    $set('latitude', $matches[1]);
-                                    $set('longitude', $matches[2]);
-                                } elseif (preg_match('/\/place\/(-?\\d+\\.\\d+),(-?\\d+\\.\\d+)/', $state, $matches)) {
-                                    $set('latitude', $matches[1]);
-                                    $set('longitude', $matches[2]);
-                                }
-                                // Apple Maps
-                                elseif (preg_match('/coordinate=([\\d\\.\\-]+),([\\d\\.\\-]+)/', $state, $matches)) {
-                                    $set('latitude', $matches[1]);
-                                    $set('longitude', $matches[2]);
-                                }
-                            }),
+                        ->label('Location Link')
+                        ->placeholder('Paste Google Maps or Apple Maps link here')
+                        ->reactive()
+                        ->afterStateUpdated(function ($state, callable $set) {
+                            [$lat, $lng] = Supplier::extractLatLngFromLink($state);
+                            if ($lat && $lng) {
+                                $set('latitude', $lat);
+                                $set('longitude', $lng);
+                            }
+                        }),
                         Forms\Components\TextInput::make('latitude')
                             ->label('خط العرض')
                             ->numeric()

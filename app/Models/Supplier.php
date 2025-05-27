@@ -48,4 +48,19 @@ class Supplier extends Model
         return $this->belongsToMany(Product::class, 'product_supplier')
             ->withTimestamps();
     }
+
+    public static function extractLatLngFromLink($link)
+{
+    // Google Maps
+    if (preg_match('/@(-?\d+\.\d+),(-?\d+\.\d+)/', $link, $matches)) {
+        return [$matches[1], $matches[2]];
+    } elseif (preg_match('/\/place\/(-?\d+\.\d+),(-?\d+\.\d+)/', $link, $matches)) {
+        return [$matches[1], $matches[2]];
+    }
+    // Apple Maps
+    elseif (preg_match('/coordinate=([\d\.\-]+),([\d\.\-]+)/', $link, $matches)) {
+        return [$matches[1], $matches[2]];
+    }
+    return [null, null];
+}
 }
