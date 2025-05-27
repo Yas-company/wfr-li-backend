@@ -26,7 +26,7 @@ class Supplier extends Model
         'is_verified',
     ];
 
-    public $translatable = ['name', 'address'];
+    public $translatable = ['name'];
 
     protected $hidden = [
         'password',
