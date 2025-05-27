@@ -25,11 +25,9 @@ class SupplierSeeder extends Seeder
                         'ar' => 'المورد الأول'
                     ],
                     'phone' => '9876543210',
-                    'address' => [
-                        'en' => '123 Test Street, Test City',
-                        'ar' => '123 شارع التجربة، مدينة التجربة'
-                    ],
-                    'location' => 'Test City',
+                    'address' => 'الرياض',
+                    'latitude' => 24.7136,
+                    'longitude' => 46.6753,
                     'email' => 'supplier1@test.com',
                     'password' => Hash::make('password'),
                     'is_verified' => true,
@@ -40,11 +38,9 @@ class SupplierSeeder extends Seeder
                         'ar' => 'المورد الثاني'
                     ],
                     'phone' => '9876543211',
-                    'address' => [
-                        'en' => '456 Test Avenue, Test City',
-                        'ar' => '456 شارع التجربة، مدينة التجربة'
-                    ],
-                    'location' => 'Test City',
+                    'address' => 'الرياض',
+                    'latitude' => 24.7136,
+                    'longitude' => 46.6753,
                     'email' => 'supplier2@test.com',
                     'password' => Hash::make('password'),
                     'is_verified' => true,
@@ -55,11 +51,9 @@ class SupplierSeeder extends Seeder
                         'ar' => 'المورد الثالث'
                     ],
                     'phone' => '9876543212',
-                    'address' => [
-                        'en' => '789 Test Road, Test City',
-                        'ar' => '789 شارع التجربة، مدينة التجربة'
-                    ],
-                    'location' => 'Test City',
+                    'address' => 'الرياض',
+                    'latitude' => 24.7136,
+                    'longitude' => 46.6753,
                     'email' => 'supplier3@test.com',
                     'password' => Hash::make('password'),
                     'is_verified' => true,
@@ -70,11 +64,9 @@ class SupplierSeeder extends Seeder
                         'ar' => 'المورد الرابع'
                     ],
                     'phone' => '9876543213',
-                    'address' => [
-                        'en' => '321 Test Lane, Test City',
-                        'ar' => '321 شارع التجربة، مدينة التجربة'
-                    ],
-                    'location' => 'Test City',
+                    'address' => 'الرياض',
+                    'latitude' => 24.7136,
+                    'longitude' => 46.6753,
                     'email' => 'supplier4@test.com',
                     'password' => Hash::make('password'),
                     'is_verified' => true,
@@ -88,7 +80,8 @@ class SupplierSeeder extends Seeder
                         'name' => $supplierData['name'],
                         'phone' => $supplierData['phone'],
                         'address' => $supplierData['address'],
-                        'location' => $supplierData['location'],
+                        'latitude' => $supplierData['latitude'],
+                        'longitude' => $supplierData['longitude'],
                         'password' => $supplierData['password'],
                         'is_verified' => $supplierData['is_verified'],
                         'factory_id' => $factory->id,

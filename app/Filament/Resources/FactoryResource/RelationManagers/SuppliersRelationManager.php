@@ -33,10 +33,6 @@ class SuppliersRelationManager extends RelationManager
                     ->required()
                     ->maxLength(65535)
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('location')
-                    ->label('الموقع')
-                    ->required()
-                    ->maxLength(255),
                 Forms\Components\TextInput::make('email')
                     ->label('البريد الإلكتروني')
                     ->email()
@@ -66,9 +62,6 @@ class SuppliersRelationManager extends RelationManager
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->label('الهاتف')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('location')
-                    ->label('الموقع')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->label('البريد الإلكتروني')

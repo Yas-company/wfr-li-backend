@@ -68,9 +68,6 @@ class UserResource extends Resource
                             ->label('العنوان')
                             ->maxLength(65535)
                             ->columnSpanFull(),
-                        Forms\Components\TextInput::make('location')
-                            ->label('الموقع')
-                            ->maxLength(255),
                     ])->columns(2),
 
                 Forms\Components\Section::make('الإعدادات')

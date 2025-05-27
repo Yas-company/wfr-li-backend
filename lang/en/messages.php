@@ -63,7 +63,6 @@ return [
             'phone' => 'Phone number is required',
             'country_code' => 'Country code is required',
             'address' => 'Please enter address',
-            'location' => 'Please enter location',
             'business_name' => 'Please enter business name',
             'lic_id' => 'Please enter license ID',
             'email' => 'Email is required',

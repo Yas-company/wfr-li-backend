@@ -24,7 +24,8 @@ class UserResource extends JsonResource
             'business_name' => $this->business_name,
             'lic_id' => $this->lic_id,
             'address' => $this->address,
-            'location' => $this->location,
+            'latitude' => $this->latitude,
+            'longitude' => $this->longitude,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
