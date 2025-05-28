@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\BuyerAuthController;
 use App\Http\Controllers\Auth\SupplierAuthController;
 use App\Http\Controllers\OnboardingScreenController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -48,6 +49,14 @@ Route::prefix('buyer')->group(function () {
         // Supplier location routes
         Route::post('/suppliers/nearest', [App\Http\Controllers\Api\SupplierController::class, 'nearest']);
         Route::post('/suppliers/nearby', [App\Http\Controllers\Api\SupplierController::class, 'nearby']);
+
+        // Order Routes
+        Route::post('/orders/checkout', [App\Http\Controllers\Api\OrderController::class, 'checkout']);
+        Route::get('/orders', [App\Http\Controllers\Api\OrderController::class, 'index']);
+        Route::get('/orders/{order}', [App\Http\Controllers\Api\OrderController::class, 'show']);
+        
+        // Payment routes
+        Route::post('/orders/{order}/payment-status', [App\Http\Controllers\Api\OrderController::class, 'updatePaymentStatus']);
     });
 
     // Password Reset Routes
@@ -64,5 +73,9 @@ Route::prefix('supplier')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [SupplierAuthController::class, 'logout']);
         Route::get('/me', [SupplierAuthController::class, 'me']);
+
+        Route::post('/orders/{order}/accept', [App\Http\Controllers\Api\OrderController::class, 'accept']);
+        Route::post('/orders/{order}/reject', [App\Http\Controllers\Api\OrderController::class, 'reject']);
+        Route::post('/orders/{order}/shipping-status', [App\Http\Controllers\Api\OrderController::class, 'updateShippingStatus']);
     });
 });
