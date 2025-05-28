@@ -16,7 +16,7 @@ Route::get('/user', function (Request $request) {
 Route::get('/onboarding-screens', [OnboardingScreenController::class, 'index']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/categories/{category}', [CategoryController::class, 'show']);
-Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products', [ProductController::class, 'index'])->middleware('auth:sanctum');
 Route::get('/products/filter', [ProductController::class, 'filter']);
 Route::get('/products/{product}', [ProductController::class, 'show']);
 Route::get('/products/{product}/related', [ProductController::class, 'related']);
