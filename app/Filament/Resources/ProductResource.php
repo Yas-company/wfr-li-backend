@@ -58,6 +58,9 @@ class ProductResource extends Resource
                                     ->imageEditor()
                                     ->maxSize(2048)
                                     ->required(),
+                                Forms\Components\Toggle::make('is_featured')
+                                    ->label('مميز')
+                                    ->default(false),
                             ])->columns(2),
 
                         Forms\Components\Tabs\Tab::make('السعر والمخزون')
@@ -160,6 +163,9 @@ class ProductResource extends Resource
                     ->label('التصنيف')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\IconColumn::make('is_featured')
+                    ->label('مميز')
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('التاريخ')
                     ->dateTime()
