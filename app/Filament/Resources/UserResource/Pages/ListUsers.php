@@ -30,6 +30,7 @@ class ListUsers extends ListRecords
                 ->modifyQueryUsing(fn ($query) => $query->where('role', UserRole::ADMIN)),
             'buyer' => Tab::make('المشترين')
                 ->badge(User::where('role', UserRole::BUYER)->count())
+                ->modifyQueryUsing(fn ($query) => $query->where('role', UserRole::BUYER)),
         ];
     }
 }
