@@ -68,7 +68,6 @@ class ProductResource extends Resource
                             ->schema([
                                 Forms\Components\TextInput::make('price_before_discount')
                                     ->label('السعر قبل الخصم')
-                                    ->required()
                                     ->numeric()
                                     ->prefix('ر.س')
                                     ->minValue(0),
