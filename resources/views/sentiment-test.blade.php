@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>AI Stock Analysis</title>
+    <title>AI Stock Analysis & Chatbot</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -17,6 +17,16 @@
             padding: 1rem 1.5rem;
             max-width: 90%;
             margin-bottom: 1rem;
+            animation: fadeInUp 0.7s cubic-bezier(.39,.575,.56,1) both;
+        }
+        .user-bubble {
+            background: #f3f4f6;
+            color: #1f2937;
+            border-radius: 1.5rem 1.5rem 0.5rem 1.5rem;
+            padding: 1rem 1.5rem;
+            max-width: 90%;
+            margin-bottom: 1rem;
+            margin-left: auto;
             animation: fadeInUp 0.7s cubic-bezier(.39,.575,.56,1) both;
         }
         @keyframes fadeInUp {
@@ -33,26 +43,43 @@
             0% { background-position: 0% 50%; }
             100% { background-position: 100% 50%; }
         }
-        .typing {
-            border-right: .1em solid #6366f1;
-            white-space: nowrap;
-            overflow: hidden;
-            animation: typing 2s steps(40, end), blink-caret .75s step-end infinite;
+        .chat-container {
+            height: 340px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #6366f1 #f3f4f6;
         }
-        @keyframes typing {
-            from { width: 0 }
-            to { width: 100% }
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
         }
-        @keyframes blink-caret {
-            from, to { border-color: transparent }
-            50% { border-color: #6366f1; }
+        .chat-container::-webkit-scrollbar-track {
+            background: #f3f4f6;
+        }
+        .chat-container::-webkit-scrollbar-thumb {
+            background-color: #6366f1;
+            border-radius: 3px;
+        }
+        /* Floating Chatbot Widget */
+        #chatbotWidget {
+            box-shadow: 0 8px 32px rgba(60,60,120,0.18);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(40px);
+            transition: all 0.5s cubic-bezier(.39,.575,.56,1);
+        }
+        #chatbotWidget.open {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
         }
     </style>
 </head>
 <body class="bg-animated">
     <div class="container mx-auto px-4 py-8">
-        <div class="max-w-2xl mx-auto">
-            <h1 class="text-4xl font-extrabold text-gray-800 mb-8 text-center tracking-tight">AI Stock Analysis</h1>
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-8 text-center tracking-tight">AI Stock Analysis & Chatbot</h1>
+            
+            <!-- Existing Stock Analysis Section -->
             <div class="bg-white/80 rounded-2xl shadow-xl p-8">
                 <form id="sentimentForm" class="space-y-6">
                     @csrf
@@ -105,20 +132,120 @@
         </div>
     </div>
 
+    <!-- Floating Chatbot Button -->
+    <button id="openChatbotBtn"
+        class="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-indigo-500 to-cyan-400 text-white rounded-full shadow-lg p-4 hover:scale-105 transition"
+        aria-label="Open Chatbot">
+        💬
+    </button>
+
+    <!-- Floating Chatbot Widget -->
+    <div id="chatbotWidget"
+        class="fixed bottom-24 right-6 z-50 w-full max-w-md bg-white/95 rounded-3xl shadow-2xl p-0 overflow-hidden transition-all duration-500"
+        style="height: 540px;">
+        <!-- Header -->
+        <div class="flex items-center justify-between bg-gradient-to-r from-indigo-500 to-cyan-400 px-6 py-4 shadow">
+            <span class="text-xl font-bold text-white tracking-wide">مساعد الأسهم</span>
+            <button id="closeChatbotBtn" class="text-white text-3xl font-bold hover:text-gray-200">&times;</button>
+        </div>
+        <!-- Chat Area -->
+        <div id="chatContainer" class="chat-container px-4 py-3 bg-gray-50" style="height: 320px; overflow-y: auto;">
+            <div class="ai-bubble">
+                مرحباً! أنا مساعدك المالي. كيف يمكنني مساعدتك اليوم؟
+            </div>
+        </div>
+        <!-- Sample Messages -->
+        <div id="sampleMessages" class="px-4 pb-2 flex flex-wrap gap-2">
+            <button type="button" class="sample-msg bg-indigo-100 text-indigo-800 rounded-full px-4 py-1 text-sm font-semibold hover:bg-indigo-200 transition">أعطني قائمة الشركات</button>
+            <button type="button" class="sample-msg bg-indigo-100 text-indigo-800 rounded-full px-4 py-1 text-sm font-semibold hover:bg-indigo-200 transition">ما هي الشركات المتوافقة مع الشريعة؟</button>
+            <button type="button" class="sample-msg bg-indigo-100 text-indigo-800 rounded-full px-4 py-1 text-sm font-semibold hover:bg-indigo-200 transition">أريد تفاصيل عن سهم AAPL</button>
+            <button type="button" class="sample-msg bg-indigo-100 text-indigo-800 rounded-full px-4 py-1 text-sm font-semibold hover:bg-indigo-200 transition">سعر USD مقابل JPY</button>
+            <button type="button" class="sample-msg bg-indigo-100 text-indigo-800 rounded-full px-4 py-1 text-sm font-semibold hover:bg-indigo-200 transition">exchange rate BTC to USD</button>
+        </div>
+        <!-- Input Area -->
+        <form id="chatForm" class="flex gap-2 p-4 border-t border-gray-200 bg-white">
+            <input type="text" id="chatMessage"
+                class="flex-1 rounded-full border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-lg px-4 py-2 transition"
+                placeholder="اكتب سؤالك هنا...">
+            <button type="submit"
+                class="px-6 py-2 border border-transparent rounded-full shadow-sm text-lg font-bold text-white bg-gradient-to-r from-indigo-500 to-cyan-400 hover:from-indigo-600 hover:to-cyan-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">
+                إرسال
+            </button>
+        </form>
+    </div>
+
     <script>
-        // Typing animation for AI bubble
-        function typeText(element, text, speed = 20) {
-            element.textContent = '';
-            let i = 0;
-            function type() {
-                if (i < text.length) {
-                    element.textContent += text.charAt(i);
-                    i++;
-                    setTimeout(type, speed);
-                }
+        // Floating Chatbot Open/Close
+        const openBtn = document.getElementById('openChatbotBtn');
+        const closeBtn = document.getElementById('closeChatbotBtn');
+        const chatbotWidget = document.getElementById('chatbotWidget');
+
+        openBtn.addEventListener('click', () => {
+            chatbotWidget.classList.add('open');
+        });
+        closeBtn.addEventListener('click', () => {
+            chatbotWidget.classList.remove('open');
+        });
+        document.addEventListener('mousedown', (e) => {
+            if (chatbotWidget.classList.contains('open') && !chatbotWidget.contains(e.target) && e.target !== openBtn) {
+                chatbotWidget.classList.remove('open');
             }
-            type();
-        }
+        });
+
+        // Chatbot functionality
+        document.getElementById('chatForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const messageInput = document.getElementById('chatMessage');
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            const chatContainer = document.getElementById('chatContainer');
+            
+            // Add user message
+            const userBubble = document.createElement('div');
+            userBubble.className = 'user-bubble';
+            userBubble.textContent = message;
+            chatContainer.appendChild(userBubble);
+            
+            // Clear input
+            messageInput.value = '';
+            
+            // Scroll to bottom
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            try {
+                const response = await fetch('/chatbot/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Authorization': 'Bearer pDAtjGHK9KsbpWflNoACLUP7d0wXuJzQv59SNKoz'
+                    },
+                    body: JSON.stringify({ message })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to get response from chatbot');
+                }
+
+                const data = await response.json();
+                
+                // Add AI response
+                const aiBubble = document.createElement('div');
+                aiBubble.className = 'ai-bubble';
+                aiBubble.textContent = data.response;
+                chatContainer.appendChild(aiBubble);
+                
+                // Scroll to bottom
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            } catch (error) {
+                const errorBubble = document.createElement('div');
+                errorBubble.className = 'ai-bubble';
+                errorBubble.textContent = 'عذراً، حدث خطأ. يرجى المحاولة مرة أخرى.';
+                chatContainer.appendChild(errorBubble);
+            }
+        });
 
         document.getElementById('sentimentForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -140,7 +267,7 @@
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name=\"csrf-token\"]').getAttribute('content')
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
                     body: JSON.stringify({ ticker, message })
                 });
@@ -171,7 +298,7 @@
                 }
                 // Display result with typing animation
                 resultDiv.classList.remove('hidden');
-                typeText(aiBubble, `🤖 AI Analysis:\n\n${analysis}\n\nSentiment Score: ${sentimentScore}`);
+                aiBubble.textContent = `🤖 AI Analysis:\n\n${analysis}\n\nSentiment Score: ${sentimentScore}`;
             } catch (error) {
                 errorMessage.textContent = error.message;
                 errorDiv.classList.remove('hidden');
@@ -257,6 +384,15 @@
                 historyContent.innerHTML = `<span class=\"text-red-600\">${error.message}</span>`;
                 historyDiv.classList.remove('hidden');
             }
+        });
+
+        // Sample message click handler
+        document.querySelectorAll('.sample-msg').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const chatInput = document.getElementById('chatMessage');
+                chatInput.value = this.textContent;
+                chatInput.focus();
+            });
         });
     </script>
 </body>

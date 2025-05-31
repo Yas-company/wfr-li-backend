@@ -39,4 +39,12 @@ return [
         'key' => env('ALPHAVANTAGE_API_KEY'),
     ],
 
+    'stocks' => [
+        'url' => env('STOCKS_API_URL', 'https://stockspanel.yaaqen.com/stocks'),
+        'token' => env('STOCKS_API_TOKEN', 'pDAtjGHK9KsbpWflNoACLUP7d0wXuJzQv59SNKoz'),
+        'default_language' => env('STOCKS_API_LANGUAGE', 'ar'),
+        'default_limit' => env('STOCKS_API_LIMIT', 50),
+        'default_page' => env('STOCKS_API_PAGE', 1),
+    ],
+
 ];
