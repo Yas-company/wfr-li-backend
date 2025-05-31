@@ -4,13 +4,18 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\SupplierLocationService;
+use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\Order;
+use App\Enums\OrderStatus;
+use App\Enums\PaymentMethod;
 
 class SupplierController extends Controller
 {
     public function __construct(
-        private readonly SupplierLocationService $locationService
+        private readonly SupplierLocationService $locationService,
+        private readonly OrderService $orderService
     ) {}
 
     /**
@@ -78,6 +83,107 @@ class SupplierController extends Controller
                     'products_count' => $supplier->products()->count()
                 ];
             })
+        ]);
+    }
+
+    /**
+     * Get supplier's orders with filtering capabilities
+     */
+    public function orders(Request $request): JsonResponse
+    {
+        $orders = Order::query()
+            ->where('supplier_id', $request->user()->id)
+            ->filterByStatus($request->status)
+            ->filterByPaymentStatus($request->payment_status)
+            ->filterByPaymentMethod($request->payment_method)
+            ->with(['items.product', 'receipt', 'user'])
+            ->latest()
+            ->paginate($request->input('per_page', 10));
+
+        return response()->json([
+            'orders' => $orders,
+        ]);
+    }
+
+    /**
+     * Get supplier's specific order details
+     */
+    public function show(Request $request, Order $order): JsonResponse
+    {
+        // Check if the order belongs to the authenticated supplier
+        if ($order->supplier_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        return response()->json([
+            'order' => $order->load(['items.product', 'receipt', 'user']),
+        ]);
+    }
+
+    /**
+     * Update order status (accept/reject)
+     */
+    public function updateOrderStatus(Request $request, Order $order): JsonResponse
+    {
+        // Check if the order belongs to the authenticated supplier
+        if ($order->supplier_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $request->validate([
+            'status' => 'required|in:accepted,rejected'
+        ]);
+
+        if ($order->status !== OrderStatus::PENDING->value) {
+            return response()->json([
+                'message' => 'Order cannot be updated',
+                'current_status' => $order->status,
+                'required_status' => OrderStatus::PENDING->value,
+                'error' => 'Order must be in pending status to be accepted or rejected'
+            ], 400);
+        }
+
+        $newStatus = OrderStatus::from($request->status);
+        $order = $this->orderService->updateOrderStatus($order, $newStatus);
+
+        $message = $newStatus === OrderStatus::ACCEPTED 
+            ? 'Order accepted successfully' 
+            : 'Order rejected successfully';
+
+        return response()->json([
+            'message' => $message,
+            'order' => $order->load(['items.product', 'receipt', 'user']),
+        ]);
+    }
+
+    /**
+     * Update order shipping status
+     */
+    public function updateShippingStatus(Request $request, Order $order): JsonResponse
+    {
+        // Check if the order belongs to the authenticated supplier
+        if ($order->supplier_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $request->validate([
+            'status' => 'required|in:shipped,delivered',
+            'tracking_number' => 'nullable|string',
+        ]);
+
+        if ($order->status !== OrderStatus::PAID->value) {
+            return response()->json(['message' => 'Order is not paid'], 400);
+        }
+
+        $order = $this->orderService->updateShippingStatus(
+            $order,
+            OrderStatus::from($request->status),
+            $request->tracking_number
+        );
+
+        return response()->json([
+            'message' => 'Shipping status updated successfully',
+            'order' => $order->load(['items.product', 'receipt', 'user']),
         ]);
     }
 } 
