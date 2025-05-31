@@ -100,4 +100,46 @@ class Order extends Model
     {
         return $query->where('payment_method', PaymentMethod::VISA);
     }
+
+    public function scopeFilterByUser($query, $user)
+    {
+        if ($user->isBuyer()) {
+            return $query->where('user_id', $user->id);
+        } elseif ($user instanceof Supplier) {
+            return $query->where('supplier_id', $user->id);
+        }
+        return $query;
+    }
+
+    public function scopeFilterByStatus($query, $status)
+    {
+        return $query->when($status, fn($q) => $q->where('status', $status));
+    }
+
+    public function scopeFilterByPaymentStatus($query, $paymentStatus)
+    {
+        return $query->when($paymentStatus, fn($q) => $q->where('payment_status', $paymentStatus));
+    }
+
+    public function scopeFilterByPaymentMethod($query, $paymentMethod)
+    {
+        return $query->when($paymentMethod, fn($q) => $q->where('payment_method', $paymentMethod));
+    }
+
+    public function scopeFilterByDateRange($query, $startDate, $endDate)
+    {
+        return $query->when($startDate, fn($q) => $q->whereDate('created_at', '>=', $startDate))
+                    ->when($endDate, fn($q) => $q->whereDate('created_at', '<=', $endDate));
+    }
+
+    public function scopeFilterByAmountRange($query, $minAmount, $maxAmount)
+    {
+        return $query->when($minAmount, fn($q) => $q->where('total_amount', '>=', $minAmount))
+                    ->when($maxAmount, fn($q) => $q->where('total_amount', '<=', $maxAmount));
+    }
+
+    public function scopeSortBy($query, $sortBy, $sortDirection)
+    {
+        return $query->orderBy($sortBy ?? 'created_at', $sortDirection ?? 'desc');
+    }
 } 

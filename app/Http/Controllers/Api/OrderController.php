@@ -9,6 +9,7 @@ use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use App\Models\Supplier;
 
 class OrderController extends Controller
 {
@@ -119,32 +120,5 @@ class OrderController extends Controller
             'message' => 'Shipping status updated successfully',
             'order' => $order->load('items.product'),
         ]);
-    }
-
-    public function show(Order $order): JsonResponse
-    {
-        return response()->json([
-            'order' => $order->load('items.product', 'receipt', 'supplier'),
-        ]);
-    }
-
-    public function index(Request $request): JsonResponse
-    {
-        $query = Order::query();
-
-        if ($request->user()->isBuyer()) {
-            $query->where('user_id', $request->user()->id);
-        }
-
-        // Filter by order status if provided
-        if ($request->has('status')) {
-            $query->where('status', $request->status);
-        }
-
-        $orders = $query->with('items.product', 'receipt', 'supplier')
-            ->latest()
-            ->paginate(10);
-
-        return response()->json(['orders' => $orders]);
     }
 } 

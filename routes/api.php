@@ -45,15 +45,14 @@ Route::prefix('buyer')->group(function () {
         Route::post('/favorites', [\App\Http\Controllers\FavoritesController::class, 'store']);
         Route::delete('/favorites/{product}', [\App\Http\Controllers\FavoritesController::class, 'destroy']);
 
-                
         // Supplier location routes
         Route::post('/suppliers/nearest', [App\Http\Controllers\Api\SupplierController::class, 'nearest']);
         Route::post('/suppliers/nearby', [App\Http\Controllers\Api\SupplierController::class, 'nearby']);
 
         // Order Routes
         Route::post('/orders/checkout', [App\Http\Controllers\Api\OrderController::class, 'checkout']);
-        Route::get('/orders', [App\Http\Controllers\Api\OrderController::class, 'index']);
-        Route::get('/orders/{order}', [App\Http\Controllers\Api\OrderController::class, 'show']);
+        Route::get('/orders', [App\Http\Controllers\Api\BuyerController::class, 'orders']);
+        Route::get('/orders/{order}', [App\Http\Controllers\Api\BuyerController::class, 'show']);
         
         // Payment routes
         Route::post('/orders/{order}/payment-status', [App\Http\Controllers\Api\OrderController::class, 'updatePaymentStatus']);
@@ -73,6 +72,10 @@ Route::prefix('supplier')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [SupplierAuthController::class, 'logout']);
         Route::get('/me', [SupplierAuthController::class, 'me']);
+        
+        // Supplier Orders
+        Route::get('/orders', [App\Http\Controllers\Api\SupplierController::class, 'orders']);
+        Route::get('/orders/{order}', [App\Http\Controllers\Api\SupplierController::class, 'show']);
 
         Route::post('/orders/{order}/accept', [App\Http\Controllers\Api\OrderController::class, 'accept']);
         Route::post('/orders/{order}/reject', [App\Http\Controllers\Api\OrderController::class, 'reject']);
