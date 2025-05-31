@@ -76,9 +76,7 @@ Route::prefix('supplier')->group(function () {
         // Supplier Orders
         Route::get('/orders', [App\Http\Controllers\Api\SupplierController::class, 'orders']);
         Route::get('/orders/{order}', [App\Http\Controllers\Api\SupplierController::class, 'show']);
-
-        Route::post('/orders/{order}/accept', [App\Http\Controllers\Api\OrderController::class, 'accept']);
-        Route::post('/orders/{order}/reject', [App\Http\Controllers\Api\OrderController::class, 'reject']);
-        Route::post('/orders/{order}/shipping-status', [App\Http\Controllers\Api\OrderController::class, 'updateShippingStatus']);
+        Route::post('/orders/{order}/status', [App\Http\Controllers\Api\SupplierController::class, 'updateOrderStatus']);
+        Route::post('/orders/{order}/shipping-status', [App\Http\Controllers\Api\SupplierController::class, 'updateShippingStatus']);
     });
 });
