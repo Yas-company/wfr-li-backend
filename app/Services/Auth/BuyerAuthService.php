@@ -19,27 +19,35 @@ class BuyerAuthService
      */
     public function register(array $data): User
     {
-        // Check if user with this phone number exists
-        $existingUser = User::where('phone', $data['phone'])->first();
+        // Check if user with this phone number exists (including soft-deleted)
+        $existingUser = User::withTrashed()
+            ->where('phone', $data['phone'])
+            ->first();
 
         if ($existingUser) {
-            if ($existingUser->is_verified) {
+            if ($existingUser->is_verified && !$existingUser->trashed()) {
                 throw ValidationException::withMessages([
                     'phone' => [__('messages.phone_already_registered')],
                 ]);
             }
 
-            // Update existing unverified user
+            // If user exists but is soft-deleted, restore it
+            if ($existingUser->trashed()) {
+                $existingUser->restore();
+            }
+
+            // Update existing user
             $existingUser->update([
                 'name' => $data['name'],
                 'address' => $data['address'],
                 'latitude' => $data['latitude'],
                 'longitude' => $data['longitude'],
                 'business_name' => $data['business_name'],
-                'lic_id' => $data['lic_id'],
+                'lic_id' => $data['lic_id'] ?? null,
                 'email' => $data['email'] ?? null,
                 'password' => Hash::make($data['password']),
                 'role' => UserRole::BUYER,
+                'is_verified' => false, // Reset verification status
             ]);
 
             return $existingUser;
@@ -54,7 +62,7 @@ class BuyerAuthService
             'latitude' => $data['latitude'],
             'longitude' => $data['longitude'],
             'business_name' => $data['business_name'],
-            'lic_id' => $data['lic_id'],
+            'lic_id' => $data['lic_id'] ?? null,
             'email' => $data['email'] ?? null,
             'password' => Hash::make($data['password']),
             'role' => UserRole::BUYER,

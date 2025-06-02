@@ -30,6 +30,7 @@ class BuyerRegisterRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $exists = \App\Models\User::where('phone', $value)
                         ->where('is_verified', true)
+                        ->whereNull('deleted_at')
                         ->exists();
                     
                     if ($exists) {
@@ -42,8 +43,8 @@ class BuyerRegisterRequest extends FormRequest
             'latitude' => ['required', 'numeric', 'between:-90,90'],
             'longitude' => ['required', 'numeric', 'between:-180,180'],
             'business_name' => ['required', 'string'],
-            'lic_id' => ['nullable', 'string', 'unique:users'],
-            'email' => ['nullable', 'string', 'email', 'max:255', 'unique:users'],
+            'lic_id' => ['nullable', 'string', 'unique:users,lic_id,NULL,id,deleted_at,NULL'],
+            'email' => ['nullable', 'string', 'email', 'max:255', 'unique:users,email,NULL,id,deleted_at,NULL'],
             'password' => ['required', 'confirmed', Password::min(8)
                 ->letters()
                 ->mixedCase()
