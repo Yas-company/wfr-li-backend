@@ -15,12 +15,6 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/onboarding-screens', [OnboardingScreenController::class, 'index']);
-Route::get('/categories', [CategoryController::class, 'index']);
-Route::get('/categories/{category}', [CategoryController::class, 'show']);
-Route::get('/products', [ProductController::class, 'index'])->middleware('auth:sanctum');
-Route::get('/products/filter', [ProductController::class, 'filter']);
-Route::get('/products/{product}', [ProductController::class, 'show']);
-Route::get('/products/{product}/related', [ProductController::class, 'related']);
 
 // Buyer Authentication Routes
 Route::prefix('buyer')->group(function () {
@@ -29,6 +23,15 @@ Route::prefix('buyer')->group(function () {
 
     // Protected Routes
     Route::middleware('auth:sanctum')->group(function () {
+        //temp routes
+        Route::get('/categories', [CategoryController::class, 'index']);
+        Route::get('/categories/{category}', [CategoryController::class, 'show']);
+        Route::get('/products', [ProductController::class, 'index']);
+        Route::get('/products/filter', [ProductController::class, 'filter']);
+        Route::get('/products/{product}', [ProductController::class, 'show']);
+        Route::get('/products/{product}/related', [ProductController::class, 'related']);
+
+
         Route::post('/logout', [BuyerAuthController::class, 'logout']);
         Route::get('/me', [BuyerAuthController::class, 'me']);
         Route::post('/change-password', [BuyerAuthController::class, 'changePassword']);
@@ -53,7 +56,7 @@ Route::prefix('buyer')->group(function () {
         Route::post('/orders/checkout', [App\Http\Controllers\Api\OrderController::class, 'checkout']);
         Route::get('/orders', [App\Http\Controllers\Api\BuyerController::class, 'orders']);
         Route::get('/orders/{order}', [App\Http\Controllers\Api\BuyerController::class, 'show']);
-        
+
         // Payment routes
         Route::post('/orders/{order}/payment-status', [App\Http\Controllers\Api\OrderController::class, 'updatePaymentStatus']);
     });
@@ -72,7 +75,7 @@ Route::prefix('supplier')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [SupplierAuthController::class, 'logout']);
         Route::get('/me', [SupplierAuthController::class, 'me']);
-        
+
         // Supplier Orders
         Route::get('/orders', [App\Http\Controllers\Api\SupplierController::class, 'orders']);
         Route::get('/orders/{order}', [App\Http\Controllers\Api\SupplierController::class, 'show']);
