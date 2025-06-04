@@ -6,11 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Services\OrderService;
 use App\Enums\OrderStatus;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class OrderController extends Controller
 {
+    use ApiResponse;
+
     public function __construct(
         private OrderService $orderService
     ) {}
@@ -29,7 +33,7 @@ class OrderController extends Controller
         $cart = $request->user()->cart;
         
         if (!$cart || $cart->items->isEmpty()) {
-            return response()->json(['message' => 'Cart is empty'], 400);
+            return $this->errorResponse('Cart is empty', null, Response::HTTP_BAD_REQUEST);
         }
 
         // Use user's address if not provided
@@ -40,10 +44,10 @@ class OrderController extends Controller
 
         $order = $this->orderService->createOrderFromCart($cart, $data);
 
-        return response()->json([
-            'message' => 'Order created successfully',
-            'order' => $order->load('items.product'),
-        ], 201);
+        return $this->createdResponse(
+            $order->load('items.product'),
+            'Order created successfully'
+        );
     }
 
     public function updatePaymentStatus(Request $request, Order $order): JsonResponse
@@ -54,7 +58,7 @@ class OrderController extends Controller
         ]);
 
         if ($order->status !== OrderStatus::ACCEPTED->value) {
-            return response()->json(['message' => 'Order is not in accepted state'], 400);
+            return $this->errorResponse('Order is not in accepted state', null, Response::HTTP_BAD_REQUEST);
         }
 
         $order = $this->orderService->updatePaymentStatus(
@@ -63,9 +67,19 @@ class OrderController extends Controller
             $request->payment_id
         );
 
-        return response()->json([
-            'message' => 'Payment status updated successfully',
-            'order' => $order->load('items.product', 'receipt'),
-        ]);
+        return $this->successResponse(
+            $order->load('items.product', 'receipt'),
+            'Payment status updated successfully'
+        );
+    }
+
+    public function index(Request $request): JsonResponse
+    {
+        $orders = $request->user()->orders()
+            ->with(['items.product', 'supplier'])
+            ->latest()
+            ->paginate(10);
+
+        return $this->successResponse($orders);
     }
 } 

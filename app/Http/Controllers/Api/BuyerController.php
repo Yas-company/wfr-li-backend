@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class BuyerController extends Controller
 {
+    use ApiResponse;
+
     /**
      * Get buyer's orders with filtering capabilities
      */
@@ -25,9 +28,7 @@ class BuyerController extends Controller
             ->latest()
             ->paginate($request->input('per_page', 10));
 
-        return response()->json([
-            'orders' => $orders,
-        ]);
+        return $this->successResponse($orders);
     }
 
     /**
@@ -37,11 +38,11 @@ class BuyerController extends Controller
     {
         // Check if the order belongs to the authenticated buyer
         if ($order->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return $this->forbiddenResponse('Unauthorized access to this order');
         }
 
-        return response()->json([
-            'order' => $order->load(['items.product', 'receipt', 'supplier']),
-        ]);
+        return $this->successResponse(
+            $order->load(['items.product', 'receipt', 'supplier'])
+        );
     }
 } 
