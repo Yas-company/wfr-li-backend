@@ -146,14 +146,14 @@ class CartController extends Controller
             return [
                 'id' => $product->id,
                 'name' => $product->name,
-                'image' => $product->image,
+                'image' => $product->image_url,
                 'price' => $product->price,
                 'price_before_discount' => $product->price_before_discount,
                 'cart_quantity' => $item->quantity,
                 'category' => [
                     'id' => $product->category->id,
                     'name' => $product->category->name,
-                    'image' => $product->category->image,
+                    'image' => $product->category->image_url,
                 ]
             ];
         })->toArray();

@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use App\Enums\OrderStatus;
-use App\Enums\PaymentMethod;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,11 +22,15 @@ class BuyerController extends Controller
             ->filterByStatus($request->status)
             ->filterByPaymentStatus($request->payment_status)
             ->filterByPaymentMethod($request->payment_method)
-            ->with(['items.product', 'receipt', 'supplier'])
+            ->with(['receipt', 'supplier'])
             ->latest()
-            ->paginate($request->input('per_page', 10));
+            ->paginate(10);
 
-        return $this->successResponse($orders);
+        $transformedOrders = $orders->through(function ($order) {
+            return $this->transformOrderData($order);
+        });
+
+        return response()->json($transformedOrders);
     }
 
     /**
@@ -42,7 +44,34 @@ class BuyerController extends Controller
         }
 
         return $this->successResponse(
-            $order->load(['items.product', 'receipt', 'supplier'])
+            $this->transformOrderData($order->load(['items.product.category', 'receipt', 'supplier']))
         );
+    }
+
+    /**
+     * Transform order data with specific product fields
+     */
+    private function transformOrderData(Order $order)
+    {
+        $orderData = $order->toArray();
+        $orderData['items'] = $order->items->map(function ($item) {
+            $product = $item->product;
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'image' => $product->image_url,
+                'price' => $product->price,
+                'price_before_discount' => $product->price_before_discount,
+                'quantity' => $item->quantity,
+                'total' => $item->total,
+                'category' => [
+                    'id' => $product->category->id,
+                    'name' => $product->category->name,
+                    'image' => $product->category->image_url,
+                ]
+            ];
+        })->toArray();
+        
+        return $orderData;
     }
 } 
