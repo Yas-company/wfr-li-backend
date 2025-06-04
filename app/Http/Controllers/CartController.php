@@ -5,11 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Response;
 
 class CartController extends Controller
 {
+    use ApiResponse;
+
     public function addToCart(Request $request)
     {
         $request->validate([
@@ -49,10 +53,10 @@ class CartController extends Controller
             $this->updateCartTotal($cart);
 
             // Return fresh data
-            return response()->json([
-                'message' => __('messages.cart.added'),
-                'cart' => $cart->fresh()->load('items.product'),
-            ]);
+            return $this->successResponse(
+                $this->transformCartData($cart->fresh()->load('items.product')),
+                __('messages.cart.added')
+            );
         });
     }
 
@@ -61,7 +65,7 @@ class CartController extends Controller
         $user = $request->user();
 
         if ($cartItem->cart->user_id !== $user->id) {
-            return response()->json(['message' => __('messages.unauthorized')], 403);
+            return $this->forbiddenResponse();
         }
 
         return DB::transaction(function () use ($cartItem) {
@@ -70,10 +74,10 @@ class CartController extends Controller
 
             $this->updateCartTotal($cart);
 
-            return response()->json([
-                'message' => __('messages.cart.removed'),
-                'cart' => $cart->load('items.product'),
-            ]);
+            return $this->successResponse(
+                $this->transformCartData($cart->load('items.product')),
+                __('messages.cart.removed')
+            );
         });
     }
 
@@ -86,7 +90,7 @@ class CartController extends Controller
         $user = $request->user();
 
         if ($cartItem->cart->user_id !== $user->id) {
-            return response()->json(['message' => __('messages.unauthorized')], 403);
+            return $this->forbiddenResponse();
         }
 
         return DB::transaction(function () use ($cartItem, $request) {
@@ -98,10 +102,10 @@ class CartController extends Controller
 
             $this->updateCartTotal($cart);
 
-            return response()->json([
-                'message' => __('messages.cart.updated'),
-                'cart' => $cart->load('items.product'),
-            ]);
+            return $this->successResponse(
+                $this->transformCartData($cart->load('items.product')),
+                __('messages.cart.updated')
+            );
         });
     }
 
@@ -111,18 +115,18 @@ class CartController extends Controller
         $cart = $user->cart;
 
         if (!$cart) {
-            return response()->json([
-                'message' => __('messages.cart.empty'),
-                'cart' => null,
-            ]);
+            return $this->successResponse(
+                null,
+                __('messages.cart.empty')
+            );
         }
 
         // Calculate total amount from items
         $this->updateCartTotal($cart);
 
-        return response()->json([
-            'cart' => $cart->load('items.product'),
-        ]);
+        return $this->successResponse(
+            $this->transformCartData($cart->load('items.product'))
+        );
     }
 
     private function updateCartTotal(Cart $cart)
@@ -132,5 +136,28 @@ class CartController extends Controller
         });
 
         $cart->update(['total_amount' => $total]);
+    }
+
+    private function transformCartData(Cart $cart)
+    {
+        $cartData = $cart->toArray();
+        $cartData['items'] = $cart->items->map(function ($item) {
+            $product = $item->product;
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'image' => $product->image,
+                'price' => $product->price,
+                'price_before_discount' => $product->price_before_discount,
+                'cart_quantity' => $item->quantity,
+                'category' => [
+                    'id' => $product->category->id,
+                    'name' => $product->category->name,
+                    'image' => $product->category->image,
+                ]
+            ];
+        })->toArray();
+        
+        return $cartData;
     }
 }
