@@ -62,8 +62,10 @@ class BuyerController extends Controller
                 'image' => $product->image_url,
                 'price' => $product->price,
                 'price_before_discount' => $product->price_before_discount,
-                'quantity' => $item->quantity,
+                'cart_quantity' => $item->quantity,
                 'total' => $item->total,
+                'stock_qty' => $product->stock_qty,
+                'is_favorite' => $product->is_favorite,
                 'category' => [
                     'id' => $product->category->id,
                     'name' => $product->category->name,

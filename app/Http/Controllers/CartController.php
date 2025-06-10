@@ -150,6 +150,8 @@ class CartController extends Controller
                 'price' => $product->price,
                 'price_before_discount' => $product->price_before_discount,
                 'cart_quantity' => $item->quantity,
+                'stock_qty' => $product->stock_qty,
+                'is_favorite' => $product->is_favorite,
                 'category' => [
                     'id' => $product->category->id,
                     'name' => $product->category->name,
