@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Resources\OrderResource;
 
 class BuyerController extends Controller
 {
@@ -22,15 +23,19 @@ class BuyerController extends Controller
             ->filterByStatus($request->status)
             ->filterByPaymentStatus($request->payment_status)
             ->filterByPaymentMethod($request->payment_method)
-            ->with(['receipt', 'supplier'])
+            ->with(['receipt', 'supplier', 'items.product.category'])
             ->latest()
             ->paginate(10);
 
-        $transformedOrders = $orders->through(function ($order) {
-            return $this->transformOrderData($order);
-        });
-
-        return response()->json($transformedOrders);
+        $data = OrderResource::collection($orders)->response()->getData(true);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'تمت العملية بنجاح',
+            'data' => $data['data'],
+            'links' => $data['links'],
+            'meta' => $data['meta']
+        ]);
     }
 
     /**
@@ -44,7 +49,7 @@ class BuyerController extends Controller
         }
 
         return $this->successResponse(
-            $this->transformOrderData($order->load(['items.product.category', 'receipt', 'supplier']))
+            new OrderResource($order->load(['items.product.category', 'receipt', 'supplier']))
         );
     }
 
