@@ -276,9 +276,10 @@ class BuyerAuthController extends Controller
             // Clear OTP and verification status
             $this->otpService->clearVerification($data['phone']);
 
-            return $this->successResponse(
-                message: __('messages.password_reset_successful')
-            );
+            return $this->successResponse([
+                'user' => new UserResource($user),
+                'token' => $user->createToken('buyer-token')->plainTextToken
+            ], __('messages.password_reset_successful'));
         } catch (\Exception $e) {
             Log::error('Password reset failed', [
                 'error' => $e->getMessage(),
