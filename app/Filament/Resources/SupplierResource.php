@@ -173,16 +173,4 @@ class SupplierResource extends Resource
             'edit' => Pages\EditSupplier::route('/{record}/edit'),
         ];
     }
-
-    public static function getEloquentQuery(): Builder
-    {
-        $query = parent::getEloquentQuery();
-
-        if (Auth::guard('factory')->check()) {
-            $factory = Auth::guard('factory')->user();
-            return $query->where('factory_id', $factory->id);
-        }
-
-        return $query;
-    }
 }
