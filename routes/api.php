@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdsController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Auth\BuyerAuthController;
@@ -16,6 +17,7 @@ Route::get('/user', function (Request $request) {
 
 Route::get('/onboarding-screens', [OnboardingScreenController::class, 'index']);
 Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/ads', [AdsController::class, 'index']);
 
 
 // Buyer Authentication Routes
