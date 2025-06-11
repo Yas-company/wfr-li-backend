@@ -36,10 +36,14 @@ class AdsResource extends Resource
                             ->label('العنوان بالعربية')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\FileUpload::make('image')
+                            Forms\Components\FileUpload::make('image')
                             ->label('الصورة')
                             ->image()
-                            ->directory('ads')
+                            ->disk('public') // Store in storage/app/public
+                            ->directory('ads') // Subdirectory for organization
+                            ->visibility('public')
+                            ->imageEditor() // Optional: Enable image cropping/editing
+                            ->maxSize(2048) // Optional: Limit file size to 2MB
                             ->required(),
                         Forms\Components\Select::make('supplier_id')
                             ->label('المورد')
@@ -69,9 +73,8 @@ class AdsResource extends Resource
                     ->getStateUsing(fn($record) => $record->getTranslation('title', 'ar'))
                     ->searchable(query: fn($query, $search) => $query->where('title->ar', 'like', "%{$search}%")),
 
-                Tables\Columns\ImageColumn::make('image')
-                    ->label('الصورة')
-                    ->disk('public'),
+                Tables\Columns\ImageColumn::make('image_url')
+                    ->label('الصورة'),
                 Tables\Columns\TextColumn::make('supplier.name')
                     ->label('المورد')
                     ->searchable(),
