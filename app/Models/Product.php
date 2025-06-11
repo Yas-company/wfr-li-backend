@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Translatable\HasTranslations;
 
 class Product extends Model
@@ -29,12 +30,7 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class);
     }
-
-    public function factory()
-    {
-        return $this->belongsTo(Factory::class);
-    }
-
+    
     public function suppliers()
     {
         return $this->belongsToMany(Supplier::class, 'product_supplier')
@@ -57,7 +53,7 @@ class Product extends Model
 
     public function getIsFavoriteAttribute()
     {
-        $user = auth()->user();
+        $user = Auth::user();
         if (!$user) return false;
         return $this->favoritedByUsers()->where('user_id', $user->id)->exists();
     }
@@ -103,7 +99,7 @@ class Product extends Model
 
     public function getCartQuantityAttribute()
     {
-        $user = auth()->user();
+        $user = Auth::user();
         if (!$user || !$user->cart) {
             return 0;
         }

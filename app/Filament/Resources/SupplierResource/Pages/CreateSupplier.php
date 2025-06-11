@@ -10,11 +10,4 @@ use Illuminate\Support\Facades\Auth;
 class CreateSupplier extends CreateRecord
 {
     protected static string $resource = SupplierResource::class;
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['factory_id'] = Auth::guard('factory')->user()->id;
-        
-        return $data;
-    }
 }

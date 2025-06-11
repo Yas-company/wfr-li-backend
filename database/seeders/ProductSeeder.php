@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Product;
 use App\Models\Category;
-use App\Models\Factory;
 use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder
@@ -14,15 +13,6 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        $factory = Factory::first();
-
-        if (!$factory) {
-            if ($this->command) {
-                $this->command->info('No factory found. Please run FactorySeeder first.');
-            }
-            return;
-        }
-
         // Fetch categories by English name
         $categories = [
             'Rice & Grains' => Category::where('name->en', 'Rice & Grains')->first(),
@@ -44,7 +34,6 @@ class ProductSeeder extends Seeder
                 'price' => 48,
                 'price_before_discount' => 55,
                 'category_id' => $categories['Rice & Grains']->id,
-                'factory_id' => $factory->id,
             ],
             [
                 'id' => 2,
@@ -54,7 +43,6 @@ class ProductSeeder extends Seeder
                 'price' => 70,
                 'price_before_discount' => 80,
                 'category_id' => $categories['Oils & Ghee']->id,
-                'factory_id' => $factory->id,
             ],
             [
                 'id' => 3,
@@ -64,7 +52,6 @@ class ProductSeeder extends Seeder
                 'price' => 32,
                 'price_before_discount' => 38,
                 'category_id' => $categories['Meat & Poultry']->id,
-                'factory_id' => $factory->id,
             ],
             [
                 'id' => 4,
@@ -74,7 +61,6 @@ class ProductSeeder extends Seeder
                 'price' => 5,
                 'price_before_discount' => 6,
                 'category_id' => $categories['Vegetables']->id,
-                'factory_id' => $factory->id,
             ],
             [
                 'id' => 5,
@@ -84,7 +70,6 @@ class ProductSeeder extends Seeder
                 'price' => 4,
                 'price_before_discount' => 5,
                 'category_id' => $categories['Vegetables']->id,
-                'factory_id' => $factory->id,
             ],
             [
                 'id' => 6,
@@ -94,7 +79,6 @@ class ProductSeeder extends Seeder
                 'price' => 30,
                 'price_before_discount' => 35,
                 'category_id' => $categories['Oils & Ghee']->id,
-                'factory_id' => $factory->id,
             ],
             [
                 'id' => 7,
@@ -104,7 +88,6 @@ class ProductSeeder extends Seeder
                 'price' => 52,
                 'price_before_discount' => 60,
                 'category_id' => $categories['Canned Food & Tuna']->id,
-                'factory_id' => $factory->id,
             ],
             [
                 'id' => 8,
@@ -114,7 +97,6 @@ class ProductSeeder extends Seeder
                 'price' => 35,
                 'price_before_discount' => 40,
                 'category_id' => $categories['Rice & Grains']->id,
-                'factory_id' => $factory->id,
             ],
             [
                 'id' => 9,
@@ -124,7 +106,6 @@ class ProductSeeder extends Seeder
                 'price' => 70,
                 'price_before_discount' => 80,
                 'category_id' => $categories['Oils & Ghee']->id,
-                'factory_id' => $factory->id,
             ],
             [
                 'id' => 10,
@@ -134,7 +115,6 @@ class ProductSeeder extends Seeder
                 'price' => 48,
                 'price_before_discount' => 55,
                 'category_id' => $categories['Rice & Grains']->id,
-                'factory_id' => $factory->id,
             ],
             [
                 'id' => 11,
@@ -144,7 +124,6 @@ class ProductSeeder extends Seeder
                 'price' => 6,
                 'price_before_discount' => 8,
                 'category_id' => $categories['Juices & Drinks']->id,
-                'factory_id' => $factory->id,
             ],
             [
                 'id' => 12,
@@ -154,7 +133,6 @@ class ProductSeeder extends Seeder
                 'price' => 38,
                 'price_before_discount' => 45,
                 'category_id' => $categories['Coffee & Tea']->id,
-                'factory_id' => $factory->id,
             ],
             [
                 'id' => 13,
@@ -164,7 +142,6 @@ class ProductSeeder extends Seeder
                 'price' => 7,
                 'price_before_discount' => 9,
                 'category_id' => $categories['Juices & Drinks']->id,
-                'factory_id' => $factory->id,
             ],
             [
                 'id' => 14,
@@ -174,7 +151,6 @@ class ProductSeeder extends Seeder
                 'price' => 26,
                 'price_before_discount' => 30,
                 'category_id' => $categories['Dairy Products']->id,
-                'factory_id' => $factory->id,
             ],
         ];
 

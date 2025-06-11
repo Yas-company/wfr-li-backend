@@ -45,16 +45,6 @@ class StatsOverview extends BaseWidget
                     'class' => 'cursor-pointer hover:bg-primary-50',
                 ]),
 
-            Stat::make('إجمالي المصانع', Factory::count())
-                ->description('عدد المصانع')
-                ->descriptionIcon('heroicon-m-building-office')
-                ->color('danger')
-                ->url(route('filament.admin.resources.factories.index'))
-                ->icon('heroicon-m-building-office')
-                ->extraAttributes([
-                    'class' => 'cursor-pointer hover:bg-danger-50',
-                ]),
-
             Stat::make('إجمالي الموردين', Supplier::count())
                 ->description('عدد الموردين')
                 ->descriptionIcon('heroicon-m-truck')

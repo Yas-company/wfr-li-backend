@@ -3,16 +3,13 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SupplierResource\Pages;
-use App\Filament\Resources\SupplierResource\RelationManagers;
 use App\Models\Supplier;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 
 class SupplierResource extends Resource
 {
@@ -30,12 +27,6 @@ class SupplierResource extends Resource
             ->schema([
                 Forms\Components\Section::make('معلومات المورد')
                     ->schema([
-                        Forms\Components\Select::make('factory_id')
-                            ->label('المصنع')
-                            ->relationship('factory', 'name')
-                            ->required()
-                            ->searchable()
-                            ->preload(),
                         Forms\Components\TextInput::make('name.en')
                             ->label('الاسم بالانجليزية')
                             ->required()
@@ -106,9 +97,6 @@ class SupplierResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('factory.name')
-                    ->label('المصنع')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('name_en')
                 ->label('الاسم بالانجليزية')
                 ->getStateUsing(fn($record) => $record->getTranslation('name', 'en'))
@@ -158,12 +146,6 @@ class SupplierResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            RelationManagers\ProductsRelationManager::class,
-        ];
-    }
 
     public static function getPages(): array
     {

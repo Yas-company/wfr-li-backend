@@ -93,12 +93,6 @@ class ProductResource extends Resource
                                     ->required()
                                     ->searchable()
                                     ->preload(),
-                                Forms\Components\Select::make('factory_id')
-                                    ->label('المصنع')
-                                    ->relationship('factory', 'name')
-                                    ->required()
-                                    ->searchable()
-                                    ->preload(),
                                 Forms\Components\Select::make('suppliers')
                                     ->label('الموردين')
                                     ->relationship('suppliers', 'name')
@@ -116,9 +110,6 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('factory.name')
-                    ->label('المصنع')
-                    ->sortable(),
                 
                 // Display English name
                 Tables\Columns\TextColumn::make('name_en')

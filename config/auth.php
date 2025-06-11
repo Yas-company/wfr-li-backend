@@ -40,10 +40,6 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-        'factory' => [
-            'driver' => 'session',
-            'provider' => 'factories',
-        ],
     ],
 
     /*
@@ -68,15 +64,6 @@ return [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
-        'factories' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\Factory::class,
-        ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
     ],
 
     /*
@@ -105,12 +92,6 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
-        'factories' => [
-            'provider' => 'factories',
-            'table' => 'password_reset_tokens',
-            'expire' => 60,
-            'throttle' => 60,
-        ],
     ],
 
     /*
@@ -124,6 +105,6 @@ return [
     |
     */
 
-    'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
+    'password_timeout' => 10800,
 
 ];
