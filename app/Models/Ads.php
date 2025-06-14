@@ -16,10 +16,11 @@ class Ads extends Model
 
     protected $casts = [
         'title' => 'array',
+        'description' => 'array',
         'is_active' => 'boolean',
     ];
 
-    protected $fillable = ['title', 'image', 'user_id', 'is_active'];
+    protected $fillable = ['title', 'image', 'user_id', 'is_active', 'description'];
 
     public function user()
     {

@@ -9,8 +9,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Auth;
 
 class AdsResource extends Resource
 {
@@ -28,29 +26,50 @@ class AdsResource extends Resource
             ->schema([
                 Forms\Components\Section::make('معلومات الإعلان')
                     ->schema([
-                        Forms\Components\TextInput::make('title.en')
-                            ->label('العنوان بالانجليزية')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('title.ar')
-                            ->label('العنوان بالعربية')
-                            ->required()
-                            ->maxLength(255),
-                            Forms\Components\FileUpload::make('image')
-                            ->label('الصورة')
-                            ->image()
-                            ->disk('public') // Store in storage/app/public
-                            ->directory('ads') // Subdirectory for organization
-                            ->visibility('public')
-                            ->imageEditor() // Optional: Enable image cropping/editing
-                            ->maxSize(2048) // Optional: Limit file size to 2MB
-                            ->required(),
-                        Forms\Components\Select::make('user_id')
-                            ->label('المورد')
-                            ->relationship('user', 'name')
-                            ->required()
-                            ->searchable()
-                            ->preload(),
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('title.ar')
+                                    ->label('العنوان بالعربية')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('title.en')
+                                    ->label('العنوان بالانجليزية')
+                                    ->required()
+                                    ->maxLength(255),
+                            ]),
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\Textarea::make('description.ar')
+                                    ->label('الوصف بالعربية')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\Textarea::make('description.en')
+                                    ->label('الوصف بالانجليزية')
+                                    ->required()
+                                    ->maxLength(255),
+                            ]),
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\FileUpload::make('image')
+                                    ->label('الصورة')
+                                    ->image()
+                                    ->disk('public')
+                                    ->directory('ads')
+                                    ->visibility('public')
+                                    ->imageEditor()
+                                    ->maxSize(2048)
+                                    ->required(),
+                                Forms\Components\Select::make('user_id')
+                                    ->label('المورد')
+                                    ->relationship(
+                                        'user',
+                                        'name',
+                                        fn ($query) => $query->where('role', \App\Enums\UserRole::SUPPLIER->value)
+                                    )
+                                    ->required()
+                                    ->searchable()
+                                    ->preload(),
+                            ]),
                         Forms\Components\Toggle::make('is_active')
                             ->label('نشط')
                             ->default(true)
@@ -73,9 +92,9 @@ class AdsResource extends Resource
                     ->getStateUsing(fn($record) => $record->getTranslation('title', 'ar'))
                     ->searchable(query: fn($query, $search) => $query->where('title->ar', 'like', "%{$search}%")),
 
-                Tables\Columns\ImageColumn::make('image_url')
+                Tables\Columns\ImageColumn::make('image')
                     ->label('الصورة'),
-                Tables\Columns\TextColumn::make('supplier.name')
+                Tables\Columns\TextColumn::make('user.name')
                     ->label('المورد')
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_active')

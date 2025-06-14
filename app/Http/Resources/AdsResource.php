@@ -12,6 +12,7 @@ class AdsResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
+            'description' => $this->description,
             'image_url' => $this->image_url,
             'user_id' => $this->user_id,
             'is_active' => $this->is_active
