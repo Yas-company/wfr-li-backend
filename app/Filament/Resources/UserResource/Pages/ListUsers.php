@@ -13,13 +13,6 @@ class ListUsers extends ListRecords
 {
     protected static string $resource = UserResource::class;
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\CreateAction::make(),
-        ];
-    }
-
     public function getTabs(): array
     {
         return [
@@ -31,6 +24,9 @@ class ListUsers extends ListRecords
             'buyer' => Tab::make('المشترين')
                 ->badge(User::where('role', UserRole::BUYER)->count())
                 ->modifyQueryUsing(fn ($query) => $query->where('role', UserRole::BUYER)),
+            'supplier' => Tab::make('الموردين')
+                ->badge(User::where('role', UserRole::SUPPLIER)->count())
+                ->modifyQueryUsing(fn ($query) => $query->where('role', UserRole::SUPPLIER)),
         ];
     }
 }

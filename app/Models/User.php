@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Enums\UserRole;
+use App\Enums\UserStatus;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -27,13 +28,14 @@ class User extends Authenticatable
         'latitude',
         'longitude',
         'business_name',
-        'lic_id',
         'email',
         'password',
         'role',
         'is_verified',
-        'otp',
-        'otp_expiry',
+        'status',
+        'license_attachment',
+        'commercial_register_attachment',
+        'field_id',
         'country_code'
     ];
 
@@ -60,8 +62,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'role' => UserRole::class,
+        'status' => UserStatus::class,
         'is_verified' => 'boolean',
-        'otp_expiry' => 'datetime',
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8'
     ];
@@ -80,24 +82,35 @@ class User extends Authenticatable
     {
         return $this->role === UserRole::BUYER;
     }
+
+    public function isSupplier(): bool
+    {
+        return $this->role === UserRole::SUPPLIER;
+    }
+
     public function isVerified(): bool
     {
         return $this->is_verified;
     }
 
-    public function hasValidOtp(): bool
+    public function isApproved(): bool
     {
-        return $this->otp && $this->otp_expiry && $this->otp_expiry->isFuture();
+        return $this->status === UserStatus::APPROVED;
     }
 
-    public function scopeVerified($query)
+    public function isPending(): bool
     {
-        return $query->where('is_verified', true);
+        return $this->status === UserStatus::PENDING;
     }
 
-    public function scopeUnverified($query)
+    public function isRejected(): bool
     {
-        return $query->where('is_verified', false);
+        return $this->status === UserStatus::REJECTED;
+    }
+
+    public function field()
+    {
+        return $this->belongsTo(Field::class);
     }
 
     public function cart()
@@ -108,5 +121,11 @@ class User extends Authenticatable
     public function favoriteProducts()
     {
         return $this->belongsToMany(Product::class, 'favorites')->withTimestamps();
+    }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'product_supplier')
+            ->withTimestamps();
     }
 }

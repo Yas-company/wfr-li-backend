@@ -27,19 +27,27 @@ class UserSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        // Create a buyer
+        // Create buyer user
         User::create([
-            'name' => 'Test Buyer',
+            'name' => 'Buyer User',
             'phone' => '1234567891',
             'country_code' => '966',
-            'address' => 'الرياض',
-            'latitude' => 24.7136,
-            'longitude' => 46.6753,
-            'business_name' => 'Buyer Business',
-            'lic_id' => 'BUYER123',
             'email' => 'buyer@gmail.com',
             'password' => Hash::make('password'),
             'role' => UserRole::BUYER,
+            'is_verified' => true,
+            'email_verified_at' => now(),
+        ]);
+
+
+        // Create supplier user
+        User::create([
+            'name' => 'Supplier User',
+            'phone' => '1234567892',
+            'country_code' => '966',
+            'email' => 'supplier@gmail.com',
+            'password' => Hash::make('password'),
+            'role' => UserRole::SUPPLIER,
             'is_verified' => true,
             'email_verified_at' => now(),
         ]);

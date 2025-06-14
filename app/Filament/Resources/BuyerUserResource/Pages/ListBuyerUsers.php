@@ -3,17 +3,14 @@
 namespace App\Filament\Resources\BuyerUserResource\Pages;
 
 use App\Filament\Resources\BuyerUserResource;
-use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
 class ListBuyerUsers extends ListRecords
 {
     protected static string $resource = BuyerUserResource::class;
 
-    protected function getHeaderActions(): array
+    public function getTitle(): string
     {
-        return [
-            Actions\CreateAction::make(),
-        ];
+        return 'المشترين';
     }
 } 

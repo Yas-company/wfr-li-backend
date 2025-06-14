@@ -15,7 +15,6 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
-        'supplier_id',
         'status',
         'total_amount',
         'shipping_address',
@@ -44,11 +43,6 @@ class Order extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function supplier(): BelongsTo
-    {
-        return $this->belongsTo(Supplier::class);
     }
 
     public function items(): HasMany
@@ -99,16 +93,6 @@ class Order extends Model
     public function scopeVisaPayment($query)
     {
         return $query->where('payment_method', PaymentMethod::VISA);
-    }
-
-    public function scopeFilterByUser($query, $user)
-    {
-        if ($user->isBuyer()) {
-            return $query->where('user_id', $user->id);
-        } elseif ($user instanceof Supplier) {
-            return $query->where('supplier_id', $user->id);
-        }
-        return $query;
     }
 
     public function scopeFilterByStatus($query, $status)

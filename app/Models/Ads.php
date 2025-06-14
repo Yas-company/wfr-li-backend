@@ -19,11 +19,11 @@ class Ads extends Model
         'is_active' => 'boolean',
     ];
 
-    protected $fillable = ['title', 'image', 'supplier_id', 'is_active'];
+    protected $fillable = ['title', 'image', 'user_id', 'is_active'];
 
-    public function supplier()
+    public function user()
     {
-        return $this->belongsTo(Supplier::class, 'supplier_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function getImageUrlAttribute()

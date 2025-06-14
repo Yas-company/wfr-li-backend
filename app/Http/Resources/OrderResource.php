@@ -12,7 +12,6 @@ class OrderResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'supplier_id' => $this->supplier_id,
             'status' => $this->status,
             'total_amount' => $this->total_amount,
             'shipping_address' => $this->shipping_address,
@@ -28,7 +27,7 @@ class OrderResource extends JsonResource
             'updated_at' => $this->updated_at,
             'deleted_at' => $this->deleted_at,
             'receipt' => $this->whenLoaded('receipt'),
-            'supplier' => new SupplierResource($this->whenLoaded('supplier')),
+            'user' => new UserResource($this->whenLoaded('user')),
             'items' => $this->whenLoaded('items', function () {
                 return $this->items->map(function ($item) {
                     $product = $item->product;

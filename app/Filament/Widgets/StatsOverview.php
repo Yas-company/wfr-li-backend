@@ -2,13 +2,12 @@
 
 namespace App\Filament\Widgets;
 
+use App\Enums\UserRole;
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\Factory;
-use App\Models\Supplier;
+use App\Models\User;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Filament\Support\Enums\IconPosition;
 
 class StatsOverview extends BaseWidget
 {
@@ -45,14 +44,22 @@ class StatsOverview extends BaseWidget
                     'class' => 'cursor-pointer hover:bg-primary-50',
                 ]),
 
-            Stat::make('إجمالي الموردين', Supplier::count())
+            Stat::make('إجمالي الموردين', User::where('role', UserRole::SUPPLIER)->count())
                 ->description('عدد الموردين')
                 ->descriptionIcon('heroicon-m-truck')
                 ->color('info')
-                ->url(route('filament.admin.resources.suppliers.index'))
                 ->icon('heroicon-m-truck')
                 ->extraAttributes([
                     'class' => 'cursor-pointer hover:bg-info-50',
+                ]),
+
+            Stat::make('إجمالي المشترين', User::where('role', UserRole::BUYER)->count())
+                ->description('عدد المشترين')
+                ->descriptionIcon('heroicon-m-user')
+                ->color('danger')
+                ->icon('heroicon-m-user')
+                ->extraAttributes([
+                    'class' => 'cursor-pointer hover:bg-danger-50',
                 ]),
         ];
     }

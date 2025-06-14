@@ -72,8 +72,8 @@ class OrderResource extends Resource
                                             ->relationship('user', 'name')
                                             ->label('Buyer / المشتري')
                                             ->disabled(),
-                                        Forms\Components\Select::make('supplier_id')
-                                            ->relationship('supplier', 'name')
+                                        Forms\Components\Select::make('user_id')
+                                            ->relationship('user', 'name')
                                             ->label('Supplier / المورد')
                                             ->disabled(),
                                     ]),

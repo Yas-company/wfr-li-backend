@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('ads', function (Blueprint $table) {
             $table->id();
             $table->string('title')->nullable();
+            $table->string('description')->nullable();
             $table->string('image')->nullable();
-            $table->foreignId('supplier_id')->constrained('suppliers')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->boolean('is_active')->default(false);
             $table->timestamps();
         });

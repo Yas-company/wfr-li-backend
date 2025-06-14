@@ -13,7 +13,7 @@ class AdsResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'image_url' => $this->image_url,
-            'supplier_id' => $this->supplier_id,
+            'user_id' => $this->user_id,
             'is_active' => $this->is_active
         ];
     }

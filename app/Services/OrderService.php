@@ -19,7 +19,6 @@ class OrderService
             // Create the order
             $order = Order::create([
                 'user_id' => $cart->user_id,
-                'supplier_id' => $data['supplier_id'],
                 'status' => OrderStatus::PENDING->value,
                 'total_amount' => $cart->total_amount,
                 'shipping_address' => $data['shipping_address'],

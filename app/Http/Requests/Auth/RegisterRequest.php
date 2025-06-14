@@ -2,27 +2,20 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Enums\UserRole;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
-class BuyerRegisterRequest extends FormRequest
+class RegisterRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
-        return [
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'phone' => [
                 'required', 
@@ -40,10 +33,9 @@ class BuyerRegisterRequest extends FormRequest
             ],
             'country_code' => ['required'],
             'address' => ['required', 'string'],
-            'latitude' => ['required', 'numeric', 'between:-90,90'],
-            'longitude' => ['required', 'numeric', 'between:-180,180'],
+            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
             'business_name' => ['required', 'string'],
-            'lic_id' => ['nullable', 'string', 'unique:users,lic_id,NULL,id,deleted_at,NULL'],
             'email' => ['nullable', 'string', 'email', 'max:255', 'unique:users,email,NULL,id,deleted_at,NULL'],
             'password' => ['required', 'confirmed', Password::min(8)
                 ->letters()
@@ -51,14 +43,19 @@ class BuyerRegisterRequest extends FormRequest
                 ->numbers()
                 ->symbols()
             ],
+            'role' => ['required', 'string', 'in:' . implode(',', UserRole::values())],
         ];
+
+        // Add supplier-specific validation rules
+        if ($this->request->get('role') === UserRole::SUPPLIER->value) {
+            $rules['license_attachment'] = ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'];
+            $rules['commercial_register_attachment'] = ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'];
+            $rules['field_id'] = ['required', 'exists:fields,id'];
+        }
+
+        return $rules;
     }
 
-    /**
-     * Get custom messages for validator errors.
-     *
-     * @return array<string, string>
-     */
     public function messages(): array
     {
         return [
@@ -67,15 +64,11 @@ class BuyerRegisterRequest extends FormRequest
             'phone.unique' => __('messages.validation.unique.phone'),
             'country_code.required' => __('messages.validation.required.country_code'),
             'address.required' => __('messages.validation.required.address'),
-            'latitude.required' => __('messages.validation.required.latitude'),
             'latitude.numeric' => __('messages.validation.numeric.latitude'),
             'latitude.between' => __('messages.validation.between.latitude'),
-            'longitude.required' => __('messages.validation.required.longitude'),
             'longitude.numeric' => __('messages.validation.numeric.longitude'),
             'longitude.between' => __('messages.validation.between.longitude'),
             'business_name.required' => __('messages.validation.required.business_name'),
-            'lic_id.required' => __('messages.validation.required.lic_id'),
-            'lic_id.unique' => __('messages.validation.unique.lic_id'),
             'email.email' => __('messages.validation.email'),
             'email.unique' => __('messages.validation.unique.email'),
             'password.required' => __('messages.validation.required.password'),
@@ -84,6 +77,18 @@ class BuyerRegisterRequest extends FormRequest
             'password.mixed_case' => __('messages.validation.password.mixed_case'),
             'password.numbers' => __('messages.validation.password.numbers'),
             'password.symbols' => __('messages.validation.password.symbols'),
+            'role.required' => __('messages.validation.required.role'),
+            'role.in' => __('messages.validation.in.role'),
+            'license_attachment.required' => __('messages.validation.required.license_attachment'),
+            'license_attachment.file' => __('messages.validation.file.license_attachment'),
+            'license_attachment.mimes' => __('messages.validation.mimes.license_attachment'),
+            'license_attachment.max' => __('messages.validation.max.license_attachment'),
+            'commercial_register_attachment.required' => __('messages.validation.required.commercial_register_attachment'),
+            'commercial_register_attachment.file' => __('messages.validation.file.commercial_register_attachment'),
+            'commercial_register_attachment.mimes' => __('messages.validation.mimes.commercial_register_attachment'),
+            'commercial_register_attachment.max' => __('messages.validation.max.commercial_register_attachment'),
+            'field_id.required' => __('messages.validation.required.field_id'),
+            'field_id.exists' => __('messages.validation.exists.field_id'),
         ];
     }
 } 

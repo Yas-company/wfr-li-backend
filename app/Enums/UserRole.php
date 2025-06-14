@@ -7,6 +7,7 @@ enum UserRole: string
     case VISITOR = 'visitor';
     case ADMIN = 'admin';
     case BUYER = 'buyer';
+    case SUPPLIER = 'supplier';
 
     public function label(): string
     {
@@ -14,6 +15,7 @@ enum UserRole: string
             self::ADMIN => 'Admin',
             self::BUYER => 'Buyer',
             self::VISITOR => 'Visitor',
+            self::SUPPLIER => 'Supplier',
         };
     }
 
@@ -30,5 +32,10 @@ enum UserRole: string
     public function isAdmin(): bool
     {
         return $this === self::ADMIN;
+    }
+
+    public function isSupplier(): bool
+    {
+        return $this === self::SUPPLIER;
     }
 } 

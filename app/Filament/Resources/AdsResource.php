@@ -45,9 +45,9 @@ class AdsResource extends Resource
                             ->imageEditor() // Optional: Enable image cropping/editing
                             ->maxSize(2048) // Optional: Limit file size to 2MB
                             ->required(),
-                        Forms\Components\Select::make('supplier_id')
+                        Forms\Components\Select::make('user_id')
                             ->label('المورد')
-                            ->relationship('supplier', 'name')
+                            ->relationship('user', 'name')
                             ->required()
                             ->searchable()
                             ->preload(),

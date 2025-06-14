@@ -30,11 +30,10 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class);
     }
-    
-    public function suppliers()
+
+    public function user()
     {
-        return $this->belongsToMany(Supplier::class, 'product_supplier')
-            ->withTimestamps();
+        return $this->belongsTo(User::class);
     }
 
     public function getImageUrlAttribute()

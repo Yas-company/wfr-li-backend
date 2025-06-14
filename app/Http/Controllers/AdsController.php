@@ -13,7 +13,7 @@ class AdsController extends Controller
      */
     public function index()
     {
-        $ads = Ads::with('supplier')
+        $ads = Ads::with('user')
             ->where('is_active', true)
             ->latest()
             ->get();

@@ -22,7 +22,7 @@ class OrderController extends Controller
     public function checkout(Request $request): JsonResponse
     {
         $request->validate([
-            'supplier_id' => 'required|exists:suppliers,id',
+            'user_id' => 'required|exists:users,id',
             'shipping_address' => 'nullable|string',
             'shipping_latitude' => 'nullable|numeric',
             'shipping_longitude' => 'nullable|numeric',

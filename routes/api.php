@@ -3,13 +3,11 @@
 use App\Http\Controllers\AdsController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\Auth\BuyerAuthController;
-use App\Http\Controllers\Auth\SupplierAuthController;
 use App\Http\Controllers\OnboardingScreenController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\OrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\AuthController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -21,9 +19,12 @@ Route::get('/ads', [AdsController::class, 'index']);
 
 
 // Buyer Authentication Routes
-Route::prefix('buyer')->group(function () {
-    Route::post('/register', [BuyerAuthController::class, 'register']);
-    Route::post('/login', [BuyerAuthController::class, 'login']);
+Route::prefix('auth')->group(function () {
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('verify-otp', [AuthController::class, 'verifyOtp']);
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('reset-password', [AuthController::class, 'resetPassword']);
 
     // Protected Routes
     Route::middleware('auth:sanctum')->group(function () {
@@ -34,11 +35,10 @@ Route::prefix('buyer')->group(function () {
         Route::get('/products/{product}', [ProductController::class, 'show']);
         Route::get('/products/{product}/related', [ProductController::class, 'related']);
 
-
-        Route::post('/logout', [BuyerAuthController::class, 'logout']);
-        Route::get('/me', [BuyerAuthController::class, 'me']);
-        Route::post('/change-password', [BuyerAuthController::class, 'changePassword']);
-        Route::delete('/delete-account', [App\Http\Controllers\Auth\BuyerAuthController::class, 'destroy']);
+        Route::post('logout', [AuthController::class, 'logout']);
+        Route::get('me', [AuthController::class, 'me']);
+        Route::post('change-password', [AuthController::class, 'changePassword']);
+        Route::delete('delete-account', [AuthController::class, 'destroy']);
 
         // Cart Routes
         Route::get('/cart', [CartController::class, 'getCart']);
@@ -51,10 +51,6 @@ Route::prefix('buyer')->group(function () {
         Route::post('/favorites', [\App\Http\Controllers\FavoritesController::class, 'store']);
         Route::delete('/favorites/{product}', [\App\Http\Controllers\FavoritesController::class, 'destroy']);
 
-        // Supplier location routes
-        Route::post('/suppliers/nearest', [App\Http\Controllers\Api\SupplierController::class, 'nearest']);
-        Route::post('/suppliers/nearby', [App\Http\Controllers\Api\SupplierController::class, 'nearby']);
-
         // Order Routes
         Route::post('/orders/checkout', [App\Http\Controllers\Api\OrderController::class, 'checkout']);
         Route::get('/orders', [App\Http\Controllers\Api\BuyerController::class, 'orders']);
@@ -63,26 +59,16 @@ Route::prefix('buyer')->group(function () {
         // Payment routes
         Route::post('/orders/{order}/payment-status', [App\Http\Controllers\Api\OrderController::class, 'updatePaymentStatus']);
     });
-
-    // Password Reset Routes
-    Route::post('forgot-password', [BuyerAuthController::class, 'forgotPassword']);
-    Route::post('verify-otp', [BuyerAuthController::class, 'verifyOtp']);
-    Route::post('reset-password', [BuyerAuthController::class, 'resetPassword']);
 });
 
-// Supplier Authentication Routes
-Route::prefix('supplier')->group(function () {
-    Route::post('/login', [SupplierAuthController::class, 'login']);
-
-    // Protected Routes
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/logout', [SupplierAuthController::class, 'logout']);
-        Route::get('/me', [SupplierAuthController::class, 'me']);
-
-        // Supplier Orders
-        Route::get('/orders', [App\Http\Controllers\Api\SupplierController::class, 'orders']);
-        Route::get('/orders/{order}', [App\Http\Controllers\Api\SupplierController::class, 'show']);
-        Route::post('/orders/{order}/status', [App\Http\Controllers\Api\SupplierController::class, 'updateOrderStatus']);
-        Route::post('/orders/{order}/shipping-status', [App\Http\Controllers\Api\SupplierController::class, 'updateShippingStatus']);
-    });
-});
+// // Supplier Authentication Routes
+// Route::prefix('supplier')->group(function () {
+//     // Protected Routes
+//     Route::middleware('auth:sanctum')->group(function () {
+//         // Supplier Orders
+//         Route::get('/orders', [App\Http\Controllers\Api\SupplierController::class, 'orders']);
+//         Route::get('/orders/{order}', [App\Http\Controllers\Api\SupplierController::class, 'show']);
+//         Route::post('/orders/{order}/status', [App\Http\Controllers\Api\SupplierController::class, 'updateOrderStatus']);
+//         Route::post('/orders/{order}/shipping-status', [App\Http\Controllers\Api\SupplierController::class, 'updateShippingStatus']);
+//     });
+// });

@@ -3,62 +3,126 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\BuyerLoginRequest;
-use App\Http\Requests\Auth\BuyerRegisterRequest;
-use App\Services\Auth\BuyerAuthService;
-use App\Traits\ApiResponse;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\VerifyOtpRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\ChangePasswordRequest;
-use App\Services\OtpService;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
-use Illuminate\Http\Response;
 use App\Http\Resources\UserResource;
+use App\Models\User;
+use App\Services\OtpService;
+use App\Traits\ApiResponse;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use App\Enums\UserRole;
+use App\Enums\UserStatus;
 
-class BuyerAuthController extends Controller
+class AuthController extends Controller
 {
     use ApiResponse;
 
     public function __construct(
-        private readonly BuyerAuthService $authService,
         private readonly OtpService $otpService
     ) {}
 
-    /**
-     * Register a new buyer
-     *
-     * @param BuyerRegisterRequest $request
-     * @return JsonResponse
-     */
-    public function register(BuyerRegisterRequest $request): JsonResponse
+    public function register(RegisterRequest $request): JsonResponse
     {
         try {
-            $user = $this->authService->register($request->validated());
+            $data = $request->validated();
+            
+            // Handle file uploads for suppliers
+            if ($data['role'] === UserRole::SUPPLIER->value) {
+                if ($request->hasFile('license_attachment')) {
+                    $data['license_attachment'] = $request->file('license_attachment')
+                        ->store('suppliers/licenses', 'public');
+                }
+                
+                if ($request->hasFile('commercial_register_attachment')) {
+                    $data['commercial_register_attachment'] = $request->file('commercial_register_attachment')
+                        ->store('suppliers/commercial_registers', 'public');
+                }
+            }
+            
+            // Check if user exists (including soft-deleted)
+            $existingUser = User::withTrashed()
+                ->where('phone', $data['phone'])
+                ->first();
 
-            
-            // Generate and send OTP
-            $otp = $this->otpService->generateOtp($user->phone);
-            
-            // TODO: Send OTP via SMS service
-            // For testing, we'll just log it
-            Log::info('OTP generated for registration', [
-                'phone' => $user->phone,
-                'otp' => $otp
-            ]);
-            
+            if ($existingUser) {
+                if ($existingUser->is_verified && !$existingUser->trashed()) {
+                    throw ValidationException::withMessages([
+                        'phone' => [__('messages.phone_already_registered')],
+                    ]);
+                }
+
+                if ($existingUser->trashed()) {
+                    $existingUser->restore();
+                }
+
+                $existingUser->update([
+                    'name' => $data['name'],
+                    'address' => $data['address'],
+                    'latitude' => $data['latitude'],
+                    'longitude' => $data['longitude'],
+                    'business_name' => $data['business_name'],
+                    'email' => $data['email'] ?? null,
+                    'password' => Hash::make($data['password']),
+                    'role' => $data['role'],
+                    'is_verified' => false,
+                    'status' => $data['role'] === UserRole::SUPPLIER->value ? UserStatus::PENDING->value : UserStatus::APPROVED->value,
+                    'license_attachment' => $data['license_attachment'] ?? null,
+                    'commercial_register_attachment' => $data['commercial_register_attachment'] ?? null,
+                    'field_id' => $data['field_id'] ?? null,
+                ]);
+
+                $user = $existingUser;
+            } else {
+                $user = User::create([
+                    'name' => $data['name'],
+                    'phone' => $data['phone'],
+                    'country_code' => $data['country_code'],
+                    'address' => $data['address'],
+                    'latitude' => $data['latitude'],
+                    'longitude' => $data['longitude'],
+                    'business_name' => $data['business_name'],
+                    'email' => $data['email'] ?? null,
+                    'password' => Hash::make($data['password']),
+                    'role' => $data['role'],
+                    'status' => $data['role'] === UserRole::SUPPLIER->value ? UserStatus::PENDING->value : UserStatus::APPROVED->value,
+                    'license_attachment' => $data['license_attachment'] ?? null,
+                    'commercial_register_attachment' => $data['commercial_register_attachment'] ?? null,
+                    'field_id' => $data['field_id'] ?? null,
+                ]);
+            }
+
+            // For buyers, generate and send OTP
+            if ($user->isBuyer()) {
+                $otp = $this->otpService->generateOtp($user->phone);
+                
+                // TODO: Send OTP via SMS service
+                Log::info('OTP generated for registration', [
+                    'phone' => $user->phone,
+                    'otp' => $otp
+                ]);
+                
+                return $this->createdResponse([
+                    'user' => new UserResource($user),
+                    'message' => __('messages.otp_sent'),
+                    'requires_verification' => true
+                ], __('messages.registration_successful'));
+            }
+
+            // For suppliers, return success message
             return $this->createdResponse([
                 'user' => new UserResource($user),
-                'message' => __('messages.otp_sent'),
-                'requires_verification' => true
+                'message' => __('messages.registration_successful')
             ], __('messages.registration_successful'));
         } catch (\Exception $e) {
-            Log::error('Buyer registration failed', [
+            Log::error('Registration failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -67,9 +131,6 @@ class BuyerAuthController extends Controller
         }
     }
 
-    /**
-     * Verify OTP for registration or password reset
-     */
     public function verifyOtp(VerifyOtpRequest $request): JsonResponse
     {
         try {
@@ -81,21 +142,19 @@ class BuyerAuthController extends Controller
             if (!$isValid) {
                 return $this->errorResponse(
                     message: __('messages.invalid_otp'),
-                    statusCode: Response::HTTP_UNPROCESSABLE_ENTITY
+                    statusCode: 422
                 );
             }
 
-            // Check if this is a registration verification
             $user = User::where('phone', $request->validated('phone'))->first();
             if ($user && !$user->is_verified) {
                 $user->update(['is_verified' => true]);
                 return $this->successResponse([
                     'user' => new UserResource($user),
-                    'token' => $user->createToken('buyer-token')->plainTextToken
+                    'token' => $user->createToken('auth-token')->plainTextToken
                 ], __('messages.registration_verified'));
             }
 
-            // For password reset, just return success
             return $this->successResponse(
                 message: __('messages.otp_verified')
             );
@@ -111,29 +170,42 @@ class BuyerAuthController extends Controller
         }
     }
 
-    /**
-     * Login a buyer
-     *
-     * @param BuyerLoginRequest $request
-     * @return JsonResponse
-     */
-    public function login(BuyerLoginRequest $request): JsonResponse
+    public function login(LoginRequest $request): JsonResponse
     {
         try {
-            $user = $this->authService->login($request->validated());
-            
+            $data = $request->validated();
+            $user = User::where('phone', $data['phone'])->first();
+
+            if (!$user || !Hash::check($data['password'], $user->password)) {
+                throw ValidationException::withMessages([
+                    'phone' => [__('messages.invalid_credentials')],
+                ]);
+            }
+
+            if (!$user->is_verified) {
+                throw ValidationException::withMessages([
+                    'phone' => [__('messages.account_not_verified')],
+                ]);
+            }
+
+            if ($user->isSupplier() && !$user->isApproved()) {
+                throw ValidationException::withMessages([
+                    'phone' => [__('messages.account_pending_approval')],
+                ]);
+            }
+
             return $this->successResponse([
                 'user' => new UserResource($user),
-                'token' => $user->createToken('buyer-token')->plainTextToken
+                'token' => $user->createToken('auth-token')->plainTextToken
             ], __('messages.login_successful'));
         } catch (ValidationException $e) {
             return $this->errorResponse(
                 message: $e->getMessage(),
                 errors: $e->errors(),
-                statusCode: Response::HTTP_UNPROCESSABLE_ENTITY
+                statusCode: 422
             );
         } catch (\Exception $e) {
-            Log::error('Buyer login failed', [
+            Log::error('Login failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -142,20 +214,16 @@ class BuyerAuthController extends Controller
         }
     }
 
-    /**
-     * Logout the authenticated buyer
-     *
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function logout(Request $request): JsonResponse
     {
         try {
-            $this->authService->logout($request->user());
+            $request->user()->currentAccessToken()->delete();
             
-            return $this->successResponse(null, __('messages.logout_successful'));
+            return $this->successResponse(
+                message: __('messages.logout_successful')
+            );
         } catch (\Exception $e) {
-            Log::error('Buyer logout failed', [
+            Log::error('Logout failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -164,20 +232,14 @@ class BuyerAuthController extends Controller
         }
     }
 
-    /**
-     * Get the authenticated buyer's profile
-     *
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function me(Request $request): JsonResponse
     {
         try {
-            $user = $this->authService->getProfile($request->user());
-            
-            return $this->successResponse($user);
+            return $this->successResponse(
+                new UserResource($request->user())
+            );
         } catch (\Exception $e) {
-            Log::error('Failed to get buyer profile', [
+            Log::error('Failed to get user profile', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -186,9 +248,6 @@ class BuyerAuthController extends Controller
         }
     }
 
-    /**
-     * Change password when user knows their current password
-     */
     public function changePassword(ChangePasswordRequest $request): JsonResponse
     {
         try {
@@ -209,8 +268,8 @@ class BuyerAuthController extends Controller
                 message: __('messages.password_changed_successful')
             );
         } catch (\Exception $e) {
-            Log::error('Failed to change password: ' . $e->getMessage(), [
-                'user_id' => $request->user()->id,
+            Log::error('Failed to change password', [
+                'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
             
@@ -220,9 +279,6 @@ class BuyerAuthController extends Controller
         }
     }
 
-    /**
-     * Send OTP for password reset
-     */
     public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
     {
         try {
@@ -230,7 +286,6 @@ class BuyerAuthController extends Controller
             $otp = $this->otpService->generateOtp($phone);
 
             // TODO: Send OTP via SMS service
-            // For testing, we'll just log it
             Log::info('OTP generated for password reset', [
                 'phone' => $phone,
                 'otp' => $otp
@@ -252,33 +307,28 @@ class BuyerAuthController extends Controller
         }
     }
 
-    /**
-     * Reset password after OTP verification
-     */
     public function resetPassword(ResetPasswordRequest $request): JsonResponse
     {
         try {
             $data = $request->validated();
             $user = User::where('phone', $data['phone'])->first();
 
-            // Check if OTP is verified
             if (!$this->otpService->isVerified($data['phone'])) {
                 return $this->errorResponse(
                     message: __('messages.invalid_otp'),
-                    statusCode: Response::HTTP_UNPROCESSABLE_ENTITY
+                    statusCode: 422
                 );
             }
 
-            // Update password
-            $user->password = Hash::make($data['password']);
-            $user->save();
+            $user->update([
+                'password' => Hash::make($data['password'])
+            ]);
 
-            // Clear OTP and verification status
             $this->otpService->clearVerification($data['phone']);
 
             return $this->successResponse([
                 'user' => new UserResource($user),
-                'token' => $user->createToken('buyer-token')->plainTextToken
+                'token' => $user->createToken('auth-token')->plainTextToken
             ], __('messages.password_reset_successful'));
         } catch (\Exception $e) {
             Log::error('Password reset failed', [
@@ -292,23 +342,16 @@ class BuyerAuthController extends Controller
         }
     }
 
-    /**
-     * Delete the authenticated buyer's account
-     *
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function destroy(Request $request): JsonResponse
     {
         try {
-            $user = $request->user();
-            $user->delete();
+            $request->user()->delete();
 
             return $this->successResponse(
                 message: __('messages.account_deleted_successfully')
             );
         } catch (\Exception $e) {
-            \Log::error('Failed to delete buyer account', [
+            Log::error('Failed to delete account', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -318,4 +361,4 @@ class BuyerAuthController extends Controller
             );
         }
     }
-}
+} 
