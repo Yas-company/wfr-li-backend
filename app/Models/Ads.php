@@ -13,7 +13,7 @@ class Ads extends Model
     use HasFactory;
     use HasTranslations;
 
-    public $translatable = ['title'];
+    public $translatable = ['title', 'description'];
 
     protected $casts = [
         'title' => 'array',
