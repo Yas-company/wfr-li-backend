@@ -108,4 +108,8 @@ return [
     // Account Deletion Messages
     'account_deleted_successfully' => 'Account deleted successfully',
     'account_delete_failed' => 'Failed to delete account',
+
+    // Supplier Review Messages
+    'supplier_pending_review' => 'Your supplier account is currently under review. Please wait for admin approval.',
+    'supplier_registration_pending' => 'Your supplier account is pending admin approval.',
 ]; 

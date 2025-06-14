@@ -21,6 +21,7 @@ class RegisterRequest extends FormRequest
                 'required', 
                 'string',
                 function ($attribute, $value, $fail) {
+                    $role = $this->validated('role');
                     $exists = \App\Models\User::where('phone', $value)
                         ->where('is_verified', true)
                         ->whereNull('deleted_at')
@@ -29,6 +30,18 @@ class RegisterRequest extends FormRequest
                     if ($exists) {
                         $fail(__('messages.validation.unique.phone'));
                     }
+
+                    // For buyers, also check unverified accounts
+                    if ($role === UserRole::BUYER->value) {
+                        $unverifiedExists = \App\Models\User::where('phone', $value)
+                            ->where('is_verified', false)
+                            ->whereNull('deleted_at')
+                            ->exists();
+                        
+                        if ($unverifiedExists) {
+                            $fail(__('messages.validation.unique.phone'));
+                        }
+                    }
                 }
             ],
             'country_code' => ['required'],
@@ -36,7 +49,35 @@ class RegisterRequest extends FormRequest
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
             'business_name' => ['required', 'string'],
-            'email' => ['nullable', 'string', 'email', 'max:255', 'unique:users,email,NULL,id,deleted_at,NULL'],
+            'email' => [
+                'nullable', 
+                'string', 
+                'email', 
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    $role = $this->validated('role');
+                    if ($value && $role === UserRole::BUYER->value) {
+                        $exists = \App\Models\User::where('email', $value)
+                            ->where('is_verified', true)
+                            ->whereNull('deleted_at')
+                            ->exists();
+                        
+                        if ($exists) {
+                            $fail(__('messages.validation.unique.email'));
+                        }
+
+                        // Also check unverified accounts for buyers
+                        $unverifiedExists = \App\Models\User::where('email', $value)
+                            ->where('is_verified', false)
+                            ->whereNull('deleted_at')
+                            ->exists();
+                        
+                        if ($unverifiedExists) {
+                            $fail(__('messages.validation.unique.email'));
+                        }
+                    }
+                }
+            ],
             'password' => ['required', 'confirmed', Password::min(8)
                 ->letters()
                 ->mixedCase()

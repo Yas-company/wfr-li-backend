@@ -108,4 +108,8 @@ return [
     // Account Deletion Messages
     'account_deleted_successfully' => 'تم حذف الحساب بنجاح',
     'account_delete_failed' => 'فشل في حذف الحساب',
+
+    // Supplier Pending Review Message
+    'supplier_pending_review' => 'حساب المورد الخاص بك قيد المراجعة حالياً. يرجى الانتظار حتى تتم الموافقة من قبل المسؤول.',
+    'supplier_registration_pending' => 'حساب المورد الخاص بك قيد انتظار موافقة المسؤول.',
 ]; 

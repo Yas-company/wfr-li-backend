@@ -53,6 +53,14 @@ class AuthController extends Controller
                 ->first();
 
             if ($existingUser) {
+                // Check if user is a pending supplier
+                if ($existingUser->isSupplier() && $existingUser->status === UserStatus::PENDING->value) {
+                    return $this->errorResponse(
+                        message: __('messages.supplier_pending_review'),
+                        statusCode: 422
+                    );
+                }
+
                 if ($existingUser->is_verified && !$existingUser->trashed()) {
                     throw ValidationException::withMessages([
                         'phone' => [__('messages.phone_already_registered')],
@@ -113,14 +121,14 @@ class AuthController extends Controller
                     'user' => new UserResource($user),
                     'message' => __('messages.otp_sent'),
                     'requires_verification' => true
-                ], __('messages.registration_successful'));
+                ], __('messages.otp_sent'));
             }
 
             // For suppliers, return success message
             return $this->createdResponse([
                 'user' => new UserResource($user),
-                'message' => __('messages.registration_successful')
-            ], __('messages.registration_successful'));
+                'message' => __('messages.supplier_registration_pending')
+            ], __('messages.supplier_registration_pending'));
         } catch (\Exception $e) {
             Log::error('Registration failed', [
                 'error' => $e->getMessage(),
