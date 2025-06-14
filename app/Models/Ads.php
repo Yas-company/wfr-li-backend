@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Translatable\HasTranslations;
+use Illuminate\Support\Facades\Storage;
 
 
 class Ads extends Model
@@ -32,8 +33,7 @@ class Ads extends Model
         if (!$this->image) {
             return asset('images/logo.jpeg');
         }
-
-        return asset('storage/' . $this->image);
+        return Storage::disk('public')->url($this->image);
     }
 
 }
