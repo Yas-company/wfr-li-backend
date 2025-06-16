@@ -26,6 +26,7 @@ Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('verify-otp', [AuthController::class, 'verifyOtp']);
     Route::post('login', [AuthController::class, 'login']);
+    Route::post('biometric-login', [AuthController::class, 'biometricLogin']);
     Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('reset-password', [AuthController::class, 'resetPassword']);
 

@@ -369,4 +369,59 @@ class AuthController extends Controller
             );
         }
     }
+
+    public function biometricLogin(Request $request): JsonResponse
+    {
+        try {
+            $token = $request->input('token');
+            
+            if (!$token) {
+                return $this->errorResponse(
+                    message: __('messages.invalid_token'),
+                    statusCode: 422
+                );
+            }
+
+            // Find user by token
+            $user = User::whereHas('tokens', function ($query) use ($token) {
+                $query->where('token', hash('sha256', $token));
+            })->first();
+
+            if (!$user) {
+                return $this->errorResponse(
+                    message: __('messages.invalid_token'),
+                    statusCode: 422
+                );
+            }
+
+            if (!$user->is_verified) {
+                return $this->errorResponse(
+                    message: __('messages.account_not_verified'),
+                    statusCode: 422
+                );
+            }
+
+            if ($user->isSupplier() && !$user->isApproved()) {
+                return $this->errorResponse(
+                    message: __('messages.account_pending_approval'),
+                    statusCode: 422
+                );
+            }
+
+            // Create new token
+            $newToken = $user->createToken('auth-token')->plainTextToken;
+
+            return $this->successResponse([
+                'user' => new UserResource($user),
+                'token' => $newToken
+            ], __('messages.login_successful'));
+        } catch (\Exception $e) {
+            Log::error('Biometric login failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return $this->serverErrorResponse(__('messages.login_failed'));
+        }
+    }
 } 
