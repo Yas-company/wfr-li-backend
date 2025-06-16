@@ -8,6 +8,7 @@ use App\Http\Controllers\CartController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\FieldController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -16,6 +17,8 @@ Route::get('/user', function (Request $request) {
 Route::get('/onboarding-screens', [OnboardingScreenController::class, 'index']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/ads', [AdsController::class, 'index']);
+Route::get('/fields', [FieldController::class, 'index']);
+Route::get('/fields/{field}', [FieldController::class, 'show']);
 
 
 // Buyer Authentication Routes

@@ -18,8 +18,23 @@ class Field extends Model
 
     public $translatable = ['name'];
 
+    protected $casts = [
+        'name' => 'array',
+    ];
+
     public function users()
     {
         return $this->hasMany(User::class);
     }
+
+
+    public function getImageUrlAttribute()
+    {
+        if (!$this->image) {
+            return asset('images/logo.jpeg');
+        }
+
+        return asset('storage/' . $this->image);
+    }
+
 } 
