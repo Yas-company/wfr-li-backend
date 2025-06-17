@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\FieldController;
+use App\Http\Controllers\UserController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -19,7 +20,7 @@ Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/ads', [AdsController::class, 'index']);
 Route::get('/fields', [FieldController::class, 'index']);
 Route::get('/fields/{field}', [FieldController::class, 'show']);
-
+Route::get('/suppliers', [UserController::class, 'suppliers']);
 
 // Buyer Authentication Routes
 Route::prefix('auth')->group(function () {
