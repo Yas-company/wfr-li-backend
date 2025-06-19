@@ -29,6 +29,7 @@ class UserResource extends JsonResource
             'commercial_register_attachment' => $this->commercial_register_attachment,
             'status' => $this->status,
             'field_id' => $this->field_id,
+            'categories' => CategoryResource::collection($this->whenLoaded('categories')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

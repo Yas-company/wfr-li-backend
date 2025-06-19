@@ -16,11 +16,9 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/onboarding-screens', [OnboardingScreenController::class, 'index']);
-Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/ads', [AdsController::class, 'index']);
 Route::get('/fields', [FieldController::class, 'index']);
 Route::get('/fields/{field}', [FieldController::class, 'show']);
-Route::get('/suppliers', [UserController::class, 'suppliers']);
 
 // Buyer Authentication Routes
 Route::prefix('auth')->group(function () {
@@ -33,17 +31,27 @@ Route::prefix('auth')->group(function () {
 
     // Protected Routes
     Route::middleware('auth:sanctum')->group(function () {
-        //temp routes
-        Route::get('/products', [ProductController::class, 'index']);
-        Route::get('/categories/{category}', [CategoryController::class, 'show']);
-        Route::get('/products/filter', [ProductController::class, 'filter']);
-        Route::get('/products/{product}', [ProductController::class, 'show']);
-        Route::get('/products/{product}/related', [ProductController::class, 'related']);
-
         Route::post('logout', [AuthController::class, 'logout']);
         Route::get('me', [AuthController::class, 'me']);
         Route::post('change-password', [AuthController::class, 'changePassword']);
         Route::delete('delete-account', [AuthController::class, 'destroy']);
+
+        //suppliers
+        Route::get('/suppliers', [UserController::class, 'suppliers']);
+        Route::get('/suppliers/{user}', [UserController::class, 'show']);
+
+        //categories
+        Route::post('/categories', [CategoryController::class, 'store']);
+
+
+
+
+        //temp routes
+        Route::get('/products', [ProductController::class, 'index']);
+        Route::get('/products/filter', [ProductController::class, 'filter']);
+        Route::get('/products/{product}', [ProductController::class, 'show']);
+        Route::get('/products/{product}/related', [ProductController::class, 'related']);
+
 
         // Cart Routes
         Route::get('/cart', [CartController::class, 'getCart']);
@@ -65,15 +73,3 @@ Route::prefix('auth')->group(function () {
         Route::post('/orders/{order}/payment-status', [App\Http\Controllers\Api\OrderController::class, 'updatePaymentStatus']);
     });
 });
-
-// // Supplier Authentication Routes
-// Route::prefix('supplier')->group(function () {
-//     // Protected Routes
-//     Route::middleware('auth:sanctum')->group(function () {
-//         // Supplier Orders
-//         Route::get('/orders', [App\Http\Controllers\Api\SupplierController::class, 'orders']);
-//         Route::get('/orders/{order}', [App\Http\Controllers\Api\SupplierController::class, 'show']);
-//         Route::post('/orders/{order}/status', [App\Http\Controllers\Api\SupplierController::class, 'updateOrderStatus']);
-//         Route::post('/orders/{order}/shipping-status', [App\Http\Controllers\Api\SupplierController::class, 'updateShippingStatus']);
-//     });
-// });

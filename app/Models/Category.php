@@ -8,36 +8,14 @@ use Spatie\Translatable\HasTranslations;
 
 class Category extends Model
 {
-    use HasTranslations , HasFactory;
+    use HasTranslations, HasFactory;
 
     protected $guarded = [];
 
-    public $translatable = ['name' , 'description'];
+    public $translatable = ['name'];
 
-    protected $casts = [
-        'is_active' => 'boolean',
-    ];
-
-    protected $attributes = [
-        'is_active' => false,
-    ];
-
-    public function products()
+    public function supplier()
     {
-        return $this->hasMany(Product::class);
-    }
-
-    public function scopeActive($query)
-    {
-        return $query->where('is_active', true);
-    }
-
-    public function getImageUrlAttribute()
-    {
-        if (!$this->image) {
-            return asset('images/logo.jpeg');
-        }
-
-        return asset('storage/' . $this->image);
+        return $this->belongsTo(User::class, 'supplier_id');
     }
 }

@@ -24,16 +24,6 @@ class StatsOverview extends BaseWidget
                     'class' => 'cursor-pointer hover:bg-warning-50',
                 ]),
 
-            Stat::make('إجمالي التصنيفات الفعالة', Category::active()->count())
-                ->description('عدد التصنيفات الفعالة')
-                ->descriptionIcon('heroicon-m-tag')
-                ->color('success')
-                ->url(route('filament.admin.resources.categories.index', ['tableFilters[is_active]' => 'true']))
-                ->icon('heroicon-m-check-circle')
-                ->extraAttributes([
-                    'class' => 'cursor-pointer hover:bg-success-50',
-                ]),
-
             Stat::make('إجمالي المنتجات', Product::count())
                 ->description('عدد المنتجات')
                 ->descriptionIcon('heroicon-m-shopping-bag')

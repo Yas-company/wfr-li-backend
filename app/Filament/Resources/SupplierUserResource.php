@@ -84,11 +84,7 @@ class SupplierUserResource extends Resource
                 Tables\Actions\ViewAction::make()
                     ->label('عرض بيانات المورد')
                     ->icon('heroicon-o-eye')
-                    ->color('primary')
-                    ->modalContent(fn (User $record): View => view(
-                        'filament.resources.supplier-user-resource.pages.view-supplier',
-                        ['supplier' => $record]
-                    )),
+                    ->color('primary'),
                 Tables\Actions\Action::make('approve')
                     ->label('قبول')
                     ->icon('heroicon-o-check')
@@ -120,6 +116,7 @@ class SupplierUserResource extends Resource
     {
         return [
             'index' => Pages\ListSupplierUsers::route('/'),
+            'view' => Pages\ViewSupplierUser::route('/{record}'),
         ];
     }
 } 

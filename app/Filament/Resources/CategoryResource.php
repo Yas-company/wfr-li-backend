@@ -35,19 +35,6 @@ class CategoryResource extends Resource
                 Forms\Components\TextInput::make('name.ar')
                     ->label('الاسم بالعربية')
                     ->required(),
-                Forms\Components\FileUpload::make('image')
-                    ->label('الصورة')
-                    ->image()
-                    ->disk('public') // Store in storage/app/public
-                    ->directory('categories') // Subdirectory for organization
-                    ->visibility('public')
-                    ->imageEditor() // Optional: Enable image cropping/editing
-                    ->maxSize(2048) // Optional: Limit file size to 2MB
-                    ->required(),
-                Forms\Components\Toggle::make('is_active')
-                    ->label('الحالة')
-                    ->default(false),
-
             ]);
     }
 
@@ -65,19 +52,10 @@ class CategoryResource extends Resource
                 Tables\Columns\TextColumn::make('name_ar')
                     ->label('الاسم بالعربية')
                     ->getStateUsing(fn($record) => $record->getTranslation('name', 'ar'))
-                    ->searchable(query: fn($query, $search) => $query->where('name->ar', 'like', "%{$search}%")),
-                Tables\Columns\ImageColumn::make('image_url')
-                    ->label('الصورة'),
-                Tables\Columns\ToggleColumn::make('is_active')
-                    ->label('الحالة'),
+                    ->searchable(query: fn($query, $search) => $query->where('name->ar', 'like', "%{$search}%"))
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('is_active')
-                    ->label('الحالة')
-                    ->options([
-                        true => 'مفعل',
-                        false => 'غير مفعل',
-                    ]),
+              //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

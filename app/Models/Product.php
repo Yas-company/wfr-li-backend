@@ -24,17 +24,7 @@ class Product extends Model
         'description' => 'array'
     ];
 
-    protected $with = ['category'];
-
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+    protected $with = ['category', 'supplier'];
 
     public function getImageUrlAttribute()
     {
@@ -104,5 +94,15 @@ class Product extends Model
         }
         $cartItem = $user->cart->items->where('product_id', $this->id)->first();
         return $cartItem ? $cartItem->quantity : 0;
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(User::class, 'supplier_id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

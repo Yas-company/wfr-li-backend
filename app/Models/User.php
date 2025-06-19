@@ -128,4 +128,9 @@ class User extends Authenticatable
         return $this->belongsToMany(Product::class, 'product_supplier')
             ->withTimestamps();
     }
+
+    public function categories()
+    {
+        return $this->hasMany(Category::class, 'supplier_id');
+    }
 }
