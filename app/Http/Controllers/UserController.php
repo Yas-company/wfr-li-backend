@@ -7,7 +7,6 @@ use App\Http\Resources\UserResource;
 use App\Traits\ApiResponse;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
-use App\Models\Category;
 use App\Models\User;
 
 class UserController extends Controller
