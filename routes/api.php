@@ -44,32 +44,9 @@ Route::prefix('auth')->group(function () {
         Route::post('/categories', [CategoryController::class, 'store']);
 
 
-
-
-        //temp routes
-        Route::get('/products', [ProductController::class, 'index']);
-        Route::get('/products/filter', [ProductController::class, 'filter']);
-        Route::get('/products/{product}', [ProductController::class, 'show']);
-        Route::get('/products/{product}/related', [ProductController::class, 'related']);
-
-
-        // Cart Routes
-        Route::get('/cart', [CartController::class, 'getCart']);
-        Route::post('/cart/add', [CartController::class, 'addToCart']);
-        Route::delete('/cart/items/{cartItem}', [CartController::class, 'removeFromCart']);
-        Route::patch('/cart/items/{cartItem}/quantity', [CartController::class, 'updateQuantity']);
-
         // Favorites Routes
         Route::get('/favorites', [\App\Http\Controllers\FavoritesController::class, 'index']);
         Route::post('/favorites', [\App\Http\Controllers\FavoritesController::class, 'store']);
         Route::delete('/favorites/{product}', [\App\Http\Controllers\FavoritesController::class, 'destroy']);
-
-        // Order Routes
-        Route::post('/orders/checkout', [App\Http\Controllers\Api\OrderController::class, 'checkout']);
-        Route::get('/orders', [App\Http\Controllers\Api\BuyerController::class, 'orders']);
-        Route::get('/orders/{order}', [App\Http\Controllers\Api\BuyerController::class, 'show']);
-
-        // Payment routes
-        Route::post('/orders/{order}/payment-status', [App\Http\Controllers\Api\OrderController::class, 'updatePaymentStatus']);
     });
 });
