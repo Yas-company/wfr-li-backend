@@ -113,11 +113,6 @@ class User extends Authenticatable
         return $this->belongsTo(Field::class);
     }
 
-    public function cart()
-    {
-        return $this->hasOne(Cart::class);
-    }
-
     public function favoriteProducts()
     {
         return $this->belongsToMany(Product::class, 'favorites')->withTimestamps();

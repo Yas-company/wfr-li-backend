@@ -85,17 +85,7 @@ class Product extends Model
             ->limit($limit)
             ->get();
     }
-
-    public function getCartQuantityAttribute()
-    {
-        $user = Auth::user();
-        if (!$user || !$user->cart) {
-            return 0;
-        }
-        $cartItem = $user->cart->items->where('product_id', $this->id)->first();
-        return $cartItem ? $cartItem->quantity : 0;
-    }
-
+    
     public function supplier()
     {
         return $this->belongsTo(User::class, 'supplier_id');
