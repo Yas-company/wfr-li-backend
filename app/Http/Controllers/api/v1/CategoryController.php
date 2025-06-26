@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api\v1;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use App\Traits\ApiResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -22,7 +22,7 @@ class CategoryController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             if (!$this->canManageCategories($user)) {
                 return $this->errorResponse('Only approved suppliers can view categories.', 403);
             }
@@ -32,7 +32,7 @@ class CategoryController extends Controller
                 ->get();
 
             return $this->successResponse(
-                CategoryResource::collection($categories), 
+                CategoryResource::collection($categories),
                 'Categories retrieved successfully'
             );
         } catch (\Exception $e) {
@@ -47,7 +47,7 @@ class CategoryController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             if (!$this->canManageCategories($user)) {
                 return $this->errorResponse('Only approved suppliers can view categories.', 403);
             }
@@ -57,7 +57,7 @@ class CategoryController extends Controller
             }
 
             return $this->successResponse(
-                new CategoryResource($category), 
+                new CategoryResource($category),
                 'Category retrieved successfully'
             );
         } catch (\Exception $e) {
@@ -72,17 +72,17 @@ class CategoryController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             if (!$this->canManageCategories($user)) {
                 return $this->errorResponse('Only approved suppliers can add categories.', 403);
             }
 
             $validated = $request->validated();
-            
+
             $created = [];
-            
+
             DB::beginTransaction();
-            
+
             try {
                 foreach ($validated['categories'] as $catData) {
                     $created[] = Category::create([
@@ -90,11 +90,11 @@ class CategoryController extends Controller
                         'supplier_id' => $user->id,
                     ]);
                 }
-                
+
                 DB::commit();
-                
+
                 return $this->successResponse(
-                    CategoryResource::collection($created), 
+                    CategoryResource::collection($created),
                     'Categories created successfully'
                 );
             } catch (\Exception $e) {
@@ -113,7 +113,7 @@ class CategoryController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             if (!$this->canManageCategories($user)) {
                 return $this->errorResponse('Only approved suppliers can edit categories.', 403);
             }
@@ -123,13 +123,13 @@ class CategoryController extends Controller
             }
 
             $validated = $request->validated();
-            
+
             $category->update([
                 'name' => $validated['name'],
             ]);
 
             return $this->successResponse(
-                new CategoryResource($category), 
+                new CategoryResource($category),
                 'Category updated successfully'
             );
         } catch (\Exception $e) {
@@ -144,7 +144,7 @@ class CategoryController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             if (!$this->canManageCategories($user)) {
                 return $this->errorResponse('Only approved suppliers can delete categories.', 403);
             }
@@ -156,7 +156,7 @@ class CategoryController extends Controller
             // Check if category has associated products
             if ($category->products()->exists()) {
                 return $this->errorResponse(
-                    'Cannot delete category. It has associated products.', 
+                    'Cannot delete category. It has associated products.',
                     422
                 );
             }
