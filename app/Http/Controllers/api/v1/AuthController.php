@@ -1,14 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\api\v1;
 
+use App\Enums\UserRole;
+use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\ChangePasswordRequest;
+use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
-use App\Http\Requests\Auth\ForgotPasswordRequest;
-use App\Http\Requests\Auth\VerifyOtpRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
-use App\Http\Requests\Auth\ChangePasswordRequest;
+use App\Http\Requests\Auth\VerifyOtpRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\OtpService;
@@ -18,8 +20,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
-use App\Enums\UserRole;
-use App\Enums\UserStatus;
 
 class AuthController extends Controller
 {
@@ -33,20 +33,20 @@ class AuthController extends Controller
     {
         try {
             $data = $request->validated();
-            
+
             // Handle file uploads for suppliers
             if ($data['role'] === UserRole::SUPPLIER->value) {
                 if ($request->hasFile('license_attachment')) {
                     $data['license_attachment'] = $request->file('license_attachment')
                         ->store('suppliers/licenses', 'public');
                 }
-                
+
                 if ($request->hasFile('commercial_register_attachment')) {
                     $data['commercial_register_attachment'] = $request->file('commercial_register_attachment')
                         ->store('suppliers/commercial_registers', 'public');
                 }
             }
-            
+
             // Check if user exists (including soft-deleted)
             $existingUser = User::withTrashed()
                 ->where('phone', $data['phone'])
@@ -110,13 +110,13 @@ class AuthController extends Controller
             // For buyers, generate and send OTP
             if ($user->isBuyer()) {
                 $otp = $this->otpService->generateOtp($user->phone);
-                
+
                 // TODO: Send OTP via SMS service
                 Log::info('OTP generated for registration', [
                     'phone' => $user->phone,
                     'otp' => $otp
                 ]);
-                
+
                 return $this->createdResponse([
                     'user' => new UserResource($user),
                     'message' => __('messages.otp_sent'),
@@ -226,7 +226,7 @@ class AuthController extends Controller
     {
         try {
             $request->user()->currentAccessToken()->delete();
-            
+
             return $this->successResponse(
                 message: __('messages.logout_successful')
             );
@@ -260,18 +260,18 @@ class AuthController extends Controller
     {
         try {
             $user = $request->user();
-            
+
             if (!Hash::check($request->validated('current_password'), $user->password)) {
                 return $this->errorResponse(
                     message: __('messages.invalid_current_password'),
                     statusCode: 422
                 );
             }
-            
+
             $user->update([
                 'password' => Hash::make($request->validated('password'))
             ]);
-            
+
             return $this->successResponse(
                 message: __('messages.password_changed_successful')
             );
@@ -280,7 +280,7 @@ class AuthController extends Controller
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return $this->errorResponse(
                 message: __('messages.password_change_failed')
             );
@@ -374,7 +374,7 @@ class AuthController extends Controller
     {
         try {
             $token = $request->input('token');
-            
+
             if (!$token) {
                 return $this->errorResponse(
                     message: __('messages.invalid_token'),
@@ -424,4 +424,4 @@ class AuthController extends Controller
             return $this->serverErrorResponse(__('messages.login_failed'));
         }
     }
-} 
+}

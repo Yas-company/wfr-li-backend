@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api\v1\lookup;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AdsResource;

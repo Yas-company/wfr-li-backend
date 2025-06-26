@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api\v1\lookup;
 
-use App\Models\OnboardingScreen;
-use Illuminate\Http\JsonResponse;
-use App\Traits\ApiResponse;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\OnboardingScreenResource;
+use App\Models\OnboardingScreen;
+use App\Traits\ApiResponse;
+use Illuminate\Http\JsonResponse;
 
 class OnboardingScreenController extends Controller
 {

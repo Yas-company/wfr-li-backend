@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api\v1;
 
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use App\Http\Resources\ProductResource;
 
 class FavoritesController extends Controller
 {
@@ -29,4 +30,4 @@ class FavoritesController extends Controller
         $user->favoriteProducts()->detach($product->id);
         return response()->json(['message' => __('messages.removed_from_favorites')]);
     }
-} 
+}

@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api\v1;
 
 
-use App\Http\Resources\UserResource;
-use App\Traits\ApiResponse;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Traits\ApiResponse;
 
 class UserController extends Controller
 {
