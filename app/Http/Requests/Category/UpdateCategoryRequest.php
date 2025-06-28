@@ -25,6 +25,7 @@ class UpdateCategoryRequest extends FormRequest
             'name' => 'required|array',
             'name.ar' => 'required|string|max:255',
             'name.en' => 'required|string|max:255',
+            'field_id' => 'nullable|exists:fields,id',
         ];
     }
 
