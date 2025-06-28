@@ -17,15 +17,15 @@ class StoreCategoryRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * 
      */
     public function rules(): array
     {
         return [
-            'categories' => 'required|array|min:1|max:10',
-            'categories.*.name' => 'required|array',
-            'categories.*.name.ar' => 'required|string|max:255',
-            'categories.*.name.en' => 'required|string|max:255',
+            'name' => 'required|array',
+            'name.ar' => 'required|string|max:255',
+            'name.en' => 'required|string|max:255',
+            'field_id' => 'required|exists:fields,id',
         ];
     }
 
@@ -37,14 +37,11 @@ class StoreCategoryRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'categories.required' => 'Categories data is required.',
-            'categories.min' => 'At least one category is required.',
-            'categories.max' => 'Maximum 10 categories can be created at once.',
-            'categories.*.name.required' => 'Category name is required.',
-            'categories.*.name.ar.required' => 'Arabic name is required.',
-            'categories.*.name.en.required' => 'English name is required.',
-            'categories.*.name.ar.max' => 'Arabic name cannot exceed 255 characters.',
-            'categories.*.name.en.max' => 'English name cannot exceed 255 characters.',
+            'name.required' => 'Category name is required.',
+            'name.ar.required' => 'Arabic name is required.',
+            'name.en.required' => 'English name is required.',
+            'name.ar.max' => 'Arabic name cannot exceed 255 characters.',
+            'name.en.max' => 'English name cannot exceed 255 characters.',
         ];
     }
 } 
