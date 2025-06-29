@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace App\Http\Services;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class OtpService
 {
@@ -16,15 +15,15 @@ class OtpService
     {
         // For testing, always return the fixed OTP
         $otp = self::TEST_OTP;
-        
+
         $key = $this->getOtpKey($phone);
-        
+
         // Store in cache with file driver
         Cache::store('file')->put($key, $otp, now()->addMinutes(self::OTP_EXPIRY_MINUTES));
-        
+
         // Verify the OTP was stored
         $storedOtp = Cache::store('file')->get($key);
-        
+
         Log::info('OTP generation attempt', [
             'phone' => $phone,
             'otp' => $otp,
@@ -48,7 +47,7 @@ class OtpService
     {
         $key = $this->getOtpKey($phone);
         $cachedOtp = Cache::store('file')->get($key);
-        
+
         Log::info('OTP verification attempt', [
             'phone' => $phone,
             'provided_otp' => $otp,
@@ -56,7 +55,7 @@ class OtpService
             'key' => $key,
             'cache_driver' => config('cache.default')
         ]);
-        
+
         if (!$cachedOtp) {
             Log::warning('No OTP found in cache', [
                 'phone' => $phone,
@@ -70,7 +69,7 @@ class OtpService
             // Instead of removing the OTP, store a verification status
             $verificationKey = $this->getVerificationKey($phone);
             Cache::store('file')->put($verificationKey, true, now()->addMinutes(self::OTP_EXPIRY_MINUTES));
-            
+
             Log::info('OTP verified successfully', [
                 'phone' => $phone,
                 'key' => $key,
@@ -92,7 +91,7 @@ class OtpService
     {
         $verificationKey = $this->getVerificationKey($phone);
         $isVerified = Cache::store('file')->get($verificationKey, false);
-        
+
         Log::info('Checking verification status', [
             'phone' => $phone,
             'verification_key' => $verificationKey,
@@ -101,7 +100,7 @@ class OtpService
             'cache_path' => storage_path('framework/cache/data'),
             'all_cache_keys' => Cache::store('file')->get('*')
         ]);
-        
+
         if (!$isVerified) {
             Log::warning('Phone number not verified', [
                 'phone' => $phone,
@@ -109,7 +108,7 @@ class OtpService
                 'cache_driver' => config('cache.default')
             ]);
         }
-        
+
         return $isVerified;
     }
 
@@ -117,10 +116,10 @@ class OtpService
     {
         $key = $this->getOtpKey($phone);
         $verificationKey = $this->getVerificationKey($phone);
-        
+
         Cache::store('file')->forget($key);
         Cache::store('file')->forget($verificationKey);
-        
+
         Log::info('Cleared OTP and verification', [
             'phone' => $phone,
             'key' => $key,
@@ -137,4 +136,4 @@ class OtpService
     {
         return 'verified_' . $phone;
     }
-} 
+}

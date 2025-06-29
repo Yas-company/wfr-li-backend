@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\ProductStatus;
+use App\Enums\UnitType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +23,9 @@ class Product extends Model
         'price' => 'decimal:2',
         'stock_qty' => 'integer',
         'price_before_discount' => 'decimal:2',
-        'description' => 'array'
+        'description' => 'array',
+        'unit_type' => UnitType::class,
+        'status' => ProductStatus::class,
     ];
 
     protected $with = ['category', 'supplier'];
@@ -85,7 +89,7 @@ class Product extends Model
             ->limit($limit)
             ->get();
     }
-    
+
     public function supplier()
     {
         return $this->belongsTo(User::class, 'supplier_id');
