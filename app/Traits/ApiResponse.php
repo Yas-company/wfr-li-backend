@@ -148,6 +148,12 @@ trait ApiResponse
                     'last_page'    => $paginator->lastPage(),
                 ],
             ],
+            'links' => [
+                'first' => $paginator->url(1),
+                'last' => $paginator->url($paginator->lastPage()),
+                'next' => $paginator->nextPageUrl(),
+                'prev' => $paginator->previousPageUrl(),
+            ],
         ], $statusCode);
     }
 }
