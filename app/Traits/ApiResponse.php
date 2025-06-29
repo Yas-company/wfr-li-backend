@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Pagination\AbstractPaginator;
 use Symfony\Component\HttpFoundation\Response;
 
 trait ApiResponse
@@ -132,4 +133,21 @@ trait ApiResponse
     ): JsonResponse {
         return $this->errorResponse($message ?? __('messages.server_error'), null, Response::HTTP_INTERNAL_SERVER_ERROR);
     }
-} 
+
+    public function paginatedResponse(AbstractPaginator $paginator, $resourceCollection, ?string $message = null, int $statusCode = Response::HTTP_OK): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'message' => $message ?? __('messages.success'),
+            'data' => [
+                'products' => $resourceCollection,
+                'pagination' => [
+                    'current_page' => $paginator->currentPage(),
+                    'per_page'     => $paginator->perPage(),
+                    'total'        => $paginator->total(),
+                    'last_page'    => $paginator->lastPage(),
+                ],
+            ],
+        ], $statusCode);
+    }
+}

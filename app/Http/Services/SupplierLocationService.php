@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Http\Services;
 
 use App\Models\Supplier;
 use App\Models\User;
@@ -20,9 +20,9 @@ class SupplierLocationService
         $a = sin($latDelta / 2) * sin($latDelta / 2) +
             cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
             sin($lonDelta / 2) * sin($lonDelta / 2);
-        
+
         $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-        
+
         return $earthRadius * $c;
     }
 
@@ -87,4 +87,4 @@ class SupplierLocationService
             })
             ->sortBy('distance');
     }
-} 
+}
