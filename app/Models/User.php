@@ -108,9 +108,9 @@ class User extends Authenticatable
         return $this->status === UserStatus::REJECTED;
     }
 
-    public function field()
+    public function fields()
     {
-        return $this->belongsTo(Field::class);
+        return $this->belongsToMany(Field::class, 'user_fields', 'user_id', 'field_id');
     }
 
     public function favoriteProducts()

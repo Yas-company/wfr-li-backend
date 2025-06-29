@@ -25,7 +25,7 @@ class CategoryService
             'supplier_id' => $data['supplier_id'],
         ]);
     
-        return $category->load('field');
+        return $category->load('field')->loadCount('products');
     }
 
     public function index()
@@ -34,9 +34,11 @@ class CategoryService
         if (!$this->canManageCategories($user)) {
             return ['error' => 'Only approved suppliers can view categories.'];
         }
-            $categories = Category::with('field')->where('supplier_id', $user->id)
+            $categories = Category::with('field')->withCount('products')->where('supplier_id', $user->id)
             ->orderBy('created_at', 'desc')
-            ->get();        
+            ->paginate(10);
+            //->get();     
+   
         return $categories; 
     }
 
@@ -49,7 +51,7 @@ class CategoryService
         if (!$this->ownsCategory($user, $category)) {
             return ['error' => 'You can only view your own categories.'];
         }
-        return $category->load('field');
+        return $category->load('field')->loadCount('products');
     }
 
     public function update($request, Category $category)
@@ -63,7 +65,7 @@ class CategoryService
         }
         $data = $request->validated();
         $category->update($data);
-        return $category->load('field');
+        return $category->load('field')->loadCount('products');
     }
 
     public function destroy(Category $category)
