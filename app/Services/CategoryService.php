@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryService
 {
@@ -19,10 +20,14 @@ class CategoryService
         $data = $request->validated();
         $data['supplier_id'] = $user->id;
 
+        if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
+            $data['image'] = $data['image']->store('categories', 'public'); // path: storage/app/public/products
+        }   
         $category = Category::create([
             'name'        => $data['name'],
             'field_id'    => $data['field_id'],
             'supplier_id' => $data['supplier_id'],
+            'image'       => $data['image'] ?? null,
         ]);
     
         return $category->load('field')->loadCount('products');
@@ -64,7 +69,18 @@ class CategoryService
             return ['error' => 'You can only update your own categories.'];
         }
         $data = $request->validated();
-        $category->update($data);
+        if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
+            // Delete old image if it exists
+            if ($category->image && Storage::disk('public')->exists($category->image)) {
+                Storage::disk('public')->delete($category->image);
+            }
+            // Store new image
+            $data['image'] = $data['image']->store('categories', 'public');
+            $category->update(['image' => $data['image']]);
+        } else {
+            // If no new image, just update other fields
+            $category->update($data);
+        }
         return $category->load('field')->loadCount('products');
     }
 

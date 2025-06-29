@@ -9,6 +9,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/categories/field/{field_id}', [CategoryController::class, 'getCategoriesByField']);
     Route::get('/categories/{category}', [CategoryController::class, 'show']);
     Route::post('/categories', [CategoryController::class, 'store']);
-    Route::put('/categories/{category}', [CategoryController::class, 'update']);
+    Route::post('/categories/{category}', [CategoryController::class, 'update']);
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
 });

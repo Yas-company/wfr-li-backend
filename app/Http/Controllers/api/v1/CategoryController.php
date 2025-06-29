@@ -9,8 +9,10 @@ use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use App\Services\CategoryService;
 use App\Traits\ApiResponse;
+use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
 
 class CategoryController extends Controller
 {
@@ -34,7 +36,7 @@ class CategoryController extends Controller
         }
 
         // Return the resource collection directly for proper pagination structure
-        return CategoryResource::collection($result);
+        return $this->paginatedResponse($result, CategoryResource::collection($result), 'Categories retrieved successfully', 200);
     }
 
     /**

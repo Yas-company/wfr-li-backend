@@ -16,8 +16,6 @@ class UpdateCategoryRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -26,6 +24,7 @@ class UpdateCategoryRequest extends FormRequest
             'name.ar' => 'required|string|max:255',
             'name.en' => 'required|string|max:255',
             'field_id' => 'nullable|exists:fields,id',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
     }
 
