@@ -12,15 +12,16 @@ class ProductResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'image' => $this->image_url,
-            'price_before_discount' => $this->price_before_discount,
+            'image' => $this->image ? asset('storage/' . $this->image) : null,
             'price' => $this->price,
-            'description' => $this->description,
+            'price_before_discount' => $this->price_before_discount,
+            'quantity' => $this->quantity,
             'stock_qty' => $this->stock_qty,
-            'category' => new CategoryResource($this->whenLoaded('category')),
+            'status' => $this->status,
             'is_favorite' => $this->is_favorite,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'unit_type' => $this->unit_type,
+            'category' => new CategoryResource($this->whenLoaded('category')),
         ];
     }
-} 
+
+}
