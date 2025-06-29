@@ -28,7 +28,7 @@ class UserResource extends JsonResource
             'license_attachment' => $this->license_attachment,
             'commercial_register_attachment' => $this->commercial_register_attachment,
             'status' => $this->status,
-            'field_id' => $this->field_id,
+            'fields' => FieldResource::collection($this->whenLoaded('fields')),
             'categories' => CategoryResource::collection($this->whenLoaded('categories')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

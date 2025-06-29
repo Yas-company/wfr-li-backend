@@ -84,8 +84,11 @@ class AuthController extends Controller
                     'status' => $data['role'] === UserRole::SUPPLIER->value ? UserStatus::PENDING->value : UserStatus::APPROVED->value,
                     'license_attachment' => $data['license_attachment'] ?? null,
                     'commercial_register_attachment' => $data['commercial_register_attachment'] ?? null,
-                    'field_id' => $data['field_id'] ?? null,
+                    // 'field_id' => $data['field_id'] ?? null,
                 ]);
+                foreach ($data['fields'] as $field) {
+                    $existingUser->fields()->syncWithoutDetaching($field);
+                }
 
                 $user = $existingUser;
             } else {
@@ -103,8 +106,11 @@ class AuthController extends Controller
                     'status' => $data['role'] === UserRole::SUPPLIER->value ? UserStatus::PENDING->value : UserStatus::APPROVED->value,
                     'license_attachment' => $data['license_attachment'] ?? null,
                     'commercial_register_attachment' => $data['commercial_register_attachment'] ?? null,
-                    'field_id' => $data['field_id'] ?? null,
+                    // 'field_id' => $data['field_id'] ?? null,
                 ]);
+                foreach ($data['fields'] as $field) {
+                    $user->fields()->attach($field);
+                }
             }
 
             // For buyers, generate and send OTP
@@ -126,7 +132,7 @@ class AuthController extends Controller
 
             // For suppliers, return success message
             return $this->createdResponse([
-                'user' => new UserResource($user),
+                'user' => new UserResource($user->load('fields')),
                 'message' => __('messages.supplier_registration_pending')
             ], __('messages.supplier_registration_pending'));
         } catch (\Exception $e) {

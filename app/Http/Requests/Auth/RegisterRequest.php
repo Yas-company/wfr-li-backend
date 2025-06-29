@@ -91,7 +91,8 @@ class RegisterRequest extends FormRequest
         if ($this->request->get('role') === UserRole::SUPPLIER->value) {
             $rules['license_attachment'] = ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'];
             $rules['commercial_register_attachment'] = ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'];
-            $rules['field_id'] = ['required', 'exists:fields,id'];
+            $rules['fields'] = ['required', 'array'];
+            $rules['fields.*'] = ['required', 'exists:fields,id'];
         }
 
         return $rules;

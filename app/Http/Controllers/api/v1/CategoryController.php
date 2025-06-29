@@ -33,25 +33,8 @@ class CategoryController extends Controller
             return $this->errorResponse($result['error'], 500);
         }
 
-        return $this->successResponse( CategoryResource::collection($result), 'Categories retrieved successfully', 200);
-        // try {
-        //     $user = Auth::user();
-
-        //     if (!$this->canManageCategories($user)) {
-        //         return $this->errorResponse('Only approved suppliers can view categories.', 403);
-        //     }
-
-        //     $categories = Category::where('supplier_id', $user->id)
-        //         ->orderBy('created_at', 'desc')
-        //         ->get();
-
-        //     return $this->successResponse(
-        //         CategoryResource::collection($categories),
-        //         'Categories retrieved successfully'
-        //     );
-        // } catch (\Exception $e) {
-        //     return $this->errorResponse('Failed to retrieve categories.', 500);
-        // }
+        // Return the resource collection directly for proper pagination structure
+        return CategoryResource::collection($result);
     }
 
     /**

@@ -28,4 +28,8 @@ class Category extends Model
     {
         return $this->belongsTo(Field::class);
     }
+    public function countProducts()
+    {
+        return $this->products()->count();
+    }
 }
