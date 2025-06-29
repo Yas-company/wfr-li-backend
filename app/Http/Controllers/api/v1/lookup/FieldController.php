@@ -22,4 +22,5 @@ class FieldController extends Controller
     {
         return $this->successResponse(new FieldResource($field));
     }
+
 }
