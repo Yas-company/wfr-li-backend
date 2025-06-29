@@ -19,6 +19,7 @@ class CategoryResource extends JsonResource
             'name' => $this->name,
             'supplier_id' => $this->supplier_id,
             'field_id' => $this->field_id,
+            'field' => new FieldResource($this->field),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

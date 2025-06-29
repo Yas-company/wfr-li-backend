@@ -212,19 +212,29 @@ class CategoryController extends Controller
         // }
     }
 
+    public function getCategoriesByField(int $field_id)
+    {
+        $result = $this->categoryService->getCategoriesByField($field_id);
+        if (isset($result['error'])) {
+            return $this->errorResponse($result['error'], 500);
+        }
+
+        return $this->successResponse( CategoryResource::collection($result), 'Categories retrieved successfully', 200);
+    }
+
     /**
      * Check if user can manage categories.
      */
-    private function canManageCategories($user): bool
-    {
-        return $user && $user->isSupplier() && $user->isApproved();
-    }
+    // private function canManageCategories($user): bool
+    // {
+    //     return $user && $user->isSupplier() && $user->isApproved();
+    // }
 
     /**
      * Check if user owns the category.
      */
-    private function ownsCategory($user, Category $category): bool
-    {
-        return $category->supplier_id === $user->id;
-    }
+//     private function ownsCategory($user, Category $category): bool
+//     {
+//         return $category->supplier_id === $user->id;
+//     }
 }
