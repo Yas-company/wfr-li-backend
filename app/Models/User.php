@@ -24,6 +24,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'phone',
+        'image',
         'address',
         'latitude',
         'longitude',
@@ -120,7 +121,7 @@ class User extends Authenticatable
 
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'product_supplier')
+        return $this->belongsToMany(Product::class, 'products')
             ->withTimestamps();
     }
 

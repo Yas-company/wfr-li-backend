@@ -20,16 +20,19 @@ public function getSupplierFields()
     public function suppliers()
     {
         $suppliers = User::where('role', UserRole::SUPPLIER)
-            ->where('status', UserStatus::APPROVED)->get();
+            ->where('status', UserStatus::APPROVED)
+            ->with('fields')
+            ->paginate(10);
         return $suppliers;
     }
 
-    public function show(User $user)
+    public function show(int $user_id)
     {
+        $user = User::find($user_id);
         if (!$user || $user->role !== UserRole::SUPPLIER || $user->status !== UserStatus::APPROVED) {
             return ['error' => 'Supplier not found'];
         }
-        $user->load('categories');
+    $user->load('categories')->with('fields');
         return $user;
     }
 
