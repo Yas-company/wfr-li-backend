@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace App\Http\Services;
 
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
-
 use App\Models\User;
 use App\Models\UserField;
 use Illuminate\Support\Facades\Auth;

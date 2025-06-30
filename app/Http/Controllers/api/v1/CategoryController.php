@@ -7,10 +7,9 @@ use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Http\Requests\SearchCategoryRequest;
 use App\Http\Resources\CategoryResource;
+use App\Http\Services\CategoryService;
 use App\Models\Category;
-use App\Services\CategoryService;
 use App\Traits\ApiResponse;
-
 
 
 class CategoryController extends Controller
@@ -80,7 +79,7 @@ class CategoryController extends Controller
         }
 
         return $this->successResponse( new CategoryResource($result), 'Category updated successfully', 200);
-       
+
     }
 
     /**
@@ -95,7 +94,7 @@ class CategoryController extends Controller
         }
 
         return $this->successResponse( null, 'Category deleted successfully', 200);
- 
+
     }
 
     public function getCategoriesByField(int $field_id)
