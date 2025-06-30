@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\api\v1;
 
 
-use App\Enums\UserRole;
-use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\FieldResource;
 use App\Http\Resources\UserResource;
+use App\Http\Services\UserService;
 use App\Models\User;
 use App\Traits\ApiResponse;
-use App\Services\UserService;
+
 class UserController extends Controller
 {
     use ApiResponse;
