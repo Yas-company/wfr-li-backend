@@ -18,6 +18,20 @@ class Product extends Model
 
     public $translatable = ['name', 'description'];
 
+    protected $fillable = [
+        'name',
+        'image',
+        'price',
+        'quantity',
+        'min_order_quantity', // ✅ أضفناه هنا
+        'stock_qty',
+        'unit_type',
+        'status',
+        'is_active',
+        'category_id',
+        'supplier_id',
+    ];
+
     protected $casts = [
         'name' => 'array',
         'price' => 'decimal:2',
