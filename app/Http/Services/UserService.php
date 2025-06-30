@@ -19,7 +19,7 @@ public function getSupplierFields()
 
     public function suppliers()
     {
-        $suppliers = User::where('role', UserRole::SUPPLIER)
+    $suppliers = User::where('role', UserRole::SUPPLIER)
             ->where('status', UserStatus::APPROVED)
             ->with('fields')
             ->paginate(10);
@@ -34,6 +34,16 @@ public function getSupplierFields()
         }
     $user->load('categories')->with('fields');
         return $user;
+    }
+    public function searchSuppliers($request)
+    {
+        $search = $request->search;
+        $suppliers = User::where('name', 'like', '%' . $search . '%')
+            ->where('role', UserRole::SUPPLIER)
+            ->where('status', UserStatus::APPROVED)
+            ->with('fields')
+            ->paginate(10);
+        return $suppliers;
     }
 
 }
