@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api\v1;
 
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SearchSupplierRequest;
 use App\Http\Resources\FieldResource;
 use App\Http\Resources\SupplierDetailsResource;
 use App\Http\Resources\SupplierResource;
@@ -42,6 +43,15 @@ class UserController extends Controller
         }
    
         return $this->successResponse(new SupplierDetailsResource($result),'Supplier retrieved successfully',200);
+    }
+
+    public function searchSuppliers(SearchSupplierRequest $request)
+    {
+        $result = $this->userService->searchSuppliers($request);
+        if (isset($result['error'])) {
+            return $this->errorResponse($result['error'], 500);
+        }
+        return $this->paginatedResponse($result, SupplierResource::collection($result),'Suppliers retrieved successfully',statusCode: 200);
     }
 
     public function getSupplierFields()
