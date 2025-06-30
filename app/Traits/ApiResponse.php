@@ -139,15 +139,7 @@ trait ApiResponse
         return response()->json([
             'success' => true,
             'message' => $message ?? __('messages.success'),
-            'data' => [
-                'products' => $resourceCollection,
-                'pagination' => [
-                    'current_page' => $paginator->currentPage(),
-                    'per_page'     => $paginator->perPage(),
-                    'total'        => $paginator->total(),
-                    'last_page'    => $paginator->lastPage(),
-                ],
-            ],
+            'data' => $resourceCollection,
             'links' => [
                 'first' => $paginator->url(1),
                 'last' => $paginator->url($paginator->lastPage()),

@@ -28,6 +28,8 @@ class StoreProductRequest extends FormRequest
             'status' => 'required|in:0,1,2',
             'category_id' => 'required|exists:categories,id',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'min_order_quantity' => 'required|numeric|min:1',
+
         ];
     }
 }
