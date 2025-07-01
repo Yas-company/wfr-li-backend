@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\V1\SupplierController;
+use App\Http\Controllers\api\v1\SupplierController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->prefix('supplier')
