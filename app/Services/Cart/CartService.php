@@ -1,14 +1,21 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Cart;
 
 use App\Models\Cart;
 use App\Models\User;
 use App\Models\Product;
+use App\Values\CartTotals;
 use App\Exceptions\CartException;
+use App\Services\Contracts\CartServiceInterface;
 
-class CartService
+class CartService implements CartServiceInterface
 {
+
+    public function __construct(private CartProductManager $cartProductManager)
+    {
+        //
+    }
 
     /**
      * Get the cart for the user.
@@ -44,16 +51,7 @@ class CartService
             throw CartException::insufficientStock();
         }
 
-        $cart->products()->updateOrCreate(
-            [
-                'product_id' => $product->id,
-                'cart_id' => $cart->id
-            ],
-            [
-                'quantity' => $quantity,
-                'price' => $product->price
-            ]
-        );
+        $this->cartProductManager->add($cart, $product, $quantity);
 
         return $this->getCart($user);
     }
@@ -70,9 +68,7 @@ class CartService
     {
         $cart = $this->getCart($user);
 
-        $cart->products()
-            ->where('product_id', $productId)
-            ->delete();
+        $this->cartProductManager->remove($cart, $productId);
 
         return $this->getCart($user);
     }
@@ -87,7 +83,8 @@ class CartService
     public function clearCart(User $user): Cart
     {
         $cart = $this->getCart($user);
-        $cart->products()->delete();
+
+        $this->cartProductManager->clear($cart);
 
         return $cart->refresh();
     }
@@ -97,30 +94,12 @@ class CartService
      *
      * @param User $user
      *
-     * @return float
+     * @return CartTotals
      */
-    public function getCartTotal(User $user): float
+    public function getCartTotals(User $user): CartTotals
     {
         $cart = $this->getCart($user);
 
-        return $cart->products->sum(function ($products) {
-            return $products->quantity * $products->price;
-        });
-    }
-
-    /**
-     * Get the total price of the cart before discount.
-     *
-     * @param User $user
-     *
-     * @return float
-     */
-    public function getCartTotalBeforeDiscount(User $user): float
-    {
-        $cart = $this->getCart($user);
-
-        return $cart->products->sum(function ($products) {
-            return $products->quantity * $products->product->price_before_discount;
-        });
+        return CartTotals::fromProducts($cart->products);
     }
 }

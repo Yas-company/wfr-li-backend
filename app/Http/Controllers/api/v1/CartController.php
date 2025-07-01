@@ -11,6 +11,7 @@ use App\Http\Resources\CartResource;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Cart\AddProductToCartRequest;
+use App\Services\Contracts\CartServiceInterface;
 
 class CartController extends Controller
 {
@@ -21,7 +22,7 @@ class CartController extends Controller
      *
      * @param CartService $cartService
      */
-    public function __construct(protected CartService $cartService)
+    public function __construct(protected CartServiceInterface $cartService)
     {
         //
     }
@@ -92,14 +93,14 @@ class CartController extends Controller
     private function cartResponse(int $statusCode): JsonResponse
     {
         $cart = $this->cartService->getCart(Auth::user());
-        $total = $this->cartService->getCartTotal(Auth::user());
-        $totalBeforeDiscount = $this->cartService->getCartTotalBeforeDiscount(Auth::user());
+        $totals = $this->cartService->getCartTotals(Auth::user());
+
 
         return $this->successResponse(
             data:[
                 'cart' => CartResource::make($cart),
-                'total' => $total,
-                'total_discount' => $totalBeforeDiscount - $total,
+                'total' => $totals->total,
+                'total_discount' => $totals->discount,
             ],
             statusCode: $statusCode
         );
