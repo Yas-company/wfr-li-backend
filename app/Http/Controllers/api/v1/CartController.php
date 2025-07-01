@@ -4,7 +4,6 @@ namespace App\Http\Controllers\api\v1;
 
 use App\Models\Product;
 use App\Traits\ApiResponse;
-use App\Services\CartService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CartResource;
@@ -20,7 +19,7 @@ class CartController extends Controller
     /**
      * CarController constructor.
      *
-     * @param CartService $cartService
+     * @param CartServiceInterface $cartService
      */
     public function __construct(protected CartServiceInterface $cartService)
     {

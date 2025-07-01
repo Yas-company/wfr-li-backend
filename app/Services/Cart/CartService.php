@@ -26,7 +26,7 @@ class CartService implements CartServiceInterface
      */
     public function getCart(User $user): Cart
     {
-        $cart = Cart::firstOrCreate(['user_id' => $user->id]);
+        $cart = Cart::with('products.product')->firstOrCreate(['user_id' => $user->id]);
 
         return $cart->load('products');
     }
