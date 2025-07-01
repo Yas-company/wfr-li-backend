@@ -12,6 +12,7 @@ use App\Http\Resources\UserResource;
 use App\Http\Services\UserService;
 use App\Models\User;
 use App\Traits\ApiResponse;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -62,5 +63,14 @@ class UserController extends Controller
         }
         return $this->successResponse(FieldResource::collection($result),'Fields retrieved successfully',200);
 
+    }
+
+    public function filter(Request $request)
+    {
+        $result = $this->userService->filter($request);
+        if (isset($result['error'])) {
+            return $this->errorResponse($result['error'], 500);
+        }
+        return $this->paginatedResponse($result, SupplierResource::collection($result),'Suppliers retrieved successfully',statusCode: 200);
     }
 }

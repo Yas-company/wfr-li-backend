@@ -17,7 +17,7 @@ class FieldResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'image' => $this->image_url
+            'image' => $this->image ? asset('storage/' . $this->image) : null
         ];
     }
 } 
