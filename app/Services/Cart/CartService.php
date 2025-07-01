@@ -12,6 +12,11 @@ use App\Services\Contracts\CartServiceInterface;
 class CartService implements CartServiceInterface
 {
 
+    /**
+     * CartService constructor.
+     *
+     * @param CartProductManager $cartProductManager
+     */
     public function __construct(private CartProductManager $cartProductManager)
     {
         //

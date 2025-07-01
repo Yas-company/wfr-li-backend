@@ -8,7 +8,14 @@ use App\Exceptions\CartException;
 
 class CartProductManager
 {
-    public function add(Cart $cart, Product $product, int $quantity)
+    /**
+     * Add a product to the cart
+     *
+     * @param Cart $cart
+     * @param Product $product
+     *
+     */
+    public function add(Cart $cart, Product $product, int $quantity): void
     {
         if ($product->stock_qty < $quantity) {
             throw CartException::insufficientStock();
@@ -22,14 +29,25 @@ class CartProductManager
         ]);
     }
 
-    public function remove(Cart $cart, int $productId)
+    /**
+     * Remove a product from the cart
+     *
+     * @param Cart $cart
+     * @param int $productId
+     */
+    public function remove(Cart $cart, int $productId): void
     {
         $cart->products()
             ->where('product_id', $productId)
             ->delete();
     }
 
-    public function clear(Cart $cart)
+    /**
+     * Clear all products from the cart
+     *
+     * @param Cart $cart
+     */
+    public function clear(Cart $cart): void
     {
         $cart->products()->delete();
     }
