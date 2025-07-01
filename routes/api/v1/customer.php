@@ -1,0 +1,12 @@
+<?php
+
+use App\Http\Controllers\Api\V1\SupplierController;
+use Illuminate\Support\Facades\Route;
+
+Route::middleware('guest')->prefix('supplier')
+    ->controller(SupplierController::class)->group(function () {
+    Route::get('{supplierId}/ads', 'ads');
+    Route::get('{supplierId}/categories', 'categories');
+    Route::get('{supplierId}/products', 'products');
+    Route::get('products/{id}','showProduct');
+});

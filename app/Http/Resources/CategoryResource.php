@@ -22,8 +22,6 @@ class CategoryResource extends JsonResource
             'field_id' => $this->field_id,
             'products_count' => $this->products_count,
             'field' => new FieldResource($this->field),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
         ];
     }
 }

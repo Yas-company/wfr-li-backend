@@ -13,9 +13,9 @@ class AdsResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
-            'image_url' => $this->image_url,
+            'image' => $this->image ? asset('storage/' . $this->image) : null,
             'user_id' => $this->user_id,
             'is_active' => $this->is_active
         ];
     }
-} 
+}
