@@ -3,14 +3,16 @@
 namespace App\Http\Controllers\api\v1;
 
 
-use App\Enums\UserRole;
-use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SearchSupplierRequest;
 use App\Http\Resources\FieldResource;
+use App\Http\Resources\SupplierDetailsResource;
+use App\Http\Resources\SupplierResource;
 use App\Http\Resources\UserResource;
+use App\Http\Services\UserService;
 use App\Models\User;
 use App\Traits\ApiResponse;
-use App\Services\UserService;
+
 class UserController extends Controller
 {
     use ApiResponse;
@@ -30,22 +32,26 @@ class UserController extends Controller
             return $this->errorResponse($result['error'], 500);
         }
 
-        // $suppliers = User::where('role', UserRole::SUPPLIER)
-        // ->where('status', UserStatus::APPROVED)->get();
-        return $this->successResponse(UserResource::collection($result),'Suppliers retrieved successfully',statusCode: 200);
+        return $this->paginatedResponse($result, SupplierResource::collection($result),'Suppliers retrieved successfully',statusCode: 200);
     }
 
-    public function show(User $user)
+    public function show(int $user_id)
     {
-        $result = $this->userService->show($user);
+        $result = $this->userService->show($user_id);
         if (isset($result['error'])) {
             return $this->errorResponse($result['error'], 500);
         }
-        // if (!$user || $user->role !== UserRole::SUPPLIER || $user->status !== UserStatus::APPROVED) {
-        //     return $this->errorResponse('Supplier not found');
-        // }
-        // $user->load('categories');
-        return $this->successResponse(new UserResource($result),'Supplier retrieved successfully',200);
+   
+        return $this->successResponse(new SupplierDetailsResource($result),'Supplier retrieved successfully',200);
+    }
+
+    public function searchSuppliers(SearchSupplierRequest $request)
+    {
+        $result = $this->userService->searchSuppliers($request);
+        if (isset($result['error'])) {
+            return $this->errorResponse($result['error'], 500);
+        }
+        return $this->paginatedResponse($result, SupplierResource::collection($result),'Suppliers retrieved successfully',statusCode: 200);
     }
 
     public function getSupplierFields()

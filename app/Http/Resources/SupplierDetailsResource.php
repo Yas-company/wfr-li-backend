@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CategoryResource extends JsonResource
+class SupplierDetailsResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,10 +18,9 @@ class CategoryResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'image' => $this->image ? asset('storage/' . $this->image) : null,
-            'supplier_id' => $this->supplier_id,
-            'field_id' => $this->field_id,
-            'products_count' => $this->products_count,
-            'field' => new FieldResource($this->field),
+            'rating' => 4.7,
+            'fields' => FieldResource::collection($this->whenLoaded('fields')),
+            'categories' => CategoryResource::collection($this->whenLoaded('categories')),
         ];
     }
 }

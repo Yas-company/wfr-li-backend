@@ -19,6 +19,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -89,6 +90,13 @@ class AuthController extends Controller
                 foreach ($data['fields'] as $field) {
                     $existingUser->fields()->syncWithoutDetaching($field);
                 }
+                if ($request->hasFile('image')) {
+                    if ($existingUser->image) {
+                        Storage::disk('public')->delete($existingUser->image);
+                    }
+                    $existingUser->image = $request->file('image')->store('users', 'public');
+                    $existingUser->save();
+                }
 
                 $user = $existingUser;
             } else {
@@ -106,10 +114,15 @@ class AuthController extends Controller
                     'status' => $data['role'] === UserRole::SUPPLIER->value ? UserStatus::PENDING->value : UserStatus::APPROVED->value,
                     'license_attachment' => $data['license_attachment'] ?? null,
                     'commercial_register_attachment' => $data['commercial_register_attachment'] ?? null,
+                    'image' => $data['image'] ?? null,
                     // 'field_id' => $data['field_id'] ?? null,
                 ]);
                 foreach ($data['fields'] as $field) {
                     $user->fields()->attach($field);
+                }
+                if ($request->hasFile('image')) {
+                    $user->image = $request->file('image')->store('users', 'public');
+                    $user->save();
                 }
             }
 

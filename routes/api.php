@@ -11,4 +11,5 @@ Route::prefix('v1')->group(function () {
     require base_path('routes/api/v1/products.php');
     require base_path('routes/api/v1/favorites.php');
     require base_path('routes/api/v1/cart.php');
+    require base_path('routes/api/v1/customer.php');
 });

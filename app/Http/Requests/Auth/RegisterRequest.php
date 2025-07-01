@@ -85,6 +85,7 @@ class RegisterRequest extends FormRequest
                 ->symbols()
             ],
             'role' => ['required', 'string', 'in:' . implode(',', UserRole::values())],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
         ];
 
         // Add supplier-specific validation rules

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Http\Services;
 
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
@@ -11,7 +11,7 @@ class CategoryService
     public function storeCategory($request)
     {
         $user = Auth::user();
-        
+
         if (!$this->canManageCategories($user)) {
 
             return ['error' => 'Only approved suppliers can add categories.'];
@@ -22,14 +22,14 @@ class CategoryService
 
         if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
             $data['image'] = $data['image']->store('categories', 'public'); // path: storage/app/public/products
-        }   
+        }
         $category = Category::create([
             'name'        => $data['name'],
             'field_id'    => $data['field_id'],
             'supplier_id' => $data['supplier_id'],
             'image'       => $data['image'] ?? null,
         ]);
-    
+
         return $category->load('field')->loadCount('products');
     }
 
@@ -42,9 +42,9 @@ class CategoryService
             $categories = Category::with('field')->withCount('products')->where('supplier_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-            //->get();     
-   
-        return $categories; 
+            //->get();
+
+        return $categories;
     }
 
     public function show(Category $category)
@@ -76,11 +76,8 @@ class CategoryService
             }
             // Store new image
             $data['image'] = $data['image']->store('categories', 'public');
-            $category->update(['image' => $data['image']]);
-        } else {
-            // If no new image, just update other fields
-            $category->update($data);
         }
+        $category->update($data);
         return $category->load('field')->loadCount('products');
     }
 
@@ -105,6 +102,16 @@ class CategoryService
         return $categories;
     }
 
+    public function search($request)
+    {
+        $search = $request->search;
+
+        $categories = Category::where(function($query) use ($search) {
+            $query->where('name->en', 'like', "%{$search}%")
+                  ->orWhere('name->ar', 'like', "%{$search}%");
+            })->paginate(10);
+        return $categories;
+    }
 
     /**
      * Check if user can manage categories.
