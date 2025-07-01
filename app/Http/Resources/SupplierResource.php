@@ -19,7 +19,8 @@ class SupplierResource extends JsonResource
             'name' => $this->name,
             'image' => $this->image ? asset('storage/' . $this->image) : null,
             'rating' => 4.7,
-            'fields' => FieldResource::collection($this->whenLoaded('fields')),
+            'fields' => FieldResource::collection($this->fields),
         ];
     }
 }
+    
