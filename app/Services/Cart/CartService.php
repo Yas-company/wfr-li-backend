@@ -52,10 +52,6 @@ class CartService implements CartServiceInterface
         $product = Product::findOrFail($productId);
         $cart = $this->getCart($user);
 
-        if($product->stock_qty < $quantity){
-            throw CartException::insufficientStock();
-        }
-
         $this->cartProductManager->add($cart, $product, $quantity);
 
         return $this->getCart($user);
