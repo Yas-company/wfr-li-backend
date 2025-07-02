@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Product;
 use App\Values\CartTotals;
 use App\Exceptions\CartException;
+use App\Contracts\CartValidatorInterface;
 use App\Services\Contracts\CartServiceInterface;
 
 class CartService implements CartServiceInterface
@@ -19,7 +20,10 @@ class CartService implements CartServiceInterface
      *
      * @param CartProductManager $cartProductManager
      */
-    public function __construct(private CartProductManager $cartProductManager)
+    public function __construct(
+        private CartProductManager $cartProductManager,
+        protected CartValidatorInterface $cartValidator
+    )
     {
         //
     }
@@ -57,6 +61,8 @@ class CartService implements CartServiceInterface
     {
         $product = Product::findOrFail($productId);
         $cart = $this->getCart($user);
+
+        $this->cartValidator->validateAddToCart($cart, $product, $quantity);
 
         $this->cartProductManager->add($cart, $product, $quantity);
 

@@ -24,6 +24,7 @@ return [
         'invalid_quantity' => 'Invalid quantity',
         'product_not_found' => 'Product not found',
         'insufficient_stock' => 'Insufficient stock',
+        'cannot_mix_products_from_different_suppliers' => 'Cannot mix products from different suppliers',
     ],
 
     // Auth Messages
@@ -112,4 +113,4 @@ return [
     // Supplier Review Messages
     'supplier_pending_review' => 'Your supplier account is currently under review. Please wait for admin approval.',
     'supplier_registration_pending' => 'Your supplier account is pending admin approval.',
-]; 
+];
