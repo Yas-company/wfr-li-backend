@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests\Cart;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Enums\ProductStatus;
 use Illuminate\Validation\Rule;
+use Illuminate\Foundation\Http\FormRequest;
 
 class AddProductToCartRequest extends FormRequest
 {
@@ -23,8 +24,17 @@ class AddProductToCartRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'product_id' => ['required', Rule::exists('products', 'id')],
-            'quantity' => ['required', 'integer', 'min:1']
+            'product_id' => [
+                'required',
+                Rule::exists('products', 'id')
+                    ->where('is_active', true)
+                    ->where('status', ProductStatus::PUBLISHED)
+            ],
+            'quantity' => [
+                'required',
+                'integer',
+                'min:1'
+            ]
         ];
     }
 }

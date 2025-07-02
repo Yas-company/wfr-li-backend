@@ -17,7 +17,7 @@ class CartController extends Controller
     use ApiResponse;
 
     /**
-     * CarController constructor.
+     * CartController constructor.
      *
      * @param CartServiceInterface $cartService
      */
@@ -49,8 +49,8 @@ class CartController extends Controller
     {
         $this->cartService->addToCart(
             Auth::user(),
-            $request->product_id,
-            $request->quantity
+            $request->validated('product_id'),
+            $request->validated('quantity')
         );
 
         return $this->cartResponse(Response::HTTP_CREATED);
