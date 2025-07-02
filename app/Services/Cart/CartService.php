@@ -12,6 +12,8 @@ use App\Services\Contracts\CartServiceInterface;
 class CartService implements CartServiceInterface
 {
 
+    protected ?Cart $cart = null;
+
     /**
      * CartService constructor.
      *
@@ -31,9 +33,13 @@ class CartService implements CartServiceInterface
      */
     public function getCart(User $user): Cart
     {
-        $cart = Cart::with('products.product')->firstOrCreate(['user_id' => $user->id]);
+        if ($this->cart) {
+            return $this->cart;
+        }
 
-        return $cart->load('products');
+        $this->cart = Cart::with('products.product')->firstOrCreate(['user_id' => $user->id]);
+
+        return $this->cart;
     }
 
     /**
@@ -43,18 +49,18 @@ class CartService implements CartServiceInterface
      * @param int $productId
      * @param int $quantity
      *
-     * @return Cart
+     * @return bool
      *
      * @throws CartException
      */
-    public function addToCart(User $user, int $productId, int $quantity = 1): Cart
+    public function addToCart(User $user, int $productId, int $quantity = 1): bool
     {
         $product = Product::findOrFail($productId);
         $cart = $this->getCart($user);
 
         $this->cartProductManager->add($cart, $product, $quantity);
 
-        return $this->getCart($user);
+        return true;
     }
 
     /**
@@ -63,15 +69,15 @@ class CartService implements CartServiceInterface
      * @param User $user
      * @param int $productId
      *
-     * @return Cart
+     * @return bool
      */
-    public function removeFromCart(User $user, int $productId): Cart
+    public function removeFromCart(User $user, int $productId): bool
     {
         $cart = $this->getCart($user);
 
         $this->cartProductManager->remove($cart, $productId);
 
-        return $this->getCart($user);
+        return true;
     }
 
     /**
@@ -79,28 +85,26 @@ class CartService implements CartServiceInterface
      *
      * @param User $user
      *
-     * @return Cart
+     * @return bool
      */
-    public function clearCart(User $user): Cart
+    public function clearCart(User $user): bool
     {
         $cart = $this->getCart($user);
 
         $this->cartProductManager->clear($cart);
 
-        return $cart->refresh();
+        return true;
     }
 
     /**
      * Get the total price of the cart.
      *
-     * @param User $user
+     * @param Cart $cart
      *
      * @return CartTotals
      */
-    public function getCartTotals(User $user): CartTotals
+    public function getCartTotals(Cart $cart): CartTotals
     {
-        $cart = $this->getCart($user);
-
         return CartTotals::fromProducts($cart->products);
     }
 }
