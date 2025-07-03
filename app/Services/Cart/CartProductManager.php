@@ -17,10 +17,6 @@ class CartProductManager
      */
     public function add(Cart $cart, Product $product, int $quantity): void
     {
-        if ($product->stock_qty < $quantity) {
-            throw CartException::insufficientStock();
-        }
-
         $cart->products()->updateOrCreate([
             'product_id' => $product->id,
         ], [

@@ -33,9 +33,17 @@ class CartController extends Controller
      */
     public function index(): JsonResponse
     {
-        $this->cartService->getCart(Auth::user());
+        $cart = $this->cartService->getCart(Auth::user());
+        $totals = $this->cartService->getCartTotals($cart);
 
-        return $this->cartResponse(Response::HTTP_OK);
+        return $this->successResponse(
+            data:[
+                'cart' => CartResource::make($cart),
+                'total' => $totals->total,
+                'total_discount' => $totals->discount,
+            ],
+            statusCode: Response::HTTP_OK
+        );
     }
 
     /**
@@ -53,7 +61,7 @@ class CartController extends Controller
             $request->validated('quantity')
         );
 
-        return $this->cartResponse(Response::HTTP_CREATED);
+        return $this->successResponse(data:[], statusCode: Response::HTTP_CREATED);
     }
 
     /**
@@ -67,7 +75,7 @@ class CartController extends Controller
     {
         $this->cartService->removeFromCart(Auth::user(), $product->id);
 
-        return $this->cartResponse(Response::HTTP_OK);
+        return $this->successResponse(data:[], statusCode: Response::HTTP_CREATED);
     }
 
     /**
@@ -79,29 +87,6 @@ class CartController extends Controller
     {
         $this->cartService->clearCart(Auth::user());
 
-        return $this->cartResponse(Response::HTTP_OK);
-    }
-
-    /**
-     * Build the cart response with total and discount.
-     *
-     * @param int $statusCode
-     *
-     * @return JsonResponse
-     */
-    private function cartResponse(int $statusCode): JsonResponse
-    {
-        $cart = $this->cartService->getCart(Auth::user());
-        $totals = $this->cartService->getCartTotals(Auth::user());
-
-
-        return $this->successResponse(
-            data:[
-                'cart' => CartResource::make($cart),
-                'total' => $totals->total,
-                'total_discount' => $totals->discount,
-            ],
-            statusCode: $statusCode
-        );
+        return $this->successResponse(data:[], statusCode: Response::HTTP_CREATED);
     }
 }
