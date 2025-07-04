@@ -2,12 +2,15 @@
 
 namespace App\Services\Cart;
 
+use App\Contracts\AddToCartValidatorInterface;
 use App\Models\Cart;
 use App\Models\User;
+use App\Models\Order;
 use App\Models\Product;
 use App\Values\CartTotals;
+use App\Models\OrderDetail;
 use App\Exceptions\CartException;
-use App\Contracts\CartValidatorInterface;
+use Illuminate\Support\Facades\DB;
 use App\Services\Contracts\CartServiceInterface;
 
 class CartService implements CartServiceInterface
@@ -22,7 +25,7 @@ class CartService implements CartServiceInterface
      */
     public function __construct(
         private CartProductManager $cartProductManager,
-        protected CartValidatorInterface $cartValidator
+        protected AddToCartValidatorInterface $cartValidator
     )
     {
         //
@@ -62,7 +65,7 @@ class CartService implements CartServiceInterface
         $product = Product::findOrFail($productId);
         $cart = $this->getCart($user);
 
-        $this->cartValidator->validateAddToCart($cart, $product, $quantity);
+        $this->cartValidator->validateAdd($cart, $product, $quantity);
 
         $this->cartProductManager->add($cart, $product, $quantity);
 
@@ -112,5 +115,64 @@ class CartService implements CartServiceInterface
     public function getCartTotals(Cart $cart): CartTotals
     {
         return CartTotals::fromProducts($cart->products);
+    }
+
+
+    /**
+     * Checkout the cart.
+     *
+     * @param User $user
+     * @param array $checkoutData
+     *
+     * @return Order
+     */
+    public function checkout(User $user, array $checkoutData): Order
+    {
+        $cart = $this->getCart($user);
+        $this->cartValidator->validateCheckout($cart);
+
+
+        return DB::transaction(function() use ($cart, $user, $checkoutData) {
+
+            $totals = $this->getCartTotals($cart);
+
+            $cartProductIds = $cart->products->pluck('product_id')->toArray();
+            Product::whereIn('id', $cartProductIds)->lockForUpdate()->get();
+
+
+            $order = Order::create([
+                'user_id' => $user->id,
+                'total' => $totals->total,
+                'total_discount' => $totals->discount,
+                'status' => 'pending',
+            ]);
+
+            OrderDetail::create([
+                'order_id' => $order->id,
+                'shipping_address' => $checkoutData['shipping_address'],
+                'shipping_latitude' => $checkoutData['shipping_latitude'],
+                'shipping_longitude' => $checkoutData['shipping_longitude'],
+                'payment_method' => $checkoutData['payment_method'],
+                'notes' => $checkoutData['notes'],
+            ]);
+
+            $orderProducts = $cart->products->mapWithKeys(fn($item) => [
+                $item->product_id => [
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'price' => $item->price,
+                ]
+            ])->toArray();
+            $order->products()->createMany($orderProducts);
+
+            foreach ($cart->products as $item) {
+                Product::where('id', $item->product_id)
+                    ->decrement('stock_qty', $item->quantity);
+            }
+
+            $this->cartProductManager->clear($cart);
+
+            return $order->load(['products', 'orderDetail']);
+        });
     }
 }

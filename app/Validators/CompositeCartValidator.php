@@ -2,11 +2,15 @@
 
 namespace App\Validators;
 
-use App\Contracts\CartValidatorInterface;
 use App\Models\Cart;
 use App\Models\Product;
+use App\Dtos\CartValidationDto;
+use App\Exceptions\CartException;
+use App\Contracts\CartValidatorInterface;
+use App\Contracts\AddToCartValidatorInterface;
+use App\Contracts\CheckoutCartValidatorInterface;
 
-class CompositeCartValidator implements CartValidatorInterface
+class CompositeCartValidator implements AddToCartValidatorInterface, CheckoutCartValidatorInterface
 {
     /**
      * @param CartValidatorInterface[] $validators
@@ -16,10 +20,21 @@ class CompositeCartValidator implements CartValidatorInterface
         //
     }
 
-    public function validateAddToCart(Cart $cart, Product $product, int $quantity = 1): void
+    public function validateAdd(Cart $cart, Product $product, ?int $quantity = null): void
     {
         foreach ($this->validators as $validator) {
-            $validator->validateAddToCart($cart, $product, $quantity);
+            $validator->validateAdd($cart, $product, $quantity);
+        }
+    }
+
+    public function validateCheckout(Cart $cart): void
+    {
+        if ($cart->products->isEmpty()) {
+            throw CartException::emptyCart();
+        }
+
+        foreach ($cart->products as $item) {
+            $this->validateAdd($cart, $item->product, $item->quantity);
         }
     }
 }

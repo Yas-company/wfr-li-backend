@@ -13,23 +13,15 @@ class OrderResource extends JsonResource
             'id' => $this->id,
             'user_id' => $this->user_id,
             'status' => $this->status,
-            'total_amount' => $this->total_amount,
-            'shipping_address' => $this->shipping_address,
-            'shipping_latitude' => $this->shipping_latitude,
-            'shipping_longitude' => $this->shipping_longitude,
-            'notes' => $this->notes,
-            'payment_status' => $this->payment_status,
-            'payment_method' => $this->payment_method,
-            'payment_id' => $this->payment_id,
-            'tracking_number' => $this->tracking_number,
-            'estimated_delivery_date' => $this->estimated_delivery_date,
+            'total' => $this->total,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'deleted_at' => $this->deleted_at,
             'receipt' => $this->whenLoaded('receipt'),
             'user' => new UserResource($this->whenLoaded('user')),
-            'items' => $this->whenLoaded('items', function () {
-                return $this->items->map(function ($item) {
+            'orderDetail' => OrderDetailResource::make($this->whenLoaded('orderDetail')),
+            'products' => $this->whenLoaded('products', function () {
+                return $this->products->map(function ($item) {
                     $product = $item->product;
                     return [
                         'id' => $product->id,
@@ -37,7 +29,9 @@ class OrderResource extends JsonResource
                         'image' => $product->image_url,
                         'price' => $product->price,
                         'price_before_discount' => $product->price_before_discount,
-                        'total' => $item->total,
+                        'order_price' => $item->price,
+                        'order_quantity' => $item->quantity,
+                        'order_total' => ($item->price * $item->quantity),
                         'stock_qty' => $product->stock_qty,
                         'is_favorite' => $product->is_favorite,
                         'category' => [
@@ -50,4 +44,4 @@ class OrderResource extends JsonResource
             }),
         ];
     }
-} 
+}
