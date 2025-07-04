@@ -4,16 +4,14 @@ namespace App\Validators;
 
 use App\Models\Cart;
 use App\Models\Product;
-use App\Dtos\CartValidationDto;
 use App\Exceptions\CartException;
-use App\Contracts\CartValidatorInterface;
 use App\Contracts\AddToCartValidatorInterface;
 use App\Contracts\CheckoutCartValidatorInterface;
 
 class CompositeCartValidator implements AddToCartValidatorInterface, CheckoutCartValidatorInterface
 {
     /**
-     * @param CartValidatorInterface[] $validators
+     * @param AddToCartValidatorInterface[] $validators
      */
     public function __construct(protected iterable $validators)
     {
