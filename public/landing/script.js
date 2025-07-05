@@ -118,17 +118,55 @@ document.addEventListener("DOMContentLoaded", function () {
         loadingSpinner.classList.remove('hidden');
         submitBtn.disabled = true;
 
-        setTimeout(() => {
+        // Prepare form data
+        const formData = new FormData(interestForm);
+        const data = {
+          name: formData.get('name'),
+          email: formData.get('email'),
+          business_type: formData.get('business_type'),
+          city: formData.get('city')
+        };
+
+        // Submit to backend
+        fetch('/api/interest', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+          },
+          body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
           loadingSpinner.classList.add('hidden');
           submitText.classList.remove('hidden');
           submitBtn.disabled = false;
-          successMessage.classList.remove('hidden');
-          interestForm.reset();
+          
+          if(result.success) {
+            successMessage.classList.remove('hidden');
+            interestForm.reset();
+            
+            // Update success message with server response
+            const successText = successMessage.querySelector('p');
+            if(successText) {
+              successText.textContent = result.message;
+            }
 
-          setTimeout(() => {
-            successMessage.classList.add('hidden');
-          }, 5000);
-        }, 1500);
+            setTimeout(() => {
+              successMessage.classList.add('hidden');
+            }, 5000);
+          } else {
+            // Show error message
+            alert(result.message || 'حدث خطأ أثناء تسجيل اهتمامك، يرجى المحاولة مرة أخرى.');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          loadingSpinner.classList.add('hidden');
+          submitText.classList.remove('hidden');
+          submitBtn.disabled = false;
+          alert('حدث خطأ في الاتصال، يرجى المحاولة مرة أخرى.');
+        });
       }
     });
   }
