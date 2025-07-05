@@ -19,20 +19,18 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'phone' => $this->phone,
-            'image' => $this->image ? asset('storage/' . $this->image) : null,
+            'image' => $this->image ? asset('storage/'.$this->image) : null,
             'role' => $this->role,
             'is_verified' => $this->is_verified,
             'business_name' => $this->business_name,
-            'address' => $this->address,
-            'latitude' => $this->latitude,
-            'longitude' => $this->longitude,
             'license_attachment' => $this->license_attachment,
             'commercial_register_attachment' => $this->commercial_register_attachment,
             'status' => $this->status,
             'fields' => FieldResource::collection($this->whenLoaded('fields')),
             'categories' => CategoryResource::collection($this->whenLoaded('categories')),
+            'addresses' => AddressResource::collection($this->whenLoaded('addresses')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
     }
-} 
+}

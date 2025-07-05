@@ -18,7 +18,7 @@ class RegisterRequest extends FormRequest
         $rules = [
             'name' => ['required', 'string', 'max:255'],
             'phone' => [
-                'required', 
+                'required',
                 'string',
                 function ($attribute, $value, $fail) {
                     $role = $this->validated('role');
@@ -26,7 +26,7 @@ class RegisterRequest extends FormRequest
                         ->where('is_verified', true)
                         ->whereNull('deleted_at')
                         ->exists();
-                    
+
                     if ($exists) {
                         $fail(__('messages.validation.unique.phone'));
                     }
@@ -37,22 +37,25 @@ class RegisterRequest extends FormRequest
                             ->where('is_verified', false)
                             ->whereNull('deleted_at')
                             ->exists();
-                        
+
                         if ($unverifiedExists) {
                             $fail(__('messages.validation.unique.phone'));
                         }
                     }
-                }
+                },
             ],
             'country_code' => ['required'],
-            'address' => ['required', 'string'],
-            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
-            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
+            'address' => ['required', 'array'],
+            'address.name' => ['required', 'string'],
+            'address.street' => ['required', 'string'],
+            'address.city' => ['required', 'string'],
+            'address.latitude' => ['required', 'numeric'],
+            'address.longitude' => ['required', 'numeric'],
             'business_name' => ['required', 'string'],
             'email' => [
-                'nullable', 
-                'string', 
-                'email', 
+                'nullable',
+                'string',
+                'email',
                 'max:255',
                 function ($attribute, $value, $fail) {
                     $role = $this->validated('role');
@@ -61,7 +64,7 @@ class RegisterRequest extends FormRequest
                             ->where('is_verified', true)
                             ->whereNull('deleted_at')
                             ->exists();
-                        
+
                         if ($exists) {
                             $fail(__('messages.validation.unique.email'));
                         }
@@ -71,20 +74,20 @@ class RegisterRequest extends FormRequest
                             ->where('is_verified', false)
                             ->whereNull('deleted_at')
                             ->exists();
-                        
+
                         if ($unverifiedExists) {
                             $fail(__('messages.validation.unique.email'));
                         }
                     }
-                }
+                },
             ],
             'password' => ['required', 'confirmed', Password::min(8)
                 ->letters()
                 ->mixedCase()
                 ->numbers()
-                ->symbols()
+                ->symbols(),
             ],
-            'role' => ['required', 'string', 'in:' . implode(',', UserRole::values())],
+            'role' => ['required', 'string', 'in:'.implode(',', UserRole::values())],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
         ];
 
@@ -134,4 +137,4 @@ class RegisterRequest extends FormRequest
             'field_id.exists' => __('messages.validation.exists.field_id'),
         ];
     }
-} 
+}

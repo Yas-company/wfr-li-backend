@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
@@ -38,13 +39,14 @@ class User extends Authenticatable
         'license_attachment',
         'commercial_register_attachment',
         'field_id',
-        'country_code'
+        'country_code',
     ];
 
     protected $attributes = [
         'is_verified' => false,
-        'role' => UserRole::VISITOR->value
+        'role' => UserRole::VISITOR->value,
     ];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -67,7 +69,7 @@ class User extends Authenticatable
         'status' => UserStatus::class,
         'is_verified' => 'boolean',
         'latitude' => 'decimal:8',
-        'longitude' => 'decimal:8'
+        'longitude' => 'decimal:8',
     ];
 
     public function isVisitor(): bool
@@ -134,5 +136,10 @@ class User extends Authenticatable
     public function cart(): HasOne
     {
         return $this->hasOne(Cart::class);
+    }
+
+    public function addresses(): HasMany
+    {
+        return $this->hasMany(Address::class);
     }
 }

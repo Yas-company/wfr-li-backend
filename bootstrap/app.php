@@ -1,6 +1,7 @@
 <?php
 
 use App\Exceptions\CartException;
+use App\Exceptions\UserException;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -18,7 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(SetLocale::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function (CartException $e) {
+        $exceptions->render(function (CartException|UserException $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
