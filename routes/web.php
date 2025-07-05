@@ -6,14 +6,11 @@ use Illuminate\Support\Facades\Route;
 
 // Landing page route
 Route::get('/', function () {
-    $html = file_get_contents(public_path('landing/index.html'));
-    // Replace the CSRF token placeholder with actual token
-    $html = str_replace('{{ csrf_token() }}', csrf_token(), $html);
-    return response($html)->header('Content-Type', 'text/html');
+    return file_get_contents(public_path('landing/index.html'));
 })->name('landing');
 
 // Interest form submission route
-Route::post('/api/interest', [InterestController::class, 'store'])->name('interest.store');
+// Route::post('/api/interest', [InterestController::class, 'store'])->name('interest.store');
 
 // Original routes moved to different paths
 Route::get('/app', [HomeController::class, 'index'])->name('home');
