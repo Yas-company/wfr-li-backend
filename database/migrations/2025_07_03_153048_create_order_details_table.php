@@ -20,7 +20,7 @@ return new class extends Migration
             $table->decimal('shipping_latitude', 10, 8);
             $table->decimal('shipping_longitude', 10, 8);
             $table->enum('payment_status', array_column(PaymentStatus::cases(), 'value'))->default(PaymentStatus::PENDING);
-            $table->enum('payment_method', array_column(PaymentMethod::cases(), 'value'))->default(PaymentMethod::VISA);
+            $table->enum('payment_method', array_column(PaymentMethod::cases(), 'value'))->default(PaymentMethod::Tap);
             $table->string('tracking_number')->nullable();
             $table->date('estimated_delivery_date')->nullable();
             $table->text('notes');
