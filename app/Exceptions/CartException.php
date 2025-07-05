@@ -16,4 +16,14 @@ class CartException extends Exception
     {
         return new self(__('messages.cart.cannot_mix_products_from_different_suppliers'), Response::HTTP_UNPROCESSABLE_ENTITY);
     }
+
+    public static function emptyCart(): self
+    {
+        return new self(__('messages.cart.empty'), Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public static function productUnavailable(): self
+    {
+        return new self(__('messages.cart.item_not_found'), Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
 }

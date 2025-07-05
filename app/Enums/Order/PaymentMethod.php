@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums;
+namespace App\Enums\Order;
 
 enum PaymentMethod: string
 {
@@ -22,4 +22,4 @@ enum PaymentMethod: string
             self::VISA => 'primary',
         };
     }
-} 
+}

@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
+use App\Contracts\AddToCartValidatorInterface;
 use App\Services\Cart\CartService;
 use App\Http\Services\ProductService;
 use App\Http\Services\SupplierService;
 use Illuminate\Support\ServiceProvider;
-use App\Contracts\CartValidatorInterface;
 use App\Validators\CompositeCartValidator;
 use App\Validators\StockAvailabilityValidator;
 use App\Validators\SingleSupplierCartValidator;
@@ -34,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SupplierServiceInterface::class, SupplierService::class);
 
         $this->app->bind(
-            CartValidatorInterface::class,
+            AddToCartValidatorInterface::class,
             fn () => new CompositeCartValidator([
                 new SingleSupplierCartValidator(),
                 new StockAvailabilityValidator(),
