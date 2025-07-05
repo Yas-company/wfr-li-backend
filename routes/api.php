@@ -1,17 +1,8 @@
 <?php
 
-use App\Http\Controllers\api\v1\InterestController;
 use Illuminate\Support\Facades\Route;
 
-// Public routes (no CSRF protection needed)
-Route::options('/interest', function () {
-    return response()->json([], 200, [
-        'Access-Control-Allow-Origin' => '*',
-        'Access-Control-Allow-Methods' => 'POST, OPTIONS',
-        'Access-Control-Allow-Headers' => 'Content-Type, Accept, Authorization',
-    ]);
-});
-Route::post('/interest', [InterestController::class, 'store'])->name('api.interest.store');
+
 
 Route::prefix('v1')->group(function () {
     require base_path('routes/api/v1/auth.php');
@@ -23,4 +14,5 @@ Route::prefix('v1')->group(function () {
     require base_path('routes/api/v1/favorites.php');
     require base_path('routes/api/v1/cart.php');
     require base_path('routes/api/v1/customer.php');
+    require base_path('routes/api/v1/interest.php');
 });

@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log('Submitting form data:', data);
         
         // Try the Laravel API endpoint first
-        fetch('/api/interest', {
+        fetch('/api/v1/interest', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
