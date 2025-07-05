@@ -128,16 +128,21 @@ document.addEventListener("DOMContentLoaded", function () {
         };
 
         // Submit to backend
+        console.log('Submitting form data:', data);
         fetch('/api/interest', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+            'Accept': 'application/json',
           },
           body: JSON.stringify(data)
         })
-        .then(response => response.json())
+        .then(response => {
+          console.log('Response status:', response.status);
+          return response.json();
+        })
         .then(result => {
+          console.log('Server response:', result);
           loadingSpinner.classList.add('hidden');
           submitText.classList.remove('hidden');
           submitBtn.disabled = false;
