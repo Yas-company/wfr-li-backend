@@ -2,19 +2,19 @@
 
 namespace App\Validators;
 
+use App\Contracts\AddToCartValidatorInterface;
 use App\Models\Product;
 use App\Exceptions\CartException;
-use App\Contracts\CartValidatorInterface;
 use App\Models\Cart;
 
-class SingleSupplierCartValidator implements CartValidatorInterface
+class SingleSupplierCartValidator implements AddToCartValidatorInterface
 {
 
     /**
      * @param Cart $cart
      * @param Product $product
      */
-    public function validateAddToCart(Cart $cart, Product $product, int $quantity = 1): void
+    public function validateAdd(Cart $cart, Product $product, ?int $quantity = null): void
     {
         if (!$cart || $cart->products->isEmpty()) {
             return;

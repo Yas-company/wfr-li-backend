@@ -8,9 +8,11 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CartResource;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\OrderResource;
 use Symfony\Component\HttpFoundation\Response;
-use App\Http\Requests\Cart\AddProductToCartRequest;
 use App\Services\Contracts\CartServiceInterface;
+use App\Http\Requests\Cart\AddProductToCartRequest;
+use App\Http\Requests\Cart\CheckoutCartRequest;
 
 class CartController extends Controller
 {
@@ -88,5 +90,33 @@ class CartController extends Controller
         $this->cartService->clearCart(Auth::user());
 
         return $this->successResponse(data:[], statusCode: Response::HTTP_CREATED);
+    }
+
+    /**
+     * Checkout the cart.
+     *
+     * @param CheckoutCartRequest $request
+     *
+     * @return JsonResponse
+     */
+    public function checkout(CheckoutCartRequest $request): JsonResponse
+    {
+        $data = [
+            'shipping_address' => $request->validated('shipping_address'),
+            'shipping_latitude' => $request->validated('shipping_latitude'),
+            'shipping_longitude' => $request->validated('shipping_longitude'),
+            'payment_method' => $request->validated('payment_method'),
+            'notes' => $request->validated('notes'),
+        ];
+
+        try {
+            $order = $this->cartService->checkout(Auth::user(), $data);
+            return $this->successResponse(
+                data: ['order' => OrderResource::make($order)],
+                statusCode: Response::HTTP_CREATED
+            );
+        } catch (\App\Exceptions\CartException $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
     }
 }
