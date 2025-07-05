@@ -24,9 +24,7 @@ class CheckoutCartRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'shipping_address' => ['required', 'string'],
-            'shipping_latitude' => ['required', 'numeric'],
-            'shipping_longitude' => ['required', 'numeric'],
+            'shipping_address_id' => ['required', Rule::exists('addresses', 'id')->where('user_id', auth()->user()->id)],
             'payment_method' => ['required', Rule::in(PaymentMethod::cases())],
             'notes' => ['nullable', 'string'],
         ];
