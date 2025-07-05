@@ -129,7 +129,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Submit to backend
         console.log('Submitting form data:', data);
-        fetch('/api/interest', {
+        
+        // Try the Laravel API endpoint first
+        fetch('/api/v1/interest', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -166,11 +168,48 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         })
         .catch(error => {
-          console.error('Error:', error);
-          loadingSpinner.classList.add('hidden');
-          submitText.classList.remove('hidden');
-          submitBtn.disabled = false;
-          alert('حدث خطأ في الاتصال، يرجى المحاولة مرة أخرى.');
+          console.error('Laravel API Error:', error);
+          
+          // Fallback: try the direct PHP endpoint
+          console.log('Trying fallback PHP endpoint...');
+          fetch('/api-test.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: JSON.stringify(data)
+          })
+          .then(response => response.json())
+          .then(result => {
+            console.log('Fallback result:', result);
+            loadingSpinner.classList.add('hidden');
+            submitText.classList.remove('hidden');
+            submitBtn.disabled = false;
+            
+            if(result.success) {
+              successMessage.classList.remove('hidden');
+              interestForm.reset();
+              
+              const successText = successMessage.querySelector('p');
+              if(successText) {
+                successText.textContent = 'تم تسجيل اهتمامك بنجاح! (تم الحفظ مؤقتاً)';
+              }
+
+              setTimeout(() => {
+                successMessage.classList.add('hidden');
+              }, 5000);
+            } else {
+              alert('حدث خطأ أثناء تسجيل اهتمامك، يرجى المحاولة مرة أخرى.');
+            }
+          })
+          .catch(fallbackError => {
+            console.error('Fallback Error:', fallbackError);
+            loadingSpinner.classList.add('hidden');
+            submitText.classList.remove('hidden');
+            submitBtn.disabled = false;
+            alert('حدث خطأ في الاتصال، يرجى المحاولة مرة أخرى أو التواصل معنا مباشرة.');
+          });
         });
       }
     });

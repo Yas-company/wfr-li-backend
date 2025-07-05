@@ -15,6 +15,15 @@ class InterestController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        // Add CORS headers for production
+        if ($request->isMethod('options')) {
+            return response()->json([], 200, [
+                'Access-Control-Allow-Origin' => '*',
+                'Access-Control-Allow-Methods' => 'POST, OPTIONS',
+                'Access-Control-Allow-Headers' => 'Content-Type, Accept, Authorization',
+            ]);
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
@@ -27,7 +36,11 @@ class InterestController extends Controller
                 'success' => false,
                 'message' => 'البيانات غير صحيحة',
                 'errors' => $validator->errors()
-            ], 422);
+            ], 422, [
+                'Access-Control-Allow-Origin' => '*',
+                'Access-Control-Allow-Methods' => 'POST, OPTIONS',
+                'Access-Control-Allow-Headers' => 'Content-Type, Accept, Authorization',
+            ]);
         }
 
         try {
@@ -47,14 +60,22 @@ class InterestController extends Controller
                     'name' => $interest->name,
                     'email' => $interest->email,
                 ]
-            ], 201);
+            ], 201, [
+                'Access-Control-Allow-Origin' => '*',
+                'Access-Control-Allow-Methods' => 'POST, OPTIONS',
+                'Access-Control-Allow-Headers' => 'Content-Type, Accept, Authorization',
+            ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'حدث خطأ أثناء تسجيل اهتمامك، يرجى المحاولة مرة أخرى.',
                 'error' => $e->getMessage()
-            ], 500);
+            ], 500, [
+                'Access-Control-Allow-Origin' => '*',
+                'Access-Control-Allow-Methods' => 'POST, OPTIONS',
+                'Access-Control-Allow-Headers' => 'Content-Type, Accept, Authorization',
+            ]);
         }
     }
 } 
