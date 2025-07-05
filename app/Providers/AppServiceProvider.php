@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Http\Services\Contracts\PaymentServiceInterface;
+use App\Http\Services\Payment\PaymentService;
 use App\Services\Cart\CartService;
 use App\Http\Services\ProductService;
 use App\Http\Services\SupplierService;
@@ -32,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ProductServiceInterface::class, ProductService::class);
         $this->app->bind(CartServiceInterface::class, CartService::class);
         $this->app->bind(SupplierServiceInterface::class, SupplierService::class);
+        $this->app->bind(PaymentServiceInterface::class, PaymentService::class);
 
         $this->app->bind(
             CartValidatorInterface::class,
