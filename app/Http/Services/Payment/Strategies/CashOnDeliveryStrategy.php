@@ -2,29 +2,27 @@
 
 namespace App\Http\Services\Payment\Strategies;
 
-use App\Enums\PaymentMethod;
+use App\Enums\Order\PaymentMethod;
+use App\Enums\Order\PaymentStatus;
 use App\Http\Services\Contracts\PaymentStrategyInterface;
 use App\Models\Payment;
-use App\Enums\PaymentStatus;
 
 class CashOnDeliveryStrategy implements PaymentStrategyInterface
 {
-    public function createPayment(array $data): array
+
+    public function createPayment(array $data,$totals_discount): int
     {
         $payment = Payment::create([
             'payment_method' => PaymentMethod::CASH_ON_DELIVERY,
             'status' => PaymentStatus::PENDING,
-            'amount' => $data['amount'],
+            'amount' => $totals_discount,
             'currency' => $data['currency'] ?? 'SAR',
             'user_id' => auth()->id(),
         ]);
 
-        return [
-            'message' => 'تم تسجيل الدفع عند التوصيل',
-            'payment_id' => $payment->id,
-            'status' => $payment->status->value
-        ];
+        return $payment->id;
     }
+
 
     public function verifyPayment(string $id): array
     {

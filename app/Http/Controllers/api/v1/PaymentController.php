@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\api\v1;
 
-use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Services\Contracts\PaymentServiceInterface;
 use App\Http\Services\Payment\PaymentContext;
@@ -32,9 +31,9 @@ class PaymentController extends Controller
         $context = new PaymentContext();
         $context->setStrategy($strategy);
 
-        $result = $context->createPayment($request->all());
+        //$result = $context->createPayment($request->all());
 
-        return $this->successResponse($result, 'تم إنشاء الدفع بنجاح');
+        //return $this->successResponse($result, 'تم إنشاء الدفع بنجاح');
     }
 
 

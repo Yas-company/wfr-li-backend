@@ -13,9 +13,9 @@ class PaymentContext
         $this->strategy = $strategy;
     }
 
-    public function createPayment(array $data): array
+    public function createPayment(array $data,$totals_discount): int
     {
-        return $this->strategy->createPayment($data);
+        return $this->strategy->createPayment($data,$totals_discount);
     }
 
     public function verifyPayment(string $tap_id): array

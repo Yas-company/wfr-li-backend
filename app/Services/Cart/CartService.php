@@ -3,6 +3,8 @@
 namespace App\Services\Cart;
 
 use App\Contracts\AddToCartValidatorInterface;
+use App\Http\Services\Payment\PaymentContext;
+use App\Http\Services\Payment\PaymentFactory;
 use App\Models\Cart;
 use App\Models\User;
 use App\Models\Order;
@@ -131,14 +133,16 @@ class CartService implements CartServiceInterface
         $cart = $this->getCart($user);
         $this->cartValidator->validateCheckout($cart);
 
+        $strategy = PaymentFactory::make($checkoutData['payment_method']);
+        $context = new PaymentContext();
+        $context->setStrategy($strategy);
 
-        return DB::transaction(function() use ($cart, $user, $checkoutData) {
+        return DB::transaction(function() use ($cart, $user, $checkoutData,$context) {
 
             $totals = $this->getCartTotals($cart);
 
             $cartProductIds = $cart->products->pluck('product_id')->toArray();
             Product::whereIn('id', $cartProductIds)->lockForUpdate()->get();
-
 
             $order = Order::create([
                 'user_id' => $user->id,
@@ -147,11 +151,14 @@ class CartService implements CartServiceInterface
                 'status' => 'pending',
             ]);
 
+           $pyment_id =  $context->createPayment($checkoutData, $totals->discount);
+
             OrderDetail::create([
                 'order_id' => $order->id,
                 'shipping_address_id' => $checkoutData['shipping_address_id'],
                 'payment_method' => $checkoutData['payment_method'],
                 'notes' => $checkoutData['notes'],
+                'payment_id' => $pyment_id,
             ]);
 
             $orderProducts = $cart->products->mapWithKeys(fn($item) => [
@@ -167,6 +174,7 @@ class CartService implements CartServiceInterface
                 Product::where('id', $item->product_id)
                     ->decrement('stock_qty', $item->quantity);
             }
+
 
             $this->cartProductManager->clear($cart);
 
