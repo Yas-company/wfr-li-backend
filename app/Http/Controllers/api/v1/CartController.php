@@ -102,9 +102,7 @@ class CartController extends Controller
     public function checkout(CheckoutCartRequest $request): JsonResponse
     {
         $data = [
-            'shipping_address' => $request->validated('shipping_address'),
-            'shipping_latitude' => $request->validated('shipping_latitude'),
-            'shipping_longitude' => $request->validated('shipping_longitude'),
+            'shipping_address_id' => $request->validated('shipping_address_id'),
             'payment_method' => $request->validated('payment_method'),
             'notes' => $request->validated('notes'),
         ];

@@ -15,14 +15,12 @@ class OrderDetailResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'shipping_address' => $this->shipping_address,
-            'shipping_latitude' => $this->shipping_latitude,
-            'shipping_longitude' => $this->shipping_longitude,
             'notes' => $this->notes,
             'payment_status' => $this->payment_status,
             'payment_method' => $this->payment_method,
             'tracking_number' => $this->tracking_number,
             'estimated_delivery_date' => $this->estimated_delivery_date,
+            'shipping_address' => AddressResource::make($this->whenLoaded('shippingAddress')),
         ];
     }
 }

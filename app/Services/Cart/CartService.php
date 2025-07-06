@@ -149,9 +149,7 @@ class CartService implements CartServiceInterface
 
             OrderDetail::create([
                 'order_id' => $order->id,
-                'shipping_address' => $checkoutData['shipping_address'],
-                'shipping_latitude' => $checkoutData['shipping_latitude'],
-                'shipping_longitude' => $checkoutData['shipping_longitude'],
+                'shipping_address_id' => $checkoutData['shipping_address_id'],
                 'payment_method' => $checkoutData['payment_method'],
                 'notes' => $checkoutData['notes'],
             ]);

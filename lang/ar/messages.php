@@ -27,6 +27,11 @@ return [
         'cannot_mix_products_from_different_suppliers' => 'لا يمكن دمج المنتجات من مزودين مختلفين',
     ],
 
+    'users' => [
+        'cannot_delete_last_address' => 'لا يمكن حذف العنوان الأخير',
+        'at_least_one_default_address_required' => 'يجب تحديد عنوان افتراضي واحد على الأقل',
+    ],
+
     // Auth Messages
     'registration_successful' => 'تم التسجيل بنجاح',
     'registration_failed' => 'فشل التسجيل',
@@ -88,7 +93,7 @@ return [
             'symbols' => 'يجب أن تحتوي كلمة المرور على رموز',
         ],
         'size' => [
-            'otp' => 'يجب أن يتكون رمز التحقق من 6 أرقام'
+            'otp' => 'يجب أن يتكون رمز التحقق من 6 أرقام',
         ],
         'exists' => [
             'phone' => 'رقم الهاتف غير مسجل',

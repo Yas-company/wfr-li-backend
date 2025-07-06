@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Cart;
+namespace App\Http\Requests\Address;
 
-use Illuminate\Validation\Rule;
-use App\Enums\Order\PaymentMethod;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CheckoutCartRequest extends FormRequest
+class UpdateAddressRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +22,13 @@ class CheckoutCartRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'shipping_address_id' => ['required', Rule::exists('addresses', 'id')->where('user_id', auth()->user()->id)],
-            'payment_method' => ['required', Rule::in(PaymentMethod::cases())],
-            'notes' => ['nullable', 'string'],
+            'name' => ['string', 'max:255'],
+            'street' => ['string', 'max:255'],
+            'city' => ['string', 'max:255'],
+            'phone' => ['string', 'max:255'],
+            'latitude' => ['numeric'],
+            'longitude' => ['numeric'],
+            'is_default' => ['boolean'],
         ];
     }
 }

@@ -27,6 +27,11 @@ return [
         'cannot_mix_products_from_different_suppliers' => 'Cannot mix products from different suppliers',
     ],
 
+    'users' => [
+        'cannot_delete_last_address' => 'Cannot delete last address',
+        'at_least_one_default_address_required' => 'At least one default address is required',
+    ],
+
     // Auth Messages
     'registration_successful' => 'Registration successful',
     'registration_failed' => 'Registration failed',
@@ -88,7 +93,7 @@ return [
             'symbols' => 'Password must contain symbols',
         ],
         'size' => [
-            'otp' => 'Verification code must be 6 digits'
+            'otp' => 'Verification code must be 6 digits',
         ],
         'exists' => [
             'phone' => 'Phone number not registered',

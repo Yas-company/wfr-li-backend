@@ -2,17 +2,20 @@
 
 namespace App\Providers;
 
-use App\Contracts\AddToCartValidatorInterface;
-use App\Http\Services\Contracts\PaymentServiceInterface;
-use App\Http\Services\Payment\PaymentService;
+use App\Models\Address;
+use App\Policies\AddressPolicy;
 use App\Services\Cart\CartService;
+use Illuminate\Support\Facades\Gate;
 use App\Http\Services\ProductService;
 use App\Http\Services\SupplierService;
 use Illuminate\Support\ServiceProvider;
 use App\Validators\CompositeCartValidator;
+use App\Http\Services\Payment\PaymentService;
+use App\Contracts\AddToCartValidatorInterface;
 use App\Validators\StockAvailabilityValidator;
 use App\Validators\SingleSupplierCartValidator;
 use App\Services\Contracts\CartServiceInterface;
+use App\Http\Services\Contracts\PaymentServiceInterface;
 use App\Http\Services\Contracts\ProductServiceInterface;
 use App\Http\Services\Contracts\SupplierServiceInterface;
 
@@ -43,5 +46,8 @@ class AppServiceProvider extends ServiceProvider
                 new StockAvailabilityValidator(),
             ])
         );
+
+        Gate::policy(Address::class, AddressPolicy::class);
+
     }
 }
