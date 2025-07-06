@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('order_details', function (Blueprint $table) {
             $table->dropColumn(['shipping_address', 'shipping_latitude', 'shipping_longitude']);
-            $table->foreignId('shipping_address_id')->constrained('addresses');
+            $table->foreignId('shipping_address_id')->after('notes')->constrained('addresses');
         });
     }
 

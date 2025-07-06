@@ -25,6 +25,7 @@ class UpdateAddressRequest extends FormRequest
             'name' => ['string', 'max:255'],
             'street' => ['string', 'max:255'],
             'city' => ['string', 'max:255'],
+            'phone' => ['string', 'max:255'],
             'latitude' => ['numeric'],
             'longitude' => ['numeric'],
             'is_default' => ['boolean'],

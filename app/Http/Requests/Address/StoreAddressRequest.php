@@ -25,6 +25,7 @@ class StoreAddressRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'street' => ['required', 'string', 'max:255'],
             'city' => ['required', 'string', 'max:255'],
+            'phone' => ['required', 'string', 'max:255'],
             'latitude' => ['required', 'numeric'],
             'longitude' => ['required', 'numeric'],
             'is_default' => ['required', 'boolean'],

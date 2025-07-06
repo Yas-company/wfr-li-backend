@@ -75,6 +75,8 @@ class AddressController extends Controller
      */
     public function update(UpdateAddressRequest $request, Address $address): JsonResponse
     {
+        $this->authorize('update', $address);
+
         $address = $this->addressService->updateAddress(Auth::user(), $address, $request->validated());
 
         return $this->successResponse(
@@ -95,6 +97,8 @@ class AddressController extends Controller
      */
     public function destroy(Address $address): JsonResponse
     {
+        $this->authorize('delete', $address);
+
         $this->addressService->deleteAddress(Auth::user(), $address);
 
         return $this->successResponse(

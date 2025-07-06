@@ -4,9 +4,10 @@ use App\Exceptions\CartException;
 use App\Exceptions\UserException;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -23,6 +24,13 @@ return Application::configure(basePath: dirname(__DIR__))
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
-            ], Response::HTTP_BAD_REQUEST);
+            ], $e->getCode());
+        });
+
+        $exceptions->render(function(HttpException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], Response::HTTP_NOT_FOUND);
         });
     })->create();

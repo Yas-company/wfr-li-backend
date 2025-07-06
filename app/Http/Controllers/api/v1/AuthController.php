@@ -130,6 +130,7 @@ class AuthController extends Controller
                 'name' => $data['address']['name'],
                 'street' => $data['address']['street'],
                 'city' => $data['address']['city'],
+                'phone' => $data['address']['phone'],
                 'latitude' => $data['address']['latitude'],
                 'longitude' => $data['address']['longitude'],
                 'is_default' => true,
@@ -159,7 +160,6 @@ class AuthController extends Controller
                 'message' => __('messages.supplier_registration_pending'),
             ], __('messages.supplier_registration_pending'));
         } catch (\Exception $e) {
-            dd($e);
             Log::error('Registration failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),

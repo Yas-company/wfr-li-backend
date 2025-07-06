@@ -51,6 +51,10 @@ class RegisterRequest extends FormRequest
             'address.city' => ['required', 'string'],
             'address.latitude' => ['required', 'numeric'],
             'address.longitude' => ['required', 'numeric'],
+            'address.phone' => [
+                'required',
+                'string',
+            ],
             'business_name' => ['required', 'string'],
             'email' => [
                 'nullable',

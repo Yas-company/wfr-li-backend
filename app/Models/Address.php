@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Policies\AddressPolicy;
 use Illuminate\Database\Eloquent\Model;
 
 class Address extends Model
@@ -10,6 +11,7 @@ class Address extends Model
         'name',
         'street',
         'city',
+        'phone',
         'latitude',
         'longitude',
         'is_default',
