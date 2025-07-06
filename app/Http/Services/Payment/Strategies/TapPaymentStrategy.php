@@ -2,7 +2,6 @@
 
 namespace App\Http\Services\Payment\Strategies;
 
-use App\Enums\PaymentStatus;
 use App\Http\Services\Contracts\PaymentStrategyInterface;
 use App\Models\Payment;
 use Illuminate\Support\Facades\Http;
@@ -18,7 +17,7 @@ class TapPaymentStrategy implements PaymentStrategyInterface
         $this->baseUrl = 'https://api.tap.company/v2/';
     }
 
-    public function createPayment(array $data): array
+    public function createPayment(array $data,$totals_discount) :int
     {
         $response = Http::withToken($this->secretKey)
             ->post($this->baseUrl . 'charges', [

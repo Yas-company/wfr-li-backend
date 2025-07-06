@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\Order\PaymentStatus;
 use Illuminate\Database\Eloquent\Model;
-use App\Enums\PaymentStatus;
 
 class Payment extends Model
 {

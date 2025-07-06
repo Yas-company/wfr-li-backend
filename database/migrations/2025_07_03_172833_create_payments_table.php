@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\PaymentStatus;
+use App\Enums\Order\PaymentStatus;
 use App\Enums\Order\PaymentMethod;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;

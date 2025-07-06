@@ -2,7 +2,7 @@
 
 namespace App\Http\Services\Payment;
 
-use App\Enums\PaymentStatus;
+use App\Enums\Order\PaymentStatus;
 use App\Http\Services\Contracts\PaymentServiceInterface;
 use App\Models\Ads;
 use App\Models\Category;
@@ -16,7 +16,7 @@ class PaymentService implements PaymentServiceInterface
     {
         $status = match ($data['status']) {
             'CAPTURED' => PaymentStatus::PAID,
-            'FAILED' => PaymentStatus::FAILED,
+            'FAILED' => PaymentStatus::CANCELLED,
             default => PaymentStatus::PENDING,
         };
 
