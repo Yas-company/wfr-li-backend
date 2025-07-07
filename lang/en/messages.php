@@ -25,6 +25,7 @@ return [
         'product_not_found' => 'Product not found',
         'insufficient_stock' => 'Insufficient stock',
         'cannot_mix_products_from_different_suppliers' => 'Cannot mix products from different suppliers',
+        'insufficient_min_order_amount' => 'The minimum order amount for :supplier_name is :min_order_amount. Please add more items to reach this amount.',
     ],
 
     'users' => [

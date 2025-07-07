@@ -26,4 +26,15 @@ class CartException extends Exception
     {
         return new self(__('messages.cart.item_not_found'), Response::HTTP_UNPROCESSABLE_ENTITY);
     }
+
+    public static function insufficientMinOrderAmount(string $supplierName, float $minOrderAmount): self
+    {
+        return new self(
+            message: __(
+                'messages.cart.insufficient_min_order_amount',
+                ['supplier_name' => $supplierName, 'min_order_amount' => $minOrderAmount]
+            ),
+            code: Response::HTTP_UNPROCESSABLE_ENTITY
+        );
+}
 }

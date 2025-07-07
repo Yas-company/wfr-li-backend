@@ -13,6 +13,9 @@ class SingleSupplierCartValidator implements AddToCartValidatorInterface
     /**
      * @param Cart $cart
      * @param Product $product
+     * @param int|null $quantity
+     *
+     * @throws CartException
      */
     public function validateAdd(Cart $cart, Product $product, ?int $quantity = null): void
     {
