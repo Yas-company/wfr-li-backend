@@ -2,19 +2,23 @@
 
 namespace App\Providers;
 
+use App\Models\User;
 use App\Models\Address;
 use App\Policies\AddressPolicy;
 use App\Services\Cart\CartService;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Services\ProductService;
 use App\Http\Services\SupplierService;
+use App\Validators\EmptyCartValidator;
 use Illuminate\Support\ServiceProvider;
+use App\Contracts\CartValidatorInterface;
 use App\Validators\CompositeCartValidator;
+use App\Validators\MinOrderAmountValidator;
 use App\Http\Services\Payment\PaymentService;
-use App\Contracts\AddToCartValidatorInterface;
 use App\Validators\StockAvailabilityValidator;
 use App\Validators\SingleSupplierCartValidator;
 use App\Services\Contracts\CartServiceInterface;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use App\Http\Services\Contracts\PaymentServiceInterface;
 use App\Http\Services\Contracts\ProductServiceInterface;
 use App\Http\Services\Contracts\SupplierServiceInterface;
@@ -39,15 +43,21 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SupplierServiceInterface::class, SupplierService::class);
         $this->app->bind(PaymentServiceInterface::class, PaymentService::class);
 
-        $this->app->bind(
-            AddToCartValidatorInterface::class,
-            fn () => new CompositeCartValidator([
+        $this->app->bind(CartValidatorInterface::class, fn () => new CompositeCartValidator(
+            addToCartValidators: [
                 new SingleSupplierCartValidator(),
                 new StockAvailabilityValidator(),
-            ])
-        );
+            ],
+            checkoutValidators: [
+                new MinOrderAmountValidator(),
+                new EmptyCartValidator(),
+            ]
+        ));
 
         Gate::policy(Address::class, AddressPolicy::class);
 
+        Relation::morphMap([
+            'user' => User::class
+        ]);
     }
 }

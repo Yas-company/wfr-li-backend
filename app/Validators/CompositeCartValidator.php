@@ -4,35 +4,48 @@ namespace App\Validators;
 
 use App\Models\Cart;
 use App\Models\Product;
-use App\Exceptions\CartException;
-use App\Contracts\AddToCartValidatorInterface;
-use App\Contracts\CheckoutCartValidatorInterface;
-
-class CompositeCartValidator implements AddToCartValidatorInterface, CheckoutCartValidatorInterface
+use App\Contracts\CartValidatorInterface;
+class CompositeCartValidator implements CartValidatorInterface
 {
     /**
-     * @param AddToCartValidatorInterface[] $validators
+     * @param $addToCartValidators
+     * @param $checkoutValidators
      */
-    public function __construct(protected iterable $validators)
+    public function __construct(
+        protected array $addToCartValidators,
+        protected array $checkoutValidators
+    )
     {
         //
     }
 
+    /**
+     * Validate the add to cart.
+     *
+     * @param Cart $cart
+     * @param Product $product
+     * @param int|null $quantity
+     *
+     * @throws CartException
+     */
     public function validateAdd(Cart $cart, Product $product, ?int $quantity = null): void
     {
-        foreach ($this->validators as $validator) {
+        foreach ($this->addToCartValidators as $validator) {
             $validator->validateAdd($cart, $product, $quantity);
         }
     }
 
+    /**
+     * Validate the checkout.
+     *
+     * @param Cart $cart
+     *
+     * @throws CartException
+     */
     public function validateCheckout(Cart $cart): void
     {
-        if ($cart->products->isEmpty()) {
-            throw CartException::emptyCart();
-        }
-
-        foreach ($cart->products as $item) {
-            $this->validateAdd($cart, $item->product, $item->quantity);
+        foreach ($this->checkoutValidators as $validator) {
+            $validator->validateCheckout($cart);
         }
     }
 }

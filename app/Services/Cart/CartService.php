@@ -2,9 +2,6 @@
 
 namespace App\Services\Cart;
 
-use App\Contracts\AddToCartValidatorInterface;
-use App\Http\Services\Payment\PaymentContext;
-use App\Http\Services\Payment\PaymentFactory;
 use App\Models\Cart;
 use App\Models\User;
 use App\Models\Order;
@@ -13,6 +10,11 @@ use App\Values\CartTotals;
 use App\Models\OrderDetail;
 use App\Exceptions\CartException;
 use Illuminate\Support\Facades\DB;
+use App\Enums\Settings\OrderSettings;
+use App\Values\CartSupplierRequirement;
+use App\Contracts\CartValidatorInterface;
+use App\Http\Services\Payment\PaymentContext;
+use App\Http\Services\Payment\PaymentFactory;
 use App\Services\Contracts\CartServiceInterface;
 
 class CartService implements CartServiceInterface
@@ -27,7 +29,7 @@ class CartService implements CartServiceInterface
      */
     public function __construct(
         private CartProductManager $cartProductManager,
-        protected AddToCartValidatorInterface $cartValidator
+        protected CartValidatorInterface $cartValidator
     )
     {
         //
@@ -117,6 +119,62 @@ class CartService implements CartServiceInterface
     public function getCartTotals(Cart $cart): CartTotals
     {
         return CartTotals::fromProducts($cart->products);
+    }
+
+    /**
+     * Get the supplier requirements.
+     *
+     * @param Cart $cart
+     *
+     * @return array
+     */
+    public function getSupplierRequirements(Cart $cart): array
+    {
+        $requirements = [];
+
+        foreach ($cart->products as $item) {
+            $supplierId = $item->product->supplier_id;
+            $supplierName = $item->product->supplier->name;
+
+            if (!isset($requirements[$supplierId])) {
+                $requirements[$supplierId] = [
+                    'supplier_id' => $supplierId,
+                    'supplier_name' => $supplierName,
+                    'required_amount' => $this->getMinOrderAmountForSupplier($supplierId),
+                    'current_total' => 0,
+                ];
+            }
+
+            $requirements[$supplierId]['current_total'] += $item->quantity * $item->price;
+        }
+
+        $final = [];
+        foreach ($requirements as $req) {
+            $requirement = new CartSupplierRequirement(
+                $req['supplier_id'],
+                $req['supplier_name'],
+                $req['required_amount'],
+                $req['current_total']
+            );
+
+            $final[] = $requirement->toArray();
+        }
+
+        return $final;
+    }
+
+    /**
+     * Get the min order amount for the supplier.
+     *
+     * @param int $supplierId
+     *
+     * @return float
+     */
+    protected function getMinOrderAmountForSupplier(int $supplierId): float
+    {
+        $user = User::find($supplierId);
+
+        return (float) $user?->setting(OrderSettings::ORDER_MIN_ORDER_AMOUNT->value, 0);
     }
 
 

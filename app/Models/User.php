@@ -142,4 +142,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(Address::class);
     }
+
+    public function settings()
+    {
+        return $this->hasMany(Setting::class);
+    }
+
+    public function setting(string $key, $default = null)
+    {
+        return $this->settings->firstWhere('key', $key)?->value ?? $default;
+    }
+
+    public function setSetting(string $key, $value): void
+    {
+        $this->settings()->updateOrCreate(['key' => $key], ['value' => $value]);
+    }
 }

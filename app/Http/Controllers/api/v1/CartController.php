@@ -37,12 +37,14 @@ class CartController extends Controller
     {
         $cart = $this->cartService->getCart(Auth::user());
         $totals = $this->cartService->getCartTotals($cart);
+        $supplierRequirements = $this->cartService->getSupplierRequirements($cart);
 
         return $this->successResponse(
             data:[
                 'cart' => CartResource::make($cart),
                 'total' => $totals->total,
                 'total_discount' => $totals->discount,
+                'supplier_requirements' => $supplierRequirements,
             ],
             statusCode: Response::HTTP_OK
         );
