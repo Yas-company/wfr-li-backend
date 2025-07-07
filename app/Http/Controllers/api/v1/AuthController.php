@@ -117,7 +117,7 @@ class AuthController extends Controller
                 ]);
                 if ($data['role'] === UserRole::SUPPLIER->value) {
                     foreach ($data['fields'] as $field) {
-                        $existingUser->fields()->syncWithoutDetaching($field);
+                        $user->fields()->syncWithoutDetaching($field);
                     }
                 }
                 if ($request->hasFile('image')) {
