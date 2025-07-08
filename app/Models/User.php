@@ -138,6 +138,7 @@ class User extends Authenticatable
         return $this->hasOne(Cart::class);
     }
 
+<<<<<<< HEAD
     public function addresses(): HasMany
     {
         return $this->hasMany(Address::class);
@@ -157,4 +158,7 @@ class User extends Authenticatable
     {
         $this->settings()->updateOrCreate(['key' => $key], ['value' => $value]);
     }
+=======
+
+>>>>>>> main
 }
