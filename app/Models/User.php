@@ -135,4 +135,6 @@ class User extends Authenticatable
     {
         return $this->hasOne(Cart::class);
     }
+
+
 }

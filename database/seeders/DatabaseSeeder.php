@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             OnboardingScreenSeeder::class,
             PageSeeder::class,
             UserSeeder::class,
+            OfferSeeder::class,
         ]);
     }
 }
