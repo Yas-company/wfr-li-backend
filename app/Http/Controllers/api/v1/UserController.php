@@ -26,9 +26,9 @@ class UserController extends Controller
     /**
      * Return a list of all suppliers (any status).
      */
-    public function suppliers()
+public function suppliers(Request $request)
     {
-        $result = $this->userService->suppliers();
+        $result = $this->userService->suppliers($request);
         if (isset($result['error'])) {
             return $this->errorResponse($result['error'], 500);
         }

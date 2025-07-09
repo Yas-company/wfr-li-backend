@@ -142,6 +142,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Address::class);
     }
+    public function defaultAddress(): HasOne
+    {
+        return $this->hasOne(Address::class)->where('is_default', true);
+    }
 
     public function settings()
     {
