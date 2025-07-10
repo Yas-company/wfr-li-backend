@@ -57,10 +57,21 @@ class AddressService
     public function updateAddress(User $user, Address $address, array $data): Address
     {
         $isDefault = (bool) ($data['is_default'] ?? true);
+        $numberOfDefaultAddresses = $user->addresses()->where('is_default', true)->count();
 
-        if ($user->addresses()->count() === 1 && ! $isDefault) {
-            throw UserException::atLeastOneDefaultAddressRequired();
-        } else {
+        /* If the user is updating the default address, we need to make sure there is at least one default address */
+        if(!$isDefault)
+        {
+            if($numberOfDefaultAddresses === 1)
+            {
+                if($address->isDefault())
+                {
+                    throw UserException::atLeastOneDefaultAddressRequired();
+                }
+            }
+        }
+        else
+        {
             $user->addresses()->where('id', '!=', $address->id)->update(['is_default' => false]);
         }
 
