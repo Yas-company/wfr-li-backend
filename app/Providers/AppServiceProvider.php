@@ -22,6 +22,8 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use App\Http\Services\Contracts\PaymentServiceInterface;
 use App\Http\Services\Contracts\ProductServiceInterface;
 use App\Http\Services\Contracts\SupplierServiceInterface;
+use App\Models\Order;
+use App\Policies\OrderPolicy;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -55,6 +57,8 @@ class AppServiceProvider extends ServiceProvider
         ));
 
         Gate::policy(Address::class, AddressPolicy::class);
+        Gate::policy(Order::class, OrderPolicy::class);
+
 
         Relation::morphMap([
             'user' => User::class

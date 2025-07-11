@@ -198,7 +198,7 @@ class CartService implements CartServiceInterface
         return DB::transaction(function() use ($cart, $user, $checkoutData,$context) {
 
             $totals = $this->getCartTotals($cart);
-
+            $supplierId = $cart->products->first()->product->supplier_id;
             $cartProductIds = $cart->products->pluck('product_id')->toArray();
             Product::whereIn('id', $cartProductIds)->lockForUpdate()->get();
 
@@ -207,6 +207,7 @@ class CartService implements CartServiceInterface
                 'total' => $totals->total,
                 'total_discount' => $totals->discount,
                 'status' => 'pending',
+                'supplier_id' => $supplierId,
             ]);
 
            $pyment_id =  $context->createPayment($checkoutData, $totals->discount);
