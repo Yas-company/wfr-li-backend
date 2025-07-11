@@ -217,6 +217,7 @@ class CartService implements CartServiceInterface
                 'payment_method' => $checkoutData['payment_method'],
                 'notes' => $checkoutData['notes'],
                 'payment_id' => $pyment_id,
+                'shipping_method' => $checkoutData['shipping_method'],
             ]);
 
             $orderProducts = $cart->products->mapWithKeys(fn($item) => [

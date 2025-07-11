@@ -107,6 +107,7 @@ class CartController extends Controller
             'shipping_address_id' => $request->validated('shipping_address_id'),
             'payment_method' => $request->validated('payment_method'),
             'notes' => $request->validated('notes'),
+            'shipping_method' => $request->validated('shipping_method'),
         ];
 
         try {
