@@ -20,6 +20,7 @@ class OrderResource extends JsonResource
             'receipt' => $this->whenLoaded('receipt'),
             'user' => new UserResource($this->whenLoaded('user')),
             'orderDetail' => OrderDetailResource::make($this->whenLoaded('orderDetail')),
+            'supplier' => UserResource::make($this->whenLoaded('supplier')),
             'products' => $this->whenLoaded('products', function () {
                 return $this->products->map(function ($item) {
                     $product = $item->product;

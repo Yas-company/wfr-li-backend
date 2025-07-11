@@ -17,5 +17,5 @@ Route::prefix('v1')->group(function () {
     require base_path('routes/api/v1/interest.php');
     require base_path('routes/api/v1/payment.php');
     require base_path('routes/api/v1/users.php');
-
+    require base_path('routes/api/v1/orders.php');
 });

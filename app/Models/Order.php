@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Order\OrderStatus;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +16,8 @@ class Order extends Model
         'user_id',
         'total',
         'total_discount',
-        'status'
+        'status',
+        'supplier_id'
     ];
 
 
@@ -28,6 +30,11 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function supplier(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'supplier_id');
+    }
+
     public function products(): HasMany
     {
         return $this->hasMany(OrderProduct::class);
@@ -36,5 +43,15 @@ class Order extends Model
     public function orderDetail(): HasOne
     {
         return $this->hasOne(OrderDetail::class);
+    }
+
+    public function scopeForBuyer(Builder $query, int $userId): Builder
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    public function scopeForSupplier(Builder $query, int $userId): Builder
+    {
+        return $query->where('supplier_id', $userId);
     }
 }

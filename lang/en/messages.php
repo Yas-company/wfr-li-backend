@@ -106,6 +106,9 @@ return [
         'min' => [
             'quantity' => 'Quantity must be at least 1',
         ],
+        'end_date' => [
+            'after' => 'End date must be after start date',
+        ],
     ],
 
     // Favorites Messages
