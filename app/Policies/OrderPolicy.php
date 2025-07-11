@@ -17,7 +17,7 @@ class OrderPolicy
 
     public function viewAsBuyer(User $user, Order $order): bool
     {
-        return $user->isBuyer() &&$user->id === $order->user_id;
+        return $user->isBuyer() && $user->id === $order->user_id;
     }
 
     public function viewAsSupplier(User $user, Order $order): bool
