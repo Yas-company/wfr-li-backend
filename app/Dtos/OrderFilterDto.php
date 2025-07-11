@@ -2,6 +2,7 @@
 
 namespace App\Dtos;
 
+
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -10,16 +11,16 @@ final readonly class OrderFilterDto
     /**
      * OrderFilterDto constructor.
      *
-     * @param string|null $order_status
-     * @param string|null $shipping_method
-     * @param Carbon|null $start_date
-     * @param Carbon|null $end_date
+     * @param string|null $orderStatus
+     * @param string|null $shippingMethod
+     * @param Carbon|null $startDate
+     * @param Carbon|null $endDate
      */
     public function __construct(
-        public readonly ?string $order_status = null,
-        public readonly ?string $shipping_method = null,
-        public readonly ?Carbon $start_date = null,
-        public readonly ?Carbon $end_date = null,
+        public readonly ?string $orderStatus = null,
+        public readonly ?string $shippingMethod = null,
+        public readonly ?Carbon $startDate = null,
+        public readonly ?Carbon $endDate = null,
     )
     {
         //
@@ -35,10 +36,10 @@ final readonly class OrderFilterDto
     public static function fromRequest(Request $request): self
     {
         return new self(
-            order_status: $request->get('status'),
-            shipping_method: $request->get('shipping_method'),
-            start_date: $request->date('start_date'),
-            end_date: $request->date('end_date'),
+            orderStatus: $request->get('status'),
+            shippingMethod: $request->get('shipping_method'),
+            startDate: $request->date('start_date'),
+            endDate: $request->date('end_date'),
         );
     }
 }

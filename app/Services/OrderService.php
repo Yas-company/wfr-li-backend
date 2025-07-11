@@ -65,14 +65,14 @@ class OrderService
             ])
             ->withCount('products')
             ->leftJoin('order_details', 'order_details.order_id', '=', 'orders.id')
-            ->when($orderFilterDto->order_status ?? null, function ($query) use ($orderFilterDto) {
-                $query->where('orders.status', $orderFilterDto->order_status);
+            ->when($orderFilterDto->orderStatus ?? null, function ($query) use ($orderFilterDto) {
+                $query->where('orders.status', $orderFilterDto->orderStatus);
             })
-            ->when($orderFilterDto->shipping_method ?? null, function ($query) use ($orderFilterDto) {
-                $query->where('order_details.shipping_method', $orderFilterDto->shipping_method);
+            ->when($orderFilterDto->shippingMethod ?? null, function ($query) use ($orderFilterDto) {
+                $query->where('order_details.shipping_method', $orderFilterDto->shippingMethod);
             })
-            ->when($orderFilterDto->start_date && $orderFilterDto->end_date, function ($query) use ($orderFilterDto) {
-                $query->whereBetween('orders.created_at', [$orderFilterDto->start_date->startOfDay(), $orderFilterDto->end_date->endOfDay()]);
+            ->when($orderFilterDto->startDate && $orderFilterDto->endDate, function ($query) use ($orderFilterDto) {
+                $query->whereBetween('orders.created_at', [$orderFilterDto->startDate->startOfDay(), $orderFilterDto->endDate->endOfDay()]);
             });
     }
 }
