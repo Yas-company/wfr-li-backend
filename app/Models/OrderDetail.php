@@ -15,6 +15,7 @@ class OrderDetail extends Model
         'tracking_number',
         'estimated_delivery_date',
         'notes',
+        'shipping_method',
     ];
 
     protected $with = ['shippingAddress'];

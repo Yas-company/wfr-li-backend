@@ -4,6 +4,7 @@ namespace App\Http\Requests\Cart;
 
 use Illuminate\Validation\Rule;
 use App\Enums\Order\PaymentMethod;
+use App\Enums\Order\ShippingMethod;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CheckoutCartRequest extends FormRequest
@@ -27,6 +28,7 @@ class CheckoutCartRequest extends FormRequest
             'shipping_address_id' => ['required', Rule::exists('addresses', 'id')->where('user_id', auth()->user()->id)],
             'payment_method' => ['required', Rule::in(PaymentMethod::cases())],
             'notes' => ['nullable', 'string'],
+            'shipping_method' => ['required', Rule::in(ShippingMethod::cases())],
         ];
     }
 }

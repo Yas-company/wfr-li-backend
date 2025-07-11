@@ -21,6 +21,7 @@ class OrderDetailResource extends JsonResource
             'tracking_number' => $this->tracking_number,
             'estimated_delivery_date' => $this->estimated_delivery_date,
             'shipping_address' => AddressResource::make($this->whenLoaded('shippingAddress')),
+            'shipping_method' => $this->shipping_method,
         ];
     }
 }
