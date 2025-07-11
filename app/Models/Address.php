@@ -24,4 +24,9 @@ class Address extends Model
     protected $casts = [
         'is_default' => 'boolean',
     ];
+
+    public function isDefault(): bool
+    {
+        return $this->is_default;
+    }
 }
