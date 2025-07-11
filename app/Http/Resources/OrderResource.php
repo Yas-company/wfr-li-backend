@@ -14,6 +14,7 @@ class OrderResource extends JsonResource
             'user_id' => $this->user_id,
             'status' => $this->status,
             'total' => $this->total,
+            'total_discount' => $this->total_discount,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'deleted_at' => $this->deleted_at,
@@ -21,6 +22,7 @@ class OrderResource extends JsonResource
             'user' => new UserResource($this->whenLoaded('user')),
             'orderDetail' => OrderDetailResource::make($this->whenLoaded('orderDetail')),
             'supplier' => UserResource::make($this->whenLoaded('supplier')),
+            'products_count' => $this->products_count,
             'products' => $this->whenLoaded('products', function () {
                 return $this->products->map(function ($item) {
                     $product = $item->product;
@@ -34,7 +36,6 @@ class OrderResource extends JsonResource
                         'order_quantity' => $item->quantity,
                         'order_total' => ($item->price * $item->quantity),
                         'stock_qty' => $product->stock_qty,
-                        'is_favorite' => $product->is_favorite,
                         'category' => [
                             'id' => $product->category->id,
                             'name' => $product->category->name,

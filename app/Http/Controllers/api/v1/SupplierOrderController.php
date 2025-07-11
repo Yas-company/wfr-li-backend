@@ -55,7 +55,7 @@ class SupplierOrderController extends Controller
     {
         $this->authorize('viewAsSupplier', $order);
 
-        $order->load(['user', 'supplier', 'products', 'orderDetail']);
+        $order->load(['user', 'supplier', 'products', 'orderDetail'])->loadCount('products');
 
         return $this->successResponse(
             data: [

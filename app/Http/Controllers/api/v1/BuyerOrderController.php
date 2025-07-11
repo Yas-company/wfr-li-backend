@@ -56,7 +56,7 @@ class BuyerOrderController extends Controller
     {
         $this->authorize('viewAsBuyer', $order);
 
-        $order->load(['user', 'supplier', 'products', 'orderDetail']);
+        $order->load(['user', 'supplier', 'products', 'orderDetail'])->loadCount('products');
 
         return $this->successResponse(
             data: [
