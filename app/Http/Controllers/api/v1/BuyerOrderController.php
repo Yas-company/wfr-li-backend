@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1;
+namespace App\Http\Controllers\api\v1;
 
 use App\Models\Order;
 use App\Traits\ApiResponse;
