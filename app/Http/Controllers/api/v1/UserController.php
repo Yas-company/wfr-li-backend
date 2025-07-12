@@ -13,6 +13,7 @@ use App\Http\Services\UserService;
 use App\Models\User;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -26,7 +27,7 @@ class UserController extends Controller
     /**
      * Return a list of all suppliers (any status).
      */
-public function suppliers(Request $request)
+    public function suppliers(Request $request)
     {
         $result = $this->userService->suppliers($request);
         if (isset($result['error'])) {
@@ -42,7 +43,7 @@ public function suppliers(Request $request)
         if (isset($result['error'])) {
             return $this->errorResponse($result['error'], 500);
         }
-   
+
         return $this->successResponse(new SupplierDetailsResource($result),'Supplier retrieved successfully',200);
     }
 
@@ -57,7 +58,7 @@ public function suppliers(Request $request)
 
     public function getSupplierFields()
     {
-        $result = $this->userService->getSupplierFields();
+        $result = $this->userService->getSupplierFields(Auth::user());
         if (isset($result['error'])) {
             return $this->errorResponse($result['error'], 500);
         }

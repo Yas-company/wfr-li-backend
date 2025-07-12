@@ -11,8 +11,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/onboarding-screens', [OnboardingScreenController::class, 'index']);
     Route::get('/ads', [AdsController::class, 'index']);
     Route::get('/fields/supplier', [UserController::class, 'getSupplierFields']);
-    Route::get('/fields', [FieldController::class, 'index']);
-    Route::get('/fields/{field}', [FieldController::class, 'show']);
-
 
 });
+
+Route::get('/fields', [FieldController::class, 'index']);
+Route::get('/fields/{field}', [FieldController::class, 'show']);

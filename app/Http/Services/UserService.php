@@ -11,11 +11,9 @@ use Illuminate\Support\Facades\DB;
 
 class UserService
 {
-    public function getSupplierFields()
+    public function getSupplierFields(User $user)
     {
-        $user = Auth::user();
-        $fields = UserField::where('user_id', $user->id)->with('field')->get();
-        return $fields;
+        return $user->fields;
     }
 
     // public function suppliers()
@@ -28,39 +26,39 @@ class UserService
     // }
     public function suppliers($request)
     {
-        $buyer = Auth::user(); 
-        
+        $buyer = Auth::user();
+
         if (!$buyer) {
             return ['error' => 'User not authenticated'];
         }
 
-        
-        $query = User::where('role', UserRole::SUPPLIER)
+
+        $query = User::with('fields')->where('role', UserRole::SUPPLIER)
             ->where('status', UserStatus::APPROVED);
 
         // Check if distance filtering is needed
         $hasDistanceFilter = $request->has('distance');
         $search = $request->input('search');
 
-        
+
         if ($hasDistanceFilter) {
             $distance = $request->input('distance');
-            
+
             // Validate distance input
             if (!is_numeric($distance) || $distance <= 0) {
                 return ['error' => 'Invalid distance value'];
             }
-            
-           
+
+
             $buyerAddress = $buyer->defaultAddress;
             if (!$buyerAddress || !$buyerAddress->latitude || !$buyerAddress->longitude) {
                 return ['error' => 'Buyer location not available'];
             }
-            
+
             $latitude = $buyerAddress->latitude;
             $longitude = $buyerAddress->longitude;
-            
-      
+
+
             $query = $query->join('addresses', function($join) {
                 $join->on('users.id', '=', 'addresses.user_id')
                      ->where('addresses.is_default', '=', true);
@@ -127,8 +125,8 @@ class UserService
     }
     public function filter($request)
     {
-        $buyer = Auth::user(); 
-        $distance = $request->input('distance'); 
+        $buyer = Auth::user();
+        $distance = $request->input('distance');
         if(!$distance){
             return ['error' => 'Distance is required'];
         } else {
@@ -137,11 +135,11 @@ class UserService
             if (!$buyerAddress || !$buyerAddress->latitude || !$buyerAddress->longitude) {
                 return ['error' => 'Buyer location not available'];
             }
-            
+
             $latitude = $buyerAddress->latitude;
             $longitude = $buyerAddress->longitude;
 
-         
+
             $users = DB::table('users')
                 ->join('addresses', function($join) {
                     $join->on('users.id', '=', 'addresses.user_id')
@@ -162,7 +160,7 @@ class UserService
                 ->orderBy('distance')
                 ->paginate(10);
 
-            
+
             $userIds = $users->pluck('id')->toArray();
 
             $fields = DB::table('user_fields')
@@ -172,7 +170,7 @@ class UserService
                 ->get()
                 ->groupBy('user_id');
 
-        
+
             foreach ($users as $user) {
                 $user->fields = $fields->get($user->id, collect())->values();
                 foreach ($user->fields as $field) {
@@ -184,5 +182,5 @@ class UserService
             }
         }
         return $users;
-    }   
+    }
 }
