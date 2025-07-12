@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\Api\V1\BuyerOrderController;
-use App\Http\Controllers\Api\V1\SupplierOrderController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\api\v1\BuyerOrderController;
+use App\Http\Controllers\api\v1\SupplierOrderController;
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
 
