@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Order;
 
+use App\Http\Resources\RatingResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -23,6 +24,7 @@ class BuyerOrderListingResource extends JsonResource
             'tracking_number' => $this->tracking_number,
             'shipping_method' => $this->shipping_method,
             'payment_status' => $this->payment_status,
+            'ratings' => RatingResource::collection($this->whenLoaded('ratings')),
         ];
     }
 }

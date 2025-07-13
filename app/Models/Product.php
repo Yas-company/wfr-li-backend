@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ProductStatus;
 use App\Enums\UnitType;
+use App\Traits\Rateable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +14,7 @@ class Product extends Model
 {
     use HasFactory;
     use HasTranslations;
+    use Rateable;
 
     protected $guarded = [];
 

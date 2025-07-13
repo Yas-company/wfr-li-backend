@@ -33,6 +33,10 @@ return [
         'at_least_one_default_address_required' => 'يجب تحديد عنوان افتراضي واحد على الأقل',
     ],
 
+    'ratings' => [
+        'rated_successfully' => 'تم التقييم بنجاح',
+    ],
+
     // Auth Messages
     'registration_successful' => 'تم التسجيل بنجاح',
     'registration_failed' => 'فشل التسجيل',

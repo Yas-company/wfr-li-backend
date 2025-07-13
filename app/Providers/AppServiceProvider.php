@@ -3,7 +3,11 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Models\Order;
+use App\Models\Rating;
 use App\Models\Address;
+use App\Policies\OrderPolicy;
+use App\Policies\RatingPolicy;
 use App\Policies\AddressPolicy;
 use App\Services\Cart\CartService;
 use Illuminate\Support\Facades\Gate;
@@ -22,8 +26,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use App\Http\Services\Contracts\PaymentServiceInterface;
 use App\Http\Services\Contracts\ProductServiceInterface;
 use App\Http\Services\Contracts\SupplierServiceInterface;
-use App\Models\Order;
-use App\Policies\OrderPolicy;
+use App\Models\Product;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -58,10 +61,13 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::policy(Address::class, AddressPolicy::class);
         Gate::policy(Order::class, OrderPolicy::class);
+        Gate::policy(Rating::class, RatingPolicy::class);
 
 
         Relation::morphMap([
-            'user' => User::class
+            'user' => User::class,
+            'order' => Order::class,
+            'product' => Product::class,
         ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Order\OrderStatus;
+use App\Traits\Rateable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -12,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Order extends Model
 {
+    use Rateable;
+
     protected $fillable = [
         'user_id',
         'total',

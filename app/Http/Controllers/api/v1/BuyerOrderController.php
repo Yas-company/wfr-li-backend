@@ -39,7 +39,6 @@ class BuyerOrderController extends Controller
     public function index(FilterOrderRequest $request): JsonResponse
     {
         $orderFilterDto = OrderFilterDto::fromRequest($request);
-
         $orders = $this->orderService->getBuyerOrders(Auth::user()->id, $orderFilterDto);
 
         return $this->paginatedResponse($orders, BuyerOrderListingResource::collection($orders));
