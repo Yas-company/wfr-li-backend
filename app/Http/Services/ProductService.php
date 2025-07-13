@@ -19,7 +19,7 @@ class ProductService implements ProductServiceInterface
 
     public function create(array $data)
     {
-        $data['supplier_id'] = 1;
+        $data['supplier_id'] = auth()->id();
 
         // تخزين صورة واحدة فقط إذا كانت موجودة
         if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
