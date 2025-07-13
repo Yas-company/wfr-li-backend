@@ -21,6 +21,8 @@ class ProductResource extends JsonResource
             'is_favorite' => $this->is_favorite,
             'unit_type' => $this->unit_type,
             'category' => new CategoryResource($this->whenLoaded('category')),
+            'ratings' => RatingResource::collection($this->whenLoaded('ratings')),
+            'avg_rating' => $this->averageRating(),
         ];
     }
 

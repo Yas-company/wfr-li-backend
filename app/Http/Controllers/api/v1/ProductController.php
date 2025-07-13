@@ -64,6 +64,8 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
+        $product->load(['ratings']);
+
         return new ProductResource($product);
     }
 

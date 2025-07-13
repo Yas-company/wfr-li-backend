@@ -33,6 +33,10 @@ return [
         'at_least_one_default_address_required' => 'At least one default address is required',
     ],
 
+    'ratings' => [
+        'rated_successfully' => 'تم التقييم بنجاح',
+    ],
+
     // Auth Messages
     'registration_successful' => 'Registration successful',
     'registration_failed' => 'Registration failed',

@@ -21,6 +21,7 @@ class OrderService
     {
         return $this->baseOrderQuery($orderFilterDto)
             ->addSelect(['users.name as supplier_name'])
+            ->with(['ratings'])
             ->leftJoin('users', 'users.id', '=', 'orders.supplier_id')
             ->forBuyer($userId)
             ->paginate(10);
