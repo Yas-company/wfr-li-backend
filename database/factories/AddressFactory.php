@@ -16,14 +16,16 @@ class AddressFactory extends Factory
      */
     public function definition(): array
     {
+        $cities = ['makkah', 'jeddah', 'riyadh', 'dammam', 'medina'];
+
         return [
             'name' => $this->faker->name(),
             'street' => $this->faker->streetAddress(),
-            'city' => $this->faker->city(),
-            'phone' => $this->faker->phoneNumber(),
+            'city' => $this->faker->randomElement($cities),
+            'phone' => '9665' . $this->faker->numberBetween(10000000, 99999999),
             'latitude' => $this->faker->latitude(),
             'longitude' => $this->faker->longitude(),
-            'is_default' => false,
+            'is_default' => $this->faker->boolean(),
         ];
     }
 }
