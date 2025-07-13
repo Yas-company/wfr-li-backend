@@ -22,10 +22,20 @@ class ProductFactory extends Factory
                 'en' => $this->faker->word(),
                 'ar' => $this->faker->word(),
             ],
+            'description' => [
+                'en' => $this->faker->paragraph(),
+                'ar' => $this->faker->paragraph(),
+            ],
             'image' => $this->faker->imageUrl(),
-            'price' => $this->faker->randomFloat(2, 1, 100),
-            'stock_qty' => $this->faker->numberBetween(1, 100),
-            'category_id' => Category::factory(),
+            'price' => $this->faker->randomFloat(2, 10, 1000),
+            'price_before_discount' => $this->faker->randomFloat(2, 10, 1000),
+            'stock_qty' => $this->faker->numberBetween(10, 1000),
+            'quantity' => $this->faker->numberBetween(10, 100),
+            'unit_type' => $this->faker->numberBetween(0, 3),
+            'status' => $this->faker->numberBetween(0, 1),
+            'is_active' => true,
+            'is_featured' => $this->faker->boolean(20),
+            'min_order_quantity' => $this->faker->numberBetween(2, 10),
         ];
     }
 }
