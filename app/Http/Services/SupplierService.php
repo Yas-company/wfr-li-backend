@@ -24,7 +24,8 @@ class SupplierService implements SupplierServiceInterface
     {
         $query = Product::query()
             ->where('supplier_id', $filters['supplier_id'])
-            ->where('is_active', true);
+            ->where('is_active', true)
+            ->with(['category', 'currentUserFavorite', 'ratings']);
 
         // ✅ البحث في الاسم فقط
         if (!empty($filters['search'])) {
@@ -44,7 +45,10 @@ class SupplierService implements SupplierServiceInterface
 
     public function getProductById(int $id): ?Product
     {
-        return Product::where('id', $id)->where('is_active', true)->first();
+        return Product::where('id', $id)
+            ->where('is_active', true)
+            ->with(['category', 'currentUserFavorite', 'ratings'])
+            ->first();
     }
 
 }

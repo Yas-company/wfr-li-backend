@@ -44,6 +44,8 @@ class Product extends Model
         'status' => ProductStatus::class,
     ];
 
+    protected $appends = ['is_favorite'];
+
     protected $with = ['category', 'supplier'];
 
     public function getImageUrlAttribute()
@@ -57,14 +59,34 @@ class Product extends Model
 
     public function favoritedByUsers()
     {
-        return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
+        return $this->belongsToMany(User::class, 'favorites')->where('is_favorite', true)->withTimestamps();
+    }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class, 'product_id');
+    }
+
+    public function currentUserFavorite()
+    {
+        $user = Auth::user();
+        if (!$user) return $this->hasMany(Favorite::class, 'product_id')->whereRaw('1 = 0'); // Empty relation
+        
+        return $this->hasOne(Favorite::class, 'product_id')->where('user_id', $user->id)->where('is_favorite', true);
     }
 
     public function getIsFavoriteAttribute()
     {
         $user = Auth::user();
         if (!$user) return false;
-        return $this->favoritedByUsers()->where('user_id', $user->id)->exists();
+        
+        // Check if the currentUserFavorite relationship is already loaded
+        if ($this->relationLoaded('currentUserFavorite')) {
+            return $this->currentUserFavorite && $this->currentUserFavorite->is_favorite;
+        }
+        
+        // If not loaded, perform a direct query
+        return $this->favorites()->where('user_id', $user->id)->where('is_favorite', true)->exists();
     }
 
     public function scopeFilterAndSearch($query, $params)
@@ -100,7 +122,7 @@ class Product extends Model
     {
         return self::where('category_id', $this->category_id)
             ->where('id', '!=', $this->id)
-            ->with('category')
+            ->with(['category', 'currentUserFavorite'])
             ->inRandomOrder()
             ->limit($limit)
             ->get();
