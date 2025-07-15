@@ -18,4 +18,8 @@ class Favorite extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function scopeIsFavorite($query)
+    {
+        return $query->where('is_favorite', true);
+    }
 }

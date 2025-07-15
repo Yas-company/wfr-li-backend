@@ -5,9 +5,9 @@ namespace Database\Seeders;
 use App\Enums\ProductStatus;
 use App\Enums\UnitType;
 use App\Enums\UserRole;
-use App\Models\User;
-use App\Models\Product;
 use App\Models\Category;
+use App\Models\Product;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder
@@ -16,16 +16,6 @@ class ProductSeeder extends Seeder
     {
         $categories = Category::all();
         $suppliers = User::where('role', UserRole::SUPPLIER)->get();
-
-        if ($categories->isEmpty()) {
-            $this->command->warn('No categories found! Please run CategorySeeder first.');
-            return;
-        }
-
-        if ($suppliers->isEmpty()) {
-            $this->command->warn('No suppliers found! Please create suppliers first.');
-            return;
-        }
 
         // Array of realistic product names in English and Arabic
         $productNames = [
@@ -48,7 +38,7 @@ class ProductSeeder extends Seeder
             ['en' => 'Organic Carrots', 'ar' => 'جزر عضوي'],
             ['en' => 'Premium Beef Steak', 'ar' => 'ستيك لحم فاخر'],
             ['en' => 'Traditional Dates', 'ar' => 'تمر تقليدي'],
-            ['en' => 'Fresh Mint', 'ar' => 'نعناع طازج']
+            ['en' => 'Fresh Mint', 'ar' => 'نعناع طازج'],
         ];
 
         $productDescriptions = [
@@ -56,7 +46,7 @@ class ProductSeeder extends Seeder
             ['en' => 'Premium organic product with no artificial additives', 'ar' => 'منتج عضوي فاخر بدون إضافات صناعية'],
             ['en' => 'Fresh and natural, perfect for daily consumption', 'ar' => 'طازج وطبيعي، مثالي للاستهلاك اليومي'],
             ['en' => 'Traditional quality with modern packaging', 'ar' => 'جودة تقليدية مع تغليف عصري'],
-            ['en' => 'Nutritious and delicious, rich in vitamins', 'ar' => 'مغذي ولذيذ، غني بالفيتامينات']
+            ['en' => 'Nutritious and delicious, rich in vitamins', 'ar' => 'مغذي ولذيذ، غني بالفيتامينات'],
         ];
 
         $unitTypes = [
@@ -67,21 +57,18 @@ class ProductSeeder extends Seeder
             UnitType::BOX->value,
             UnitType::DOZEN->value,
             UnitType::BOTTLE->value,
-            UnitType::CAN->value
+            UnitType::CAN->value,
         ];
-
-        $this->command->info('Creating products for each category...');
 
         foreach ($categories as $category) {
             $productsCount = rand(8, 20);
             $categoryName = $category->getTranslation('name', 'en') ?? $category->name ?? 'Unknown Category';
-            $this->command->info("Creating {$productsCount} products for category: {$categoryName}");
 
             for ($i = 0; $i < $productsCount; $i++) {
                 $nameIndex = array_rand($productNames);
                 $descIndex = array_rand($productDescriptions);
                 $unitType = $unitTypes[array_rand($unitTypes)];
-                
+
                 $basePrice = rand(10, 500);
                 $discount = rand(0, 30); // 0-30% discount
                 $priceBeforeDiscount = $basePrice + ($basePrice * $discount / 100);
@@ -105,18 +92,5 @@ class ProductSeeder extends Seeder
             }
         }
 
-        $totalProducts = Product::count();
-        $this->command->info("✅ Successfully created {$totalProducts} products!");
-        
-        // Show some statistics
-        $publishedCount = Product::where('status', ProductStatus::PUBLISHED->value)->count();
-        $featuredCount = Product::where('is_featured', true)->count();
-        $activeCount = Product::where('is_active', true)->count();
-        
-        $this->command->info("📊 Statistics:");
-        $this->command->info("   - Published: {$publishedCount}");
-        $this->command->info("   - Featured: {$featuredCount}");
-        $this->command->info("   - Active: {$activeCount}");
     }
 }
-

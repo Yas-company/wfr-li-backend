@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ToggleFavoriteRequest extends FormRequest
 {
@@ -22,7 +23,7 @@ class ToggleFavoriteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'product_id' => 'required|exists:products,id',
+            'product_id' => ['required', Rule::exists('products', 'id')->where('is_active', true)],
             'is_favorite' => 'required|boolean',
         ];
     }

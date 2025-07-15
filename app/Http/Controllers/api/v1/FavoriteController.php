@@ -3,31 +3,48 @@
 namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ToggleFavoriteRequest;
 use App\Http\Resources\FavoriteProductResource;
 use App\Http\Resources\ProductResource;
-use Illuminate\Http\Request;
-use App\Traits\ApiResponse;
 use App\Services\FavoriteService;
-use App\Http\Requests\ToggleFavoriteRequest;
+use App\Traits\ApiResponse;
+
 class FavoriteController extends Controller
 {
     use ApiResponse;
-    protected $favoriteService;
-    public function __construct(FavoriteService $favoriteService)
+
+    /*
+    * FavoriteController constructor.
+    *
+    * @param FavoriteService $favoriteService
+    */
+    public function __construct(private FavoriteService $favoriteService)
     {
-        $this->favoriteService = $favoriteService;
+        //
     }
+
+    /*
+    * Toggle favorite status for a product.
+    *
+    * @param ToggleFavoriteRequest $request
+    * @return JsonResponse
+    */
     public function toggleFavorite(ToggleFavoriteRequest $request)
     {
-        $result = $this->favoriteService->toggleFavorite($request->all());
-        if (isset($result['error'])) {
-            return $this->errorResponse($result['error'], 400);
-        }
-        return $this->successResponse(new FavoriteProductResource($result), 'Favorite status updated successfully');
+        $result = $this->favoriteService->toggleFavorite($request->all(), auth()->user());
+
+        return $this->successResponse(new FavoriteProductResource($result), __('messages.favorite_status_updated_successfully'));
     }
+
+    /**
+     * Get all favorites.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index()
     {
-        $result = $this->favoriteService->getFavorites();
-        return $this->successResponse(ProductResource::collection($result), 'Favorites fetched successfully');
+        $result = $this->favoriteService->getFavorites(auth()->user());
+
+        return $this->paginatedResponse($result, ProductResource::collection($result), __('messages.favorites_fetched_successfully'));
     }
 }
