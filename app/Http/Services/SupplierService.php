@@ -24,18 +24,19 @@ class SupplierService implements SupplierServiceInterface
     {
         $query = Product::query()
             ->where('supplier_id', $filters['supplier_id'])
-            ->where('is_active', true);
+            ->isActive()
+            ->with(['category', 'currentUserFavorite', 'ratings']);
 
         // ✅ البحث في الاسم فقط
-        if (!empty($filters['search'])) {
+        if (! empty($filters['search'])) {
             $query->where(function ($q) use ($filters) {
-                $q->where('name->ar', 'like', '%' . $filters['search'] . '%')
-                    ->orWhere('name->en', 'like', '%' . $filters['search'] . '%');
+                $q->where('name->ar', 'like', '%'.$filters['search'].'%')
+                    ->orWhere('name->en', 'like', '%'.$filters['search'].'%');
             });
         }
 
         // ✅ فلتر حسب القسم فقط لو متبعت
-        if (!empty($filters['category_id'])) {
+        if (! empty($filters['category_id'])) {
             $query->where('category_id', $filters['category_id']);
         }
 
@@ -44,7 +45,9 @@ class SupplierService implements SupplierServiceInterface
 
     public function getProductById(int $id): ?Product
     {
-        return Product::where('id', $id)->where('is_active', true)->first();
+        return Product::where('id', $id)
+            ->where('is_active', true)
+            ->with(['category', 'currentUserFavorite', 'ratings'])
+            ->first();
     }
-
 }

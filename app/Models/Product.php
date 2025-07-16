@@ -44,33 +44,49 @@ class Product extends Model
         'status' => ProductStatus::class,
     ];
 
+    protected $appends = ['is_favorite'];
+
     protected $with = ['category', 'supplier'];
 
     public function getImageUrlAttribute()
     {
-        if (!$this->image) {
+        if (! $this->image) {
             return asset('images/logo.jpeg');
         }
 
-        return asset('storage/' . $this->image);
+        return asset('storage/'.$this->image);
     }
 
     public function favoritedByUsers()
     {
-        return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
+        return $this->belongsToMany(User::class, 'favorites')->where('is_favorite', true)->withTimestamps();
+    }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class, 'product_id');
+    }
+
+    public function currentUserFavorite()
+    {
+        return $this->hasOne(Favorite::class, 'product_id')->where('user_id', Auth::user()->id)->where('is_favorite', true);
     }
 
     public function getIsFavoriteAttribute()
     {
-        $user = Auth::user();
-        if (!$user) return false;
-        return $this->favoritedByUsers()->where('user_id', $user->id)->exists();
+        // Check if the currentUserFavorite relationship is already loaded
+        if ($this->relationLoaded('currentUserFavorite')) {
+            return $this->currentUserFavorite && $this->currentUserFavorite->is_favorite;
+        }
+
+        // If not loaded, perform a direct query
+        return $this->favorites()->where('user_id', Auth::user()->id)->where('is_favorite', true)->exists();
     }
 
     public function scopeFilterAndSearch($query, $params)
     {
         // Search
-        if (!empty($params['q'])) {
+        if (! empty($params['q'])) {
             $search = $params['q'];
             $query->where(function ($q) use ($search) {
                 $q->where('name->en', 'LIKE', "%{$search}%")
@@ -81,15 +97,15 @@ class Product extends Model
         }
 
         // Filter by category
-        if (!empty($params['category_id'])) {
+        if (! empty($params['category_id'])) {
             $query->where('category_id', $params['category_id']);
         }
 
         // Filter by price range
-        if (!empty($params['min_price'])) {
+        if (! empty($params['min_price'])) {
             $query->where('price', '>=', $params['min_price']);
         }
-        if (!empty($params['max_price'])) {
+        if (! empty($params['max_price'])) {
             $query->where('price', '<=', $params['max_price']);
         }
 
@@ -100,7 +116,7 @@ class Product extends Model
     {
         return self::where('category_id', $this->category_id)
             ->where('id', '!=', $this->id)
-            ->with('category')
+            ->with(['category', 'currentUserFavorite'])
             ->inRandomOrder()
             ->limit($limit)
             ->get();
@@ -114,5 +130,10 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function scopeIsActive($query)
+    {
+        return $query->where('is_active', true);
     }
 }

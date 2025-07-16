@@ -126,4 +126,8 @@ return [
     // Supplier Review Messages
     'supplier_pending_review' => 'Your supplier account is currently under review. Please wait for admin approval.',
     'supplier_registration_pending' => 'Your supplier account is pending admin approval.',
+
+    // Favorite Messages
+    'favorite_status_updated_successfully' => 'Favorite status updated successfully',
+    'favorites_fetched_successfully' => 'Favorites fetched successfully',
 ];

@@ -126,4 +126,8 @@ return [
     // Supplier Pending Review Message
     'supplier_pending_review' => 'حساب المورد الخاص بك قيد المراجعة حالياً. يرجى الانتظار حتى تتم الموافقة من قبل المسؤول.',
     'supplier_registration_pending' => 'حساب المورد الخاص بك قيد انتظار موافقة المسؤول.',
+
+    // Favorite Messages
+    'favorite_status_updated_successfully' => 'تم تحديث حالة المفضلة بنجاح',
+    'favorites_fetched_successfully' => 'تم جلب المفضلة بنجاح',
 ];
