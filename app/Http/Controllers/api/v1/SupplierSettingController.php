@@ -25,7 +25,7 @@ class SupplierSettingController extends Controller
      */
     public function update(SupplierSettingRequest $request)
     {
-        $result = $this->supplierSettingService->updateSupplier($request->all(), Auth::user());
+        $result = $this->supplierSettingService->updateSupplier($request->validated(), Auth::user());
 
         return $this->successResponse(new SupplierResource($result), __('messages.supplier_setting_updated'));
     }
