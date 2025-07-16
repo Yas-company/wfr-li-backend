@@ -16,7 +16,7 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, Rateable;
+    use HasApiTokens, HasFactory, Notifiable, Rateable, SoftDeletes;
 
     /**
      * The attributes that are
@@ -143,6 +143,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Address::class);
     }
+
     public function defaultAddress(): HasOne
     {
         return $this->hasOne(Address::class)->where('is_default', true);
@@ -161,5 +162,10 @@ class User extends Authenticatable
     public function setSetting(string $key, $value): void
     {
         $this->settings()->updateOrCreate(['key' => $key], ['value' => $value]);
+    }
+
+    public function supplier(): HasOne
+    {
+        return $this->hasOne(Supplier::class);
     }
 }

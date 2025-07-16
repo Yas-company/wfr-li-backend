@@ -130,4 +130,7 @@ return [
     // Favorite Messages
     'favorite_status_updated_successfully' => 'Favorite status updated successfully',
     'favorites_fetched_successfully' => 'Favorites fetched successfully',
+
+    // Supplier Setting Messages
+    'supplier_setting_updated' => 'Supplier setting updated successfully',
 ];
