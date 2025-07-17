@@ -14,6 +14,7 @@ use App\Http\Requests\Auth\VerifyOtpRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Services\OtpService;
 use App\Models\Address;
+use App\Models\Supplier;
 use App\Models\User;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -136,6 +137,12 @@ class AuthController extends Controller
                 'is_default' => true,
                 'user_id' => $user->id,
             ]);
+            if ($user->isSupplier()) {
+                Supplier::createOrFirst([
+                    'user_id' => $user->id,
+                    'status' => true,
+                ]);
+            }
 
             // For buyers, generate and send OTP
             if ($user->isBuyer()) {

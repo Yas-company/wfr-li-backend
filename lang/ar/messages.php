@@ -130,4 +130,7 @@ return [
     // Favorite Messages
     'favorite_status_updated_successfully' => 'تم تحديث حالة المفضلة بنجاح',
     'favorites_fetched_successfully' => 'تم جلب المفضلة بنجاح',
+
+    // Supplier Setting Messages
+    'supplier_setting_updated' => 'تم تحديث إعدادات المورد بنجاح',
 ];

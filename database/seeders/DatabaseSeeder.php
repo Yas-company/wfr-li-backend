@@ -18,10 +18,11 @@ class DatabaseSeeder extends Seeder
             OnboardingScreenSeeder::class,
             PageSeeder::class,
             UserSeeder::class,
+            SupplierSeeder::class,
             CategorySeeder::class,
             ProductSeeder::class,
             OrderSeeder::class,
-            RatingSeeder::class
+            RatingSeeder::class,
         ]);
     }
 }
