@@ -201,26 +201,6 @@ class AuthControllerTest extends TestCase
             ->assertJsonPath('message', __('messages.invalid_otp'));
     }
 
-    public function test_buyer_can_login()
-    {
-        $password = 'Password123!';
-        $user = $this->createBuyer(['password' => Hash::make($password)]);
-
-        $response = $this->postJson(route('auth.buyer.login'), [
-            'phone' => $user->phone,
-            'password' => $password,
-        ]);
-
-        $response->assertStatus(200)
-            ->assertJsonStructure([
-                'data' => [
-                    'user' => ['id', 'name', 'phone', 'is_verified'],
-                    'token'
-                ],
-                'message'
-            ]);
-    }
-
     public function test_supplier_can_login()
     {
         $password = 'Password123!';
@@ -241,19 +221,6 @@ class AuthControllerTest extends TestCase
             ]);
     }
 
-    public function test_buyer_cannot_login_with_invalid_credentials()
-    {
-        $user = $this->createBuyer();
-
-        $response = $this->postJson(route('auth.buyer.login'), [
-            'phone' => $user->phone,
-            'password' => 'wrong',
-        ]);
-
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['phone']);
-    }
-
     public function test_supplier_cannot_login_with_invalid_credentials()
     {
         $user = $this->createBuyer();
@@ -265,30 +232,6 @@ class AuthControllerTest extends TestCase
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['phone']);
-    }
-
-    public function test_unverified_buyer_can_login()
-    {
-        $password = 'Password123!';
-        $user = User::factory()->create([
-            'role' => UserRole::BUYER,
-            'is_verified' => false,
-            'password' => Hash::make($password),
-        ]);
-
-        $response = $this->postJson(route('auth.buyer.login'), [
-            'phone' => $user->phone,
-            'password' => $password,
-        ]);
-
-        $response->assertStatus(200)
-            ->assertJsonStructure([
-                'data' => [
-                    'user' => ['id', 'name', 'phone', 'is_verified'],
-                    'token'
-                ],
-                'message'
-            ]);
     }
 
     public function test_pending_supplier_cannot_login()

@@ -7,8 +7,8 @@ use App\Traits\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Validation\ValidationException;
+use App\Http\Requests\Auth\SupplierLoginRequest;
 
 class SupplierLoginController extends Controller
 {
@@ -17,7 +17,7 @@ class SupplierLoginController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(LoginRequest $request)
+    public function __invoke(SupplierLoginRequest $request)
     {
         if(! Auth::attempt([
             'phone' => $request->validated('phone'),
