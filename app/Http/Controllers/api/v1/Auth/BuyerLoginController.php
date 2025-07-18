@@ -17,28 +17,23 @@ class BuyerLoginController extends Controller
 {
     use ApiResponse;
 
+    /**
+     * BuyerLoginController constructor.
+     *
+     * @param OtpService $otpService
+     */
     public function __construct(protected OtpService $otpService)
     {
         //
     }
 
-    public function requestOtp(RequestOtpRequest $request): JsonResponse
-    {
-        $user = User::role(UserRole::BUYER->value)
-                    ->where('phone', $request->validated('phone'))
-                    ->first();
-
-        if(!$user) {
-            return $this->errorResponse(__('messages.invalid_phone'), Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        $this->otpService->generateOtp($request->validated('phone'));
-
-        return $this->successResponse([
-            'message' => __('messages.otp_sent'),
-        ]);
-    }
-
+    /**
+     * Login
+     *
+     * @param BuyerLoginRequest $request
+     *
+     * @return JsonResponse $response
+     */
     public function login(BuyerLoginRequest $request): JsonResponse
     {
         $isValid = $this->otpService->verifyOtp(

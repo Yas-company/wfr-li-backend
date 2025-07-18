@@ -175,46 +175,6 @@ class AuthController extends Controller
         }
     }
 
-    public function verifyOtp(VerifyOtpRequest $request): JsonResponse
-    {
-        try {
-            $isValid = $this->otpService->verifyOtp(
-                $request->validated('phone'),
-                $request->validated('otp')
-            );
-
-            if (! $isValid) {
-                return $this->errorResponse(
-                    message: __('messages.invalid_otp'),
-                    statusCode: 422
-                );
-            }
-            $user = User::where('phone', $request->validated('phone'))->first();
-
-            if ($user && ! $user->is_verified) {
-                $user->update(['is_verified' => true]);
-
-                return $this->successResponse([
-                    'user' => new UserResource($user),
-                    'token' => $user->createToken('auth-token')->plainTextToken,
-                ], __('messages.registration_verified'));
-            }
-
-            return $this->successResponse(
-                message: __('messages.otp_verified')
-            );
-        } catch (\Exception $e) {
-            Log::error('OTP verification failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return $this->errorResponse(
-                message: __('messages.otp_verification_failed')
-            );
-        }
-    }
-
     public function logout(Request $request): JsonResponse
     {
         try {

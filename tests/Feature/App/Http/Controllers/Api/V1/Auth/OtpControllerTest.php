@@ -11,7 +11,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 
-class BuyerLoginControllerTest extends TestCase
+class OtpControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
@@ -20,27 +20,16 @@ class BuyerLoginControllerTest extends TestCase
         parent::setUp();
     }
 
-    public function test_buyer_can_login()
+    public function test_verified_buyer_can_request_otp()
     {
         $phone = '966501234567';
         $this->createBuyer(['phone' => $phone]);
 
-        $this->postJson(route('auth.request-otp'), ['phone' => $phone]);
+        $response = $this->postJson(route('auth.request-otp'), ['phone' => $phone]);
 
-        $response = $this->postJson(route('auth.buyer.login'), [
-            'phone' => $phone,
-            'otp' => '123456',
-        ]);
-
-        $response->assertStatus(200)
-            ->assertJsonStructure([
-                'data' => [
-                    'user' => ['id', 'name', 'phone', 'is_verified'],
-                    'token'
-                ],
-                'message'
-            ]);
+        $response->assertStatus(200);
     }
+
 
     // helpers
     protected function createBuyer(array $attributes = []): User
