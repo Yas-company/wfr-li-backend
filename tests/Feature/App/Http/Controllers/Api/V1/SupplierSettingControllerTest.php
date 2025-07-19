@@ -34,7 +34,7 @@ class SupplierSettingControllerTest extends TestCase
         $data = $this->getValidRegistrationData(UserRole::SUPPLIER->value);
         $data['fields'] = [$field->id];
 
-        $response = $this->postJson(route('auth.register'), $data);
+        $response = $this->postJson(route('auth.supplier.register'), $data);
 
         $response->assertStatus(201)
             ->assertJsonStructure([
@@ -196,7 +196,7 @@ class SupplierSettingControllerTest extends TestCase
         $data['business_name'] = 'Doe Supplies';
         $data['email'] = 'john@doesupplies.com';
 
-        $response = $this->postJson(route('auth.register'), $data);
+        $response = $this->postJson(route('auth.supplier.register'), $data);
         $response->assertStatus(201);
 
         // Step 2: Verify user and supplier were created
