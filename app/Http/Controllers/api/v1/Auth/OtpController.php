@@ -43,12 +43,16 @@ class OtpController extends Controller
         $user = User::role(UserRole::BUYER->value)->where('phone', $request->validated('phone'))->first();
 
         if (!$user) {
-            return $this->errorResponse(__('messages.invalid_phone'), Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->successResponse([
+                'is_registered' => false,
+            ], __('messages.otp_send_failed'));
         }
 
         $this->otpService->generateOtp($user->phone);
 
-        return $this->successResponse(['message' => __('messages.otp_sent')]);
+        return $this->successResponse([
+            'is_registered' => true,
+        ], __('messages.otp_sent'));
     }
 
     /**
