@@ -48,6 +48,7 @@ return [
     'profile_failed' => 'فشل في الحصول على الملف الشخصي',
     'account_not_verified' => 'لم يتم التحقق من حسابك. يرجى التحقق من رقم هاتفك أولاً',
     'invalid_credentials' => 'بيانات الاعتماد غير صحيحة',
+    'invalid_phone' => 'رقم الهاتف غير صحيح',
 
     // Password Change Messages
     'password_changed_successful' => 'تم تغيير كلمة المرور بنجاح',

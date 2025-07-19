@@ -7,7 +7,6 @@ use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
-use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\VerifyOtpRequest;
@@ -173,90 +172,6 @@ class AuthController extends Controller
             ]);
 
             return $this->serverErrorResponse(__('messages.registration_failed'));
-        }
-    }
-
-    public function verifyOtp(VerifyOtpRequest $request): JsonResponse
-    {
-        try {
-            $isValid = $this->otpService->verifyOtp(
-                $request->validated('phone'),
-                $request->validated('otp')
-            );
-
-            if (! $isValid) {
-                return $this->errorResponse(
-                    message: __('messages.invalid_otp'),
-                    statusCode: 422
-                );
-            }
-
-            $user = User::where('phone', $request->validated('phone'))->first();
-            if ($user && ! $user->is_verified) {
-                $user->update(['is_verified' => true]);
-
-                return $this->successResponse([
-                    'user' => new UserResource($user),
-                    'token' => $user->createToken('auth-token')->plainTextToken,
-                ], __('messages.registration_verified'));
-            }
-
-            return $this->successResponse(
-                message: __('messages.otp_verified')
-            );
-        } catch (\Exception $e) {
-            Log::error('OTP verification failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return $this->errorResponse(
-                message: __('messages.otp_verification_failed')
-            );
-        }
-    }
-
-    public function login(LoginRequest $request): JsonResponse
-    {
-        try {
-            $data = $request->validated();
-            $user = User::where('phone', $data['phone'])->first();
-
-            if (! $user || ! Hash::check($data['password'], $user->password)) {
-                throw ValidationException::withMessages([
-                    'phone' => [__('messages.invalid_credentials')],
-                ]);
-            }
-
-            if (! $user->is_verified) {
-                throw ValidationException::withMessages([
-                    'phone' => [__('messages.account_not_verified')],
-                ]);
-            }
-
-            if ($user->isSupplier() && ! $user->isApproved()) {
-                throw ValidationException::withMessages([
-                    'phone' => [__('messages.account_pending_approval')],
-                ]);
-            }
-
-            return $this->successResponse([
-                'user' => new UserResource($user),
-                'token' => $user->createToken('auth-token')->plainTextToken,
-            ], __('messages.login_successful'));
-        } catch (ValidationException $e) {
-            return $this->errorResponse(
-                message: $e->getMessage(),
-                errors: $e->errors(),
-                statusCode: 422
-            );
-        } catch (\Exception $e) {
-            Log::error('Login failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return $this->serverErrorResponse(__('messages.login_failed'));
         }
     }
 

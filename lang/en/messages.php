@@ -48,6 +48,7 @@ return [
     'profile_failed' => 'Failed to get profile',
     'account_not_verified' => 'Your account is not verified. Please verify your phone number first',
     'invalid_credentials' => 'Invalid credentials',
+    'invalid_phone' => 'Invalid phone number',
 
     // Password Change Messages
     'password_changed_successful' => 'Password changed successfully',

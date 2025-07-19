@@ -4,7 +4,7 @@ namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class LoginRequest extends FormRequest
+class BuyerLoginRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,8 +14,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone' => ['required', 'string'],
-            'password' => ['required', 'string'],
+            'phone' => ['required', 'string', 'exists:users,phone'],
+            'otp' => ['required', 'string', 'size:6']
         ];
     }
 
@@ -23,7 +23,9 @@ class LoginRequest extends FormRequest
     {
         return [
             'phone.required' => __('messages.validation.required.phone'),
-            'password.required' => __('messages.validation.required.password'),
+            'phone.exists' => __('messages.validation.exists.phone'),
+            'otp.required' => __('messages.validation.required.otp'),
+            'otp.size' => __('messages.validation.size.otp')
         ];
     }
-} 
+}

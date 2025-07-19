@@ -1,16 +1,18 @@
 <?php
 
-use App\Http\Controllers\api\v1\Auth\BuyerLoginController;
-use App\Http\Controllers\api\v1\Auth\SupplierLoginController;
-use App\Http\Controllers\api\v1\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\api\v1\AuthController;
+use App\Http\Controllers\api\v1\Auth\BuyerLoginController;
+use App\Http\Controllers\api\v1\Auth\OtpController;
+use App\Http\Controllers\api\v1\Auth\SupplierLoginController;
 
 Route::prefix('auth')->group(function () {
 
     Route::post('register', [AuthController::class, 'register'])->name('auth.register');
-    Route::post('verify-otp', [AuthController::class, 'verifyOtp'])->name('auth.verify-otp');
+    Route::post('verify-otp', [OtpController::class, 'verifyOtp'])->name('auth.verify-otp');
     Route::post('supplier/login', SupplierLoginController::class)->name('auth.supplier.login');
-    Route::post('buyer/login', BuyerLoginController::class)->name('auth.buyer.login');
+    Route::post('request-otp', [OtpController::class, 'requestOtp'])->name('auth.request-otp');
+    Route::post('buyer/login', [BuyerLoginController::class, 'login'])->name('auth.buyer.login');
     Route::post('biometric-login', [AuthController::class, 'biometricLogin'])->name('auth.biometric-login');
     Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->name('auth.forgot-password');
     Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('auth.reset-password');
