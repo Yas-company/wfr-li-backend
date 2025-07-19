@@ -24,8 +24,8 @@ class OtpController extends Controller
      *
      * @param OtpService $otpService
      */
-    public function __construct(protected OtpService $otpService) {
-
+    public function __construct(protected OtpService $otpService)
+    {
         //
     }
 
@@ -37,7 +37,8 @@ class OtpController extends Controller
      *
      * @return JsonResponse
      */
-    public function requestOtp(RequestOtpRequest $request): JsonResponse {
+    public function requestOtp(RequestOtpRequest $request): JsonResponse
+    {
 
         $user = User::role(UserRole::BUYER->value)->where('phone', $request->validated('phone'))->first();
 
