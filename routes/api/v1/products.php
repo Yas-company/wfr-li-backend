@@ -3,7 +3,7 @@
 use App\Http\Controllers\api\v1\ProductController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('guest')->prefix('products')->group(function () {
+Route::middleware('auth:sanctum')->prefix('products')->group(function () {
     Route::get('/', [ProductController::class, 'index']);
     Route::get('/{product}', [ProductController::class, 'show']);
     Route::get('/expired/count', [ProductController::class, 'expiredCount']);
