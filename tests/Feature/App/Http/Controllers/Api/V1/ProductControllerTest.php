@@ -47,7 +47,7 @@ class ProductControllerTest extends TestCase
         $imageFile = \Illuminate\Http\UploadedFile::fake()->create('product.jpg', 100, 'image/jpeg');
         $productData['image'] = $imageFile;
 
-        $response = $this->actingAs($this->supplier)->postJson('/api/v1/products', $productData);
+        $response = $this->actingAs($this->supplier)->postJson(route('products.store'), $productData);
         $response->assertStatus(201)
             ->assertJsonStructure([
                 'data' => [
@@ -88,7 +88,7 @@ class ProductControllerTest extends TestCase
         // Create a fake image file for testing using a simple approach
         $imageFile = \Illuminate\Http\UploadedFile::fake()->create('product.jpg', 100, 'image/jpeg');
         $updateData['image'] = $imageFile;
-        $response = $this->actingAs($this->supplier)->postJson('/api/v1/products/'.$product->id, $updateData);
+        $response = $this->actingAs($this->supplier)->postJson(route('products.update', $product->id), $updateData);
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -109,7 +109,7 @@ class ProductControllerTest extends TestCase
             'category_id' => $this->category->id,
         ]);
 
-        $response = $this->actingAs($this->supplier)->deleteJson('/api/v1/products/'.$product->id);
+        $response = $this->actingAs($this->supplier)->deleteJson(route('products.destroy', $product->id));
 
         $response->assertStatus(200)
             ->assertJson([
@@ -129,7 +129,7 @@ class ProductControllerTest extends TestCase
             'category_id' => $this->category->id,
         ]);
 
-        $response = $this->actingAs($this->supplier)->getJson('/api/v1/products/'.$product->id);
+        $response = $this->actingAs($this->supplier)->getJson(route('products.show', $product->id));
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -157,7 +157,7 @@ class ProductControllerTest extends TestCase
             'category_id' => $this->category->id,
         ]);
 
-        $response = $this->actingAs($this->supplier)->getJson('/api/v1/products');
+        $response = $this->actingAs($this->supplier)->getJson(route('products.index'));
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -194,7 +194,7 @@ class ProductControllerTest extends TestCase
             'category_id' => $this->category->id,
         ]);
 
-        $response = $this->actingAs($this->supplier)->getJson('/api/v1/products/'.$product->id);
+        $response = $this->actingAs($this->supplier)->getJson(route('products.show', $product->id));
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -221,7 +221,7 @@ class ProductControllerTest extends TestCase
             'category_id' => $this->category->id,
         ]);
 
-        $response = $this->actingAs($this->buyer)->getJson('/api/v1/products/'.$product->id);
+        $response = $this->actingAs($this->buyer)->getJson(route('products.show', $product->id));
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -249,7 +249,7 @@ class ProductControllerTest extends TestCase
             'category_id' => $this->category->id,
         ]);
 
-        $response = $this->actingAs($this->buyer)->getJson('/api/v1/products');
+        $response = $this->actingAs($this->buyer)->getJson(route('products.index'));
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -286,7 +286,7 @@ class ProductControllerTest extends TestCase
             'category_id' => $this->category->id,
         ]);
 
-        $response = $this->actingAs($this->buyer)->postJson('/api/v1/favorite/toggle', [
+        $response = $this->actingAs($this->buyer)->postJson(route('favorite.toggle'), [
             'product_id' => $product->id,
             'is_favorite' => true,
         ]);
@@ -311,7 +311,7 @@ class ProductControllerTest extends TestCase
             'category_id' => $this->category->id,
         ]);
 
-        $response = $this->actingAs($this->buyer)->postJson('/api/v1/favorite/toggle', [
+        $response = $this->actingAs($this->buyer)->postJson(route('favorite.toggle'), [
             'product_id' => $product->id,
             'is_favorite' => false,
         ]);
@@ -337,12 +337,12 @@ class ProductControllerTest extends TestCase
         ]);
 
         // First, add the product to favorites
-        $this->actingAs($this->buyer)->postJson('/api/v1/favorite/toggle', [
+        $this->actingAs($this->buyer)->postJson(route('favorite.toggle'), [
             'product_id' => $product->id,
             'is_favorite' => true,
         ]);
 
-        $response = $this->actingAs($this->buyer)->getJson('/api/v1/favorite');
+        $response = $this->actingAs($this->buyer)->getJson(route('favorite.index'));
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -381,7 +381,7 @@ class ProductControllerTest extends TestCase
             'stock_qty' => 5, // Non-expired products
         ]);
 
-        $response = $this->actingAs($this->supplier)->getJson('/api/v1/products/expired/count');
+        $response = $this->actingAs($this->supplier)->getJson(route('products.expired.count'));
 
         $response->assertStatus(200)
             ->assertJson([
@@ -407,7 +407,7 @@ class ProductControllerTest extends TestCase
             'stock_qty' => 10, // Normal stock products
         ]);
 
-        $response = $this->actingAs($this->supplier)->getJson('/api/v1/products/near-expiry/count');
+        $response = $this->actingAs($this->supplier)->getJson(route('products.near-expiry.count'));
 
         $response->assertStatus(200)
             ->assertJson([
@@ -433,7 +433,7 @@ class ProductControllerTest extends TestCase
             'stock_qty' => 2, // Near expiry products
         ]);
 
-        $response = $this->actingAs($this->supplier)->getJson('/api/v1/products/stock-status/count');
+        $response = $this->actingAs($this->supplier)->getJson(route('products.stock-status.count'));
 
         $response->assertStatus(200)
             ->assertJson([
