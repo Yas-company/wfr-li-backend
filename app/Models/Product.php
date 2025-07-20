@@ -44,7 +44,7 @@ class Product extends Model
         'status' => ProductStatus::class,
     ];
 
-    protected $appends = [];
+    protected $appends = ['is_favorite'];
 
     protected $with = ['category', 'supplier'];
 
@@ -74,11 +74,6 @@ class Product extends Model
 
     public function getIsFavoriteAttribute()
     {
-        // Only show favorite status for buyers
-        if (! Auth::check() || ! Auth::user()->isBuyer()) {
-            return null;
-        }
-
         // Check if the currentUserFavorite relationship is already loaded
         if ($this->relationLoaded('currentUserFavorite')) {
             return $this->currentUserFavorite && $this->currentUserFavorite->is_favorite;
@@ -140,20 +135,5 @@ class Product extends Model
     public function scopeIsActive($query)
     {
         return $query->where('is_active', true);
-    }
-
-    /**
-     * Get the attributes that should be appended to the model's array form.
-     */
-    public function getAppends()
-    {
-        $appends = parent::getAppends();
-
-        // Only append is_favorite for buyers
-        if (Auth::check() && Auth::user()->isBuyer()) {
-            $appends[] = 'is_favorite';
-        }
-
-        return $appends;
     }
 }
