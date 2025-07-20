@@ -94,7 +94,7 @@ class SupplierRegistrationController extends Controller
                 $user = User::create([
                     'name' => $data['name'],
                     'phone' => $data['phone'],
-                    'country_code' => $data['country_code'],
+                    'country_code' => $data['country_code'] ?? null,
                     'business_name' => $data['business_name'],
                     'email' => $data['email'] ?? null,
                     'password' => Hash::make($data['password']),
