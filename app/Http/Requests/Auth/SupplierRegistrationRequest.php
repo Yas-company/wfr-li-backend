@@ -39,7 +39,6 @@ class SupplierRegistrationRequest extends FormRequest
                     }
                 },
             ],
-            'country_code' => ['required'],
             'address' => ['required', 'array'],
             'address.name' => ['required', 'string'],
             'address.street' => ['required', 'string'],
