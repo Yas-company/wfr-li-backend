@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\Order\OrderStatus;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,6 +22,8 @@ class OrderFactory extends Factory
             'total' => $this->faker->randomFloat(2, 100, 5000),
             'total_discount' => $this->faker->randomFloat(2, 0, 500),
             'status' => $this->faker->randomElement(OrderStatus::cases()),
+            'supplier_id' => User::factory(),
+            'user_id' => User::factory()
         ];
     }
 }

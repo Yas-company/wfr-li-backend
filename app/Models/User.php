@@ -174,4 +174,9 @@ class User extends Authenticatable
     {
         return $query->where('role', $role);
     }
+
+    public function hasRole(string $role): bool
+    {
+        return $this->role->value === $role;
+    }
 }

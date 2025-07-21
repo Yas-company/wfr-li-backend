@@ -36,6 +36,7 @@ class ProductFactory extends Factory
             'is_active' => true,
             'is_featured' => $this->faker->boolean(20),
             'min_order_quantity' => $this->faker->numberBetween(2, 10),
+            'category_id' => Category::factory()
         ];
     }
 }

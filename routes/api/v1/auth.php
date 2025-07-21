@@ -21,7 +21,7 @@ Route::prefix('auth')->group(function () {
     });
 
     Route::post('verify-otp', [OtpController::class, 'verifyOtp'])->name('auth.verify-otp');
-    Route::post('request-otp', [OtpController::class, 'requestOtp'])->name('auth.request-otp');
+    Route::post('request-otp', [OtpController::class, 'requestOtp'])->middleware('throttle:2,1')->name('auth.request-otp');
     Route::post('biometric-login', [AuthController::class, 'biometricLogin'])->name('auth.biometric-login');
     Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->name('auth.forgot-password');
     Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('auth.reset-password');
