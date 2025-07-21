@@ -39,7 +39,7 @@ class FavoriteControllerTest extends TestCase
     {
         $product = Product::factory()->create(['supplier_id' => $this->supplier->id, 'category_id' => $this->category->id, 'is_active' => true]);
 
-        $response = $this->actingAs($this->user)->postJson('/api/v1/favorite/toggle', [
+        $response = $this->actingAs($this->user)->postJson(route('favorite.toggle'), [
             'product_id' => $product->id,
             'is_favorite' => true,
         ]);
@@ -60,13 +60,13 @@ class FavoriteControllerTest extends TestCase
         $product = Product::factory()->create(['supplier_id' => $this->supplier->id, 'category_id' => $this->category->id, 'is_active' => true]);
 
         // First add to favorites
-        $this->actingAs($this->user)->postJson('/api/v1/favorite/toggle', [
+        $this->actingAs($this->user)->postJson(route('favorite.toggle'), [
             'product_id' => $product->id,
             'is_favorite' => true,
         ]);
 
         // Then remove from favorites
-        $response = $this->actingAs($this->user)->postJson('/api/v1/favorite/toggle', [
+        $response = $this->actingAs($this->user)->postJson(route('favorite.toggle'), [
             'product_id' => $product->id,
             'is_favorite' => false,
         ]);
@@ -87,7 +87,7 @@ class FavoriteControllerTest extends TestCase
     {
         $product = Product::factory()->create(['supplier_id' => $this->supplier->id, 'category_id' => $this->category->id, 'is_active' => false]);
 
-        $response = $this->actingAs($this->user)->postJson('/api/v1/favorite/toggle', [
+        $response = $this->actingAs($this->user)->postJson(route('favorite.toggle'), [
             'product_id' => $product->id,
             'is_favorite' => true,
         ]);
@@ -103,7 +103,7 @@ class FavoriteControllerTest extends TestCase
 
     public function test_cannot_favorite_nonexistent_product()
     {
-        $response = $this->actingAs($this->user)->postJson('/api/v1/favorite/toggle', [
+        $response = $this->actingAs($this->user)->postJson(route('favorite.toggle'), [
             'product_id' => 99999,
             'is_favorite' => true,
         ]);
@@ -114,7 +114,7 @@ class FavoriteControllerTest extends TestCase
 
     public function test_product_id_is_required()
     {
-        $response = $this->actingAs($this->user)->postJson('/api/v1/favorite/toggle', [
+        $response = $this->actingAs($this->user)->postJson(route('favorite.toggle'), [
             'is_favorite' => true,
         ]);
 
@@ -126,7 +126,7 @@ class FavoriteControllerTest extends TestCase
     {
         $product = Product::factory()->create(['supplier_id' => $this->supplier->id, 'category_id' => $this->category->id, 'is_active' => true]);
 
-        $response = $this->actingAs($this->user)->postJson('/api/v1/favorite/toggle', [
+        $response = $this->actingAs($this->user)->postJson(route('favorite.toggle'), [
             'product_id' => $product->id,
         ]);
 
@@ -138,7 +138,7 @@ class FavoriteControllerTest extends TestCase
     {
         $product = Product::factory()->create(['supplier_id' => $this->supplier->id, 'category_id' => $this->category->id, 'is_active' => true]);
 
-        $response = $this->actingAs($this->user)->postJson('/api/v1/favorite/toggle', [
+        $response = $this->actingAs($this->user)->postJson(route('favorite.toggle'), [
             'product_id' => $product->id,
             'is_favorite' => 'invalid',
         ]);
@@ -151,7 +151,7 @@ class FavoriteControllerTest extends TestCase
     {
         $product = Product::factory()->create(['supplier_id' => $this->supplier->id, 'category_id' => $this->category->id, 'is_active' => true]);
 
-        $response = $this->postJson('/api/v1/favorite/toggle', [
+        $response = $this->postJson(route('favorite.toggle'), [
             'product_id' => $product->id,
             'is_favorite' => true,
         ]);
@@ -164,7 +164,7 @@ class FavoriteControllerTest extends TestCase
         $product = Product::factory()->create(['supplier_id' => $this->supplier->id, 'category_id' => $this->category->id, 'is_active' => true]);
 
         // Add to favorites
-        $response1 = $this->actingAs($this->user)->postJson('/api/v1/favorite/toggle', [
+        $response1 = $this->actingAs($this->user)->postJson(route('favorite.toggle'), [
             'product_id' => $product->id,
             'is_favorite' => true,
         ]);
@@ -176,7 +176,7 @@ class FavoriteControllerTest extends TestCase
         ]);
 
         // Remove from favorites
-        $response2 = $this->actingAs($this->user)->postJson('/api/v1/favorite/toggle', [
+        $response2 = $this->actingAs($this->user)->postJson(route('favorite.toggle'), [
             'product_id' => $product->id,
             'is_favorite' => false,
         ]);
@@ -189,7 +189,7 @@ class FavoriteControllerTest extends TestCase
         ]);
 
         // Add to favorites again
-        $response3 = $this->actingAs($this->user)->postJson('/api/v1/favorite/toggle', [
+        $response3 = $this->actingAs($this->user)->postJson(route('favorite.toggle'), [
             'product_id' => $product->id,
             'is_favorite' => true,
         ]);
@@ -206,13 +206,13 @@ class FavoriteControllerTest extends TestCase
         $product = Product::factory()->create(['supplier_id' => $this->supplier->id, 'category_id' => $this->category->id, 'is_active' => true]);
 
         // First user adds to favorites
-        $response1 = $this->actingAs($this->user)->postJson('/api/v1/favorite/toggle', [
+        $response1 = $this->actingAs($this->user)->postJson(route('favorite.toggle'), [
             'product_id' => $product->id,
             'is_favorite' => true,
         ]);
 
         // Second user adds to favorites
-        $response2 = $this->actingAs($this->otherUser)->postJson('/api/v1/favorite/toggle', [
+        $response2 = $this->actingAs($this->otherUser)->postJson(route('favorite.toggle'), [
             'product_id' => $product->id,
             'is_favorite' => true,
         ]);
@@ -236,13 +236,13 @@ class FavoriteControllerTest extends TestCase
         $product = Product::factory()->create(['supplier_id' => $this->supplier->id, 'category_id' => $this->category->id, 'is_active' => true]);
 
         // Add to favorites first time
-        $this->actingAs($this->user)->postJson('/api/v1/favorite/toggle', [
+        $this->actingAs($this->user)->postJson(route('favorite.toggle'), [
             'product_id' => $product->id,
             'is_favorite' => true,
         ]);
 
         // Try to add to favorites again
-        $response = $this->actingAs($this->user)->postJson('/api/v1/favorite/toggle', [
+        $response = $this->actingAs($this->user)->postJson(route('favorite.toggle'), [
             'product_id' => $product->id,
             'is_favorite' => true,
         ]);
@@ -264,7 +264,7 @@ class FavoriteControllerTest extends TestCase
         $product = Product::factory()->create(['supplier_id' => $this->supplier->id, 'category_id' => $this->category->id, 'is_active' => true]);
 
         // Try to remove from favorites without adding first
-        $response = $this->actingAs($this->user)->postJson('/api/v1/favorite/toggle', [
+        $response = $this->actingAs($this->user)->postJson(route('favorite.toggle'), [
             'product_id' => $product->id,
             'is_favorite' => false,
         ]);
