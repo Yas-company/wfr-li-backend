@@ -49,13 +49,13 @@ class SupplierGeneralMetricsControllerTest extends TestCase
         $supplier = $this->createUser(UserRole::SUPPLIER);
         $otherSupplier = $this->createUser(UserRole::SUPPLIER);
 
-        $this->createProducts($supplier->id, 10);
-        $this->createProducts($supplier->id, 5);
-        $this->createProducts($supplier->id, 0);
+        $this->createProducts($supplier->id, 10, 5);
+        $this->createProducts($supplier->id, 3, 4);
+        $this->createProducts($supplier->id, 0, 2);
 
-        $this->createProducts($otherSupplier->id, 10, 6);
-        $this->createProducts($otherSupplier->id, 5, 2);
-        $this->createProducts($otherSupplier->id, 0, 1);
+        $this->createProducts($otherSupplier->id, 10, 6, 6);
+        $this->createProducts($otherSupplier->id, 2, 3, 2);
+        $this->createProducts($otherSupplier->id, 0, 1, 1);
 
         $this->createOrders($supplier->id, 50, OrderStatus::PENDING, 5);
         $this->createOrders($supplier->id, 100, OrderStatus::DELIVERED, 5);
@@ -160,11 +160,12 @@ class SupplierGeneralMetricsControllerTest extends TestCase
         return $supplier;
     }
 
-    protected function createProducts(int $supplierId, int $stockQuantity, int $count = 5)
+    protected function createProducts(int $supplierId, int $stockQuantity, int $nearlyOutOfStockLimit = 0, int $count = 5)
     {
         Product::factory()->count($count)->create([
             'supplier_id' => $supplierId,
             'stock_qty' => $stockQuantity,
+            'nearly_out_of_stock_limit' => $nearlyOutOfStockLimit,
         ]);
     }
 

@@ -27,6 +27,7 @@ class Product extends Model
         'quantity',
         'min_order_quantity', // ✅ أضفناه هنا
         'stock_qty',
+        'nearly_out_of_stock_limit',
         'unit_type',
         'status',
         'is_active',
@@ -141,7 +142,7 @@ class Product extends Model
         return $query->where('is_active', true);
     }
 
-    
+
     /**
      * Get the attributes that should be appended to the model's array form.
      */
