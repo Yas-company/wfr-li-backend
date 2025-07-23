@@ -23,8 +23,8 @@ class ProductFactory extends Factory
                 'ar' => $this->faker->word(),
             ],
             'description' => [
-                'en' => $this->faker->paragraph(),
-                'ar' => $this->faker->paragraph(),
+                'en' => $this->faker->text(),
+                'ar' => $this->faker->text(),
             ],
             'image' => $this->faker->imageUrl(),
             'price' => $this->faker->randomFloat(2, 10, 1000),
