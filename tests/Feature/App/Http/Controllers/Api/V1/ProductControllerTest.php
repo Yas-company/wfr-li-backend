@@ -29,12 +29,13 @@ class ProductControllerTest extends TestCase
 
         $this->supplier = User::factory()->supplier()->create();
         $this->buyer = User::factory()->buyer()->create();
-        $this->category = Category::factory()->create();
+        $this->category = Category::factory()->create([
+            'supplier_id' => $this->supplier->id,
+        ]);
     }
 
     public function test_supplier_can_create_product()
     {
-
         $productData = Product::factory()->make([
             'category_id' => $this->category->id,
             'supplier_id' => $this->supplier->id,
@@ -58,6 +59,7 @@ class ProductControllerTest extends TestCase
                     'price_before_discount',
                     'quantity',
                     'stock_qty',
+                    'nearly_out_of_stock_limit',
                     'status',
                     'is_favorite',
                     'unit_type',
@@ -141,6 +143,7 @@ class ProductControllerTest extends TestCase
                     'price_before_discount',
                     'quantity',
                     'stock_qty',
+                    'nearly_out_of_stock_limit',
                     'status',
                     'is_favorite',
                     'unit_type',
@@ -172,6 +175,7 @@ class ProductControllerTest extends TestCase
                         'price_before_discount',
                         'quantity',
                         'stock_qty',
+                        'nearly_out_of_stock_limit',
                         'status',
                         'is_favorite',
                         'unit_type',
@@ -206,6 +210,7 @@ class ProductControllerTest extends TestCase
                     'price_before_discount',
                     'quantity',
                     'stock_qty',
+                    'nearly_out_of_stock_limit',
                     'status',
                     'is_favorite',
                     'unit_type',
@@ -233,6 +238,7 @@ class ProductControllerTest extends TestCase
                     'price_before_discount',
                     'quantity',
                     'stock_qty',
+                    'nearly_out_of_stock_limit',
                     'status',
                     'is_favorite',
                     'unit_type',
@@ -264,6 +270,7 @@ class ProductControllerTest extends TestCase
                         'price_before_discount',
                         'quantity',
                         'stock_qty',
+                        'nearly_out_of_stock_limit',
                         'status',
                         'is_favorite',
                         'unit_type',
@@ -357,6 +364,7 @@ class ProductControllerTest extends TestCase
                         'price_before_discount',
                         'quantity',
                         'stock_qty',
+                        'nearly_out_of_stock_limit',
                         'status',
                         'is_favorite',
                         'unit_type',

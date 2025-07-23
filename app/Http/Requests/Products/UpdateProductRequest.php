@@ -23,6 +23,7 @@ class UpdateProductRequest extends FormRequest
             'price' => 'required|numeric|min:0',
             'quantity' => 'required|numeric|min:0',
             'stock_qty' => 'required|integer|min:0',
+            'nearly_out_of_stock_limit' => 'nullable|integer|min:0',
             'unit_type' => 'required|in:0,1,2,3,4,5,6,7',
             'status' => 'required|in:0,1,2',
             'category_id' => 'required|exists:categories,id',

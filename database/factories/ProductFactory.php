@@ -30,6 +30,7 @@ class ProductFactory extends Factory
             'price' => $this->faker->randomFloat(2, 10, 1000),
             'price_before_discount' => $this->faker->randomFloat(2, 10, 1000),
             'stock_qty' => $this->faker->numberBetween(10, 1000),
+            'nearly_out_of_stock_limit' => $this->faker->numberBetween(5, 20),
             'quantity' => $this->faker->numberBetween(10, 100),
             'unit_type' => $this->faker->numberBetween(0, 3),
             'status' => $this->faker->numberBetween(0, 1),
