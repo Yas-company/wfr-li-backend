@@ -134,4 +134,7 @@ return [
 
     // Supplier Setting Messages
     'supplier_setting_updated' => 'Supplier setting updated successfully',
+
+    // supplier profile messages
+    'supplier_profile_updated' => 'Supplier profile updated successfully',
 ];
