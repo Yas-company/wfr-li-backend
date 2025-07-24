@@ -24,6 +24,7 @@ class OrderService
             ->with(['ratings'])
             ->leftJoin('users', 'users.id', '=', 'orders.supplier_id')
             ->forBuyer($userId)
+            ->orderByDesc('orders.created_at')
             ->paginate(10);
     }
 
@@ -41,6 +42,7 @@ class OrderService
             ->addSelect(['users.name as buyer_name'])
             ->leftJoin('users', 'users.id', '=', 'orders.user_id')
             ->forSupplier($userId)
+            ->orderByDesc('orders.created_at')
             ->paginate(10);
     }
 
