@@ -73,6 +73,70 @@ class ProductControllerTest extends TestCase
         ]);
     }
 
+    public function test_supplier_cannot_create_product_with_category_not_belonging_to_them()
+    {
+        // Create a category for another supplier
+        $otherSupplier = User::factory()->supplier()->create();
+        $otherCategory = Category::factory()->create([
+            'supplier_id' => $otherSupplier->id,
+        ]);
+
+        $productData = Product::factory()->make([
+            'category_id' => $otherCategory->id,
+            'supplier_id' => $this->supplier->id,
+        ])->toArray();
+
+        unset($productData['image']);
+        $imageFile = \Illuminate\Http\UploadedFile::fake()->create('product.jpg', 100, 'image/jpeg');
+        $productData['image'] = $imageFile;
+
+        $response = $this->actingAs($this->supplier)->postJson(route('products.store'), $productData);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['category_id']);
+    }
+
+    public function test_supplier_cannot_create_product_with_invalid_status_and_unit_type()
+    {
+        $productData = Product::factory()->make([
+            'category_id' => $this->category->id,
+            'supplier_id' => $this->supplier->id,
+        ])->toArray();
+
+        // Set invalid values directly in the payload
+        $productData['status'] = 100;
+        $productData['unit_type'] = 100;
+
+        unset($productData['image']);
+        $imageFile = \Illuminate\Http\UploadedFile::fake()->create('product.jpg', 100, 'image/jpeg');
+        $productData['image'] = $imageFile;
+
+        $response = $this->actingAs($this->supplier)->postJson(route('products.store'), $productData);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['status', 'unit_type']);
+    }
+
+    public function test_supplier_cannot_create_product_with_zero_price_and_quantity()
+    {
+        $productData = Product::factory()->make([
+            'category_id' => $this->category->id,
+            'supplier_id' => $this->supplier->id,
+        ])->toArray();
+
+        $productData['price'] = 0;
+        $productData['quantity'] = 0;
+
+        unset($productData['image']);
+        $imageFile = \Illuminate\Http\UploadedFile::fake()->create('product.jpg', 100, 'image/jpeg');
+        $productData['image'] = $imageFile;
+
+        $response = $this->actingAs($this->supplier)->postJson(route('products.store'), $productData);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['price', 'quantity']);
+    }
+
     public function test_supplier_can_update_product()
     {
         $product = Product::factory()->create([
