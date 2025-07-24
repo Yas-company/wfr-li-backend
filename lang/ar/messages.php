@@ -137,4 +137,8 @@ return [
 
     // supplier profile messages
     'supplier_profile_updated' => 'تم تحديث ملف المورد بنجاح',
+
+    // request supplier profile messages
+    'phone_already_exists' => 'رقم الهاتف مسجل مسبقاً',
+    'email_already_exists' => 'البريد الإلكتروني مسجل مسبقاً',
 ];

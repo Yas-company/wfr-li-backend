@@ -137,4 +137,8 @@ return [
 
     // supplier profile messages
     'supplier_profile_updated' => 'Supplier profile updated successfully',
+
+    // request supplier profile messages
+    'phone_already_exists' => 'Phone number already exists',
+    'email_already_exists' => 'Email already exists',
 ];

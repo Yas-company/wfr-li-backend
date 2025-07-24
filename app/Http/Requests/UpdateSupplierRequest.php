@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class UpdateSupplierRequest extends FormRequest
 {
@@ -22,9 +24,9 @@ class UpdateSupplierRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone' => ['nullable', 'string', 'unique:users,phone'],
+            'phone' => ['nullable', 'string', Rule::unique('users', 'phone')->ignore(Auth::user()->id)],
             'name' => ['nullable', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'max:255', 'unique:users,email'],
+            'email' => ['nullable', 'email', 'max:255', Rule::unique('users', 'email')->ignore(Auth::user()->id)],
         ];
     }
 

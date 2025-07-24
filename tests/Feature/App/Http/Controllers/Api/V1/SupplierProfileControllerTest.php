@@ -26,26 +26,6 @@ class SupplierProfileControllerTest extends TestCase
         return $supplier;
     }
 
-    protected function requestOtpAuth(string $phone, string $token)
-    {
-        return $this->withToken($token)->postJson(route('auth.request-otp-auth'), [
-            'phone' => $phone,
-        ]);
-    }
-
-    protected function verifyOtpAuth(string $phone, string $token, string $otp = '123456')
-    {
-        return $this->withToken($token)->postJson(route('auth.verify-otp-auth'), [
-            'phone' => $phone,
-            'otp' => $otp,
-        ]);
-    }
-
-    protected function updateSupplierProfile(array $data, string $token)
-    {
-        return $this->withToken($token)->putJson(route('suppliers.profile.update'), $data);
-    }
-
     /**
      * Test supplier can update phone with OTP verification flow (all steps in one function).
      */
@@ -74,7 +54,7 @@ class SupplierProfileControllerTest extends TestCase
         ]);
         $response->assertStatus(200);
 
-        // Step 3: Update profile with new phone
+        // Step 3: Update profile with new phone (authenticated)
         $response = $this->withToken($token)->putJson(route('suppliers.profile.update'), [
             'phone' => $newPhone,
         ]);
@@ -83,6 +63,7 @@ class SupplierProfileControllerTest extends TestCase
             'id' => $supplier->id,
             'phone' => $newPhone,
         ]);
+
     }
 
     /**
@@ -130,5 +111,51 @@ class SupplierProfileControllerTest extends TestCase
             'id' => $supplier->id,
             'name' => 'New Name',
         ]);
+    }
+
+    /**
+     * Test supplier can update profile with the same old phone and email (should succeed).
+     */
+    public function test_supplier_can_update_profile_with_same_phone_and_email()
+    {
+        $supplier = $this->createSupplier([
+            'name' => 'Old Name',
+            'email' => 'old@example.com',
+            'phone' => '+966500000001',
+        ]);
+        $token = $supplier->createToken('test')->plainTextToken;
+
+        $response = $this->updateSupplierProfile([
+            'name' => 'New Name',
+            'phone' => $supplier->phone,
+            'email' => $supplier->email,
+        ], $token);
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('users', [
+            'id' => $supplier->id,
+            'name' => 'New Name',
+            'phone' => '+966500000001',
+            'email' => 'old@example.com',
+        ]);
+    }
+
+    protected function requestOtpAuth(string $phone, string $token)
+    {
+        return $this->withToken($token)->postJson(route('auth.request-otp-auth'), [
+            'phone' => $phone,
+        ]);
+    }
+
+    protected function verifyOtpAuth(string $phone, string $token, string $otp = '123456')
+    {
+        return $this->withToken($token)->postJson(route('auth.verify-otp-auth'), [
+            'phone' => $phone,
+            'otp' => $otp,
+        ]);
+    }
+
+    protected function updateSupplierProfile(array $data, string $token)
+    {
+        return $this->withToken($token)->putJson(route('suppliers.profile.update'), $data);
     }
 }
