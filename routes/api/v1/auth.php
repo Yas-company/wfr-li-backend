@@ -32,5 +32,8 @@ Route::prefix('auth')->group(function () {
         Route::get('me', [AuthController::class, 'me'])->name('auth.me');
         Route::post('change-password', [AuthController::class, 'changePassword'])->name('auth.change-password');
         Route::delete('delete-account', [AuthController::class, 'destroy'])->name('auth.delete-account');
+
+        Route::post('request-otp-auth', [OtpController::class, 'requestOtpAuth'])->name('auth.request-otp-auth');
+        Route::post('verify-otp-auth', [OtpController::class, 'verifyOtpAuth'])->name('auth.verify-otp-auth');
     });
 });
