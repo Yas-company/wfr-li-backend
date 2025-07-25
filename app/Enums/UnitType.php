@@ -35,5 +35,9 @@ enum UnitType: int
     case INCH = 25;       // بوصة (2.54 سم تقريبًا)
     case FOOT = 26;       // قدم (30.48 سم)
     case YARD = 27;       // ياردة (91.44 سم)
-}
 
+    public static function values(): array
+    {
+        return array_column(self::cases(), 'value');
+    }
+}
