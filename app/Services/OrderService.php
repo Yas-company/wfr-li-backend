@@ -39,7 +39,7 @@ class OrderService
     public function getSupplierOrders(int $userId, OrderFilterDto $orderFilterDto): AbstractPaginator
     {
         return $this->baseOrderQuery($orderFilterDto)
-            ->addSelect(['users.name as buyer_name'])
+            ->addSelect(['users.name as buyer_name', 'order_details.tracking_number'])
             ->leftJoin('users', 'users.id', '=', 'orders.user_id')
             ->forSupplier($userId)
             ->orderByDesc('orders.created_at')
