@@ -20,12 +20,13 @@ class OrderSeeder extends Seeder
         $products = Product::all();
 
         foreach ($customers as $customer) {
+            $supplierId = fake()->randomElement(User::where('role', UserRole::SUPPLIER)->pluck('id')->toArray());
             // Create 1-5 orders per customer
             $orders = Order::factory()
                 ->count(rand(1, 5))
                 ->create([
                     'user_id' => $customer->id,
-                    'supplier_id' => fake()->randomElement(User::where('role', UserRole::SUPPLIER)->pluck('id')->toArray()),
+                    'supplier_id' => $supplierId,
                 ]);
 
             foreach ($orders as $order) {
@@ -35,6 +36,7 @@ class OrderSeeder extends Seeder
                 $orderDetail = OrderDetail::factory()->create([
                     'order_id' => $order->id,
                     'shipping_address_id' => $address->id,
+                    'tracking_number' => $customer->id . $supplierId . $order->id
                 ]);
 
                 // Create payment
