@@ -22,6 +22,8 @@ class Product extends Model
 
     protected $fillable = [
         'name',
+        'description',
+        'price_before_discount',
         'image',
         'price',
         'quantity',
@@ -141,7 +143,6 @@ class Product extends Model
     {
         return $query->where('is_active', true);
     }
-
 
     /**
      * Get the attributes that should be appended to the model's array form.
