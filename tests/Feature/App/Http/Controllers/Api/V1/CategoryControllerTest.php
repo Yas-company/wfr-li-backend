@@ -149,7 +149,7 @@ class CategoryControllerTest extends TestCase
         $response->assertStatus(500)
             ->assertJson([
                 'success' => false,
-                'message' => 'Only approved suppliers can add categories.',
+                'message' => __('messages.errors.unauthorized_category_creation'),
             ]);
     }
 
@@ -170,7 +170,7 @@ class CategoryControllerTest extends TestCase
         $response->assertStatus(500)
             ->assertJson([
                 'success' => false,
-                'message' => 'Only approved suppliers can add categories.',
+                'message' => __('messages.errors.unauthorized_category_creation'),
             ]);
     }
 
@@ -252,7 +252,7 @@ class CategoryControllerTest extends TestCase
         $response->assertStatus(500)
             ->assertJson([
                 'success' => false,
-                'message' => 'You can only view your own categories.',
+                'message' => __('messages.errors.unauthorized_category_ownership'),
             ]);
     }
 
@@ -315,7 +315,7 @@ class CategoryControllerTest extends TestCase
         $response->assertStatus(500)
             ->assertJson([
                 'success' => false,
-                'message' => 'You can only update your own categories.',
+                'message' => __('messages.errors.unauthorized_category_ownership'),
             ]);
     }
 
@@ -359,7 +359,7 @@ class CategoryControllerTest extends TestCase
         $response->assertStatus(500)
             ->assertJson([
                 'success' => false,
-                'message' => 'Cannot delete category. It has associated products.',
+                'message' => __('messages.errors.category_has_products'),
             ]);
 
         $this->assertDatabaseHas('categories', [
@@ -380,90 +380,8 @@ class CategoryControllerTest extends TestCase
         $response->assertStatus(500)
             ->assertJson([
                 'success' => false,
-                'message' => 'You can only delete your own categories.',
+                'message' => __('messages.errors.unauthorized_category_ownership'),
             ]);
-    }
-
-    public function test_can_get_categories_by_field()
-    {
-        $field1 = Field::factory()->create();
-        $field2 = Field::factory()->create();
-
-        // Create categories for field1
-        Category::factory()->count(3)->create([
-            'field_id' => $field1->id,
-            'supplier_id' => $this->supplier->id,
-        ]);
-
-        // Create categories for field2
-        Category::factory()->count(2)->create([
-            'field_id' => $field2->id,
-            'supplier_id' => $this->supplier->id,
-        ]);
-
-        $response = $this->actingAs($this->supplier)
-            ->getJson(route('categories.getCategoriesByField', $field1));
-
-        $response->assertStatus(200)
-            ->assertJsonStructure([
-                'success',
-                'message',
-                'data' => [
-                    '*' => [
-                        'id',
-                        'name',
-                        'image',
-                        'field_id',
-                        'field',
-                    ],
-                ],
-            ]);
-
-        // Should only get categories for the specified field
-        $categories = $response->json('data');
-        foreach ($categories as $category) {
-            $this->assertEquals($field1->id, $category['field_id']);
-        }
-    }
-
-    public function test_can_search_categories()
-    {
-        // Create categories with specific names
-        Category::factory()->create([
-            'name' => ['en' => 'Electronics', 'ar' => 'إلكترونيات'],
-            'supplier_id' => $this->supplier->id,
-            'field_id' => $this->field->id,
-        ]);
-
-        Category::factory()->create([
-            'name' => ['en' => 'Clothing', 'ar' => 'ملابس'],
-            'supplier_id' => $this->supplier->id,
-            'field_id' => $this->field->id,
-        ]);
-
-        $response = $this->actingAs($this->supplier)
-            ->postJson(route('categories.search'), [
-                'search' => 'Electronics',
-            ]);
-
-        $response->assertStatus(200)
-            ->assertJsonStructure([
-                'success',
-                'message',
-                'data' => [
-                    '*' => [
-                        'id',
-                        'name',
-                        'image',
-                        'field_id',
-                    ],
-                ],
-                'links',
-            ]);
-
-        // Should find the Electronics category
-        $categories = $response->json('data');
-        $this->assertGreaterThan(0, count($categories));
     }
 
     public function test_unauthenticated_user_cannot_access_categories()
@@ -529,5 +447,158 @@ class CategoryControllerTest extends TestCase
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['name.en']);
+    }
+
+    public function test_can_search_categories_using_index()
+    {
+        // Create categories with specific names
+        Category::factory()->create([
+            'name' => ['en' => 'Electronics', 'ar' => 'إلكترونيات'],
+            'supplier_id' => $this->supplier->id,
+            'field_id' => $this->field->id,
+        ]);
+
+        Category::factory()->create([
+            'name' => ['en' => 'Clothing', 'ar' => 'ملابس'],
+            'supplier_id' => $this->supplier->id,
+            'field_id' => $this->field->id,
+        ]);
+
+        Category::factory()->create([
+            'name' => ['en' => 'Electronics Accessories', 'ar' => 'ملحقات إلكترونيات'],
+            'supplier_id' => $this->supplier->id,
+            'field_id' => $this->field->id,
+        ]);
+
+        // Test search using index endpoint
+        $response = $this->actingAs($this->supplier)
+            ->getJson(route('categories.index', ['search' => 'Electronics']));
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    '*' => [
+                        'id',
+                        'name',
+                        'image',
+                        'supplier_id',
+                        'field_id',
+                        'field',
+                        'products_count',
+                    ],
+                ],
+                'links',
+            ]);
+
+        // Should find categories containing 'Electronics'
+        $categories = $response->json('data');
+        $this->assertGreaterThan(0, count($categories));
+
+        // Verify all returned categories contain 'Electronics' in name
+        foreach ($categories as $category) {
+            $this->assertTrue(
+                str_contains(strtolower($category['name']['en']), 'electronics') ||
+                str_contains(strtolower($category['name']['ar']), 'إلكترونيات')
+            );
+        }
+    }
+
+    public function test_can_get_categories_by_field_using_index()
+    {
+        $field1 = Field::factory()->create();
+        $field2 = Field::factory()->create();
+
+        // Create categories for field1
+        Category::factory()->count(3)->create([
+            'field_id' => $field1->id,
+            'supplier_id' => $this->supplier->id,
+        ]);
+
+        // Create categories for field2
+        Category::factory()->count(2)->create([
+            'field_id' => $field2->id,
+            'supplier_id' => $this->supplier->id,
+        ]);
+
+        // Test filtering by field using index endpoint
+        $response = $this->actingAs($this->supplier)
+            ->getJson(route('categories.index', ['field_id' => $field1->id]));
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    '*' => [
+                        'id',
+                        'name',
+                        'image',
+                        'supplier_id',
+                        'field_id',
+                        'field',
+                        'products_count',
+                    ],
+                ],
+                'links',
+            ]);
+
+        // Should only get categories for the specified field
+        $categories = $response->json('data');
+        $this->assertEquals(3, count($categories));
+
+        foreach ($categories as $category) {
+            $this->assertEquals($field1->id, $category['field_id']);
+        }
+    }
+
+    public function test_search_and_field_filter_validation()
+    {
+        // Test invalid search term (too short)
+        $response = $this->actingAs($this->supplier)
+            ->getJson(route('categories.index', ['search' => 'a']));
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['search']);
+
+        // Test invalid field_id (non-existent)
+        $response = $this->actingAs($this->supplier)
+            ->getJson(route('categories.index', ['field_id' => 999]));
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['field_id']);
+    }
+
+    public function test_search_with_arabic_text()
+    {
+        // Create categories with Arabic names
+        Category::factory()->create([
+            'name' => ['en' => 'Electronics', 'ar' => 'إلكترونيات'],
+            'supplier_id' => $this->supplier->id,
+            'field_id' => $this->field->id,
+        ]);
+
+        Category::factory()->create([
+            'name' => ['en' => 'Clothing', 'ar' => 'ملابس'],
+            'supplier_id' => $this->supplier->id,
+            'field_id' => $this->field->id,
+        ]);
+
+        // Test search with Arabic text
+        $response = $this->actingAs($this->supplier)
+            ->getJson(route('categories.index', ['search' => 'إلكترونيات']));
+
+        $response->assertStatus(200);
+
+        $categories = $response->json('data');
+        $this->assertGreaterThan(0, count($categories));
+
+        // Verify Arabic search works
+        foreach ($categories as $category) {
+            $this->assertTrue(
+                str_contains($category['name']['ar'], 'إلكترونيات')
+            );
+        }
     }
 }

@@ -8,15 +8,18 @@ use Spatie\Translatable\HasTranslations;
 
 class Category extends Model
 {
-    use HasTranslations, HasFactory;
+    use HasFactory, HasTranslations;
 
     protected $guarded = [];
 
-    public $translatable = ['name'];
+    protected $casts = [
+        'name' => 'array',
+    ];
 
-    public function supplier()
+    // Relationships
+    public function field()
     {
-        return $this->belongsTo(User::class, 'supplier_id');
+        return $this->belongsTo(Field::class);
     }
 
     public function products()
@@ -24,10 +27,11 @@ class Category extends Model
         return $this->hasMany(Product::class);
     }
 
-    public function field()
+    public function supplier()
     {
-        return $this->belongsTo(Field::class);
+        return $this->belongsTo(User::class, 'supplier_id');
     }
+
     public function countProducts()
     {
         return $this->products()->count();

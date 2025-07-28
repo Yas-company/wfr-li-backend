@@ -2,31 +2,33 @@
 
 namespace App\Providers;
 
-use App\Models\User;
-use App\Models\Order;
-use App\Models\Rating;
-use App\Models\Address;
-use App\Policies\OrderPolicy;
-use App\Policies\RatingPolicy;
-use App\Policies\AddressPolicy;
-use App\Services\Cart\CartService;
-use Illuminate\Support\Facades\Gate;
-use App\Http\Services\ProductService;
-use App\Http\Services\SupplierService;
-use App\Validators\EmptyCartValidator;
-use Illuminate\Support\ServiceProvider;
 use App\Contracts\CartValidatorInterface;
-use App\Validators\CompositeCartValidator;
-use App\Validators\MinOrderAmountValidator;
-use App\Http\Services\Payment\PaymentService;
-use App\Validators\StockAvailabilityValidator;
-use App\Validators\SingleSupplierCartValidator;
-use App\Services\Contracts\CartServiceInterface;
-use Illuminate\Database\Eloquent\Relations\Relation;
 use App\Http\Services\Contracts\PaymentServiceInterface;
 use App\Http\Services\Contracts\ProductServiceInterface;
 use App\Http\Services\Contracts\SupplierServiceInterface;
+use App\Http\Services\Payment\PaymentService;
+use App\Http\Services\ProductService;
+use App\Http\Services\SupplierService;
+use App\Models\Address;
+use App\Models\Category;
+use App\Models\Order;
 use App\Models\Product;
+use App\Models\Rating;
+use App\Models\User;
+use App\Policies\AddressPolicy;
+use App\Policies\CategoryPolicy;
+use App\Policies\OrderPolicy;
+use App\Policies\RatingPolicy;
+use App\Services\Cart\CartService;
+use App\Services\Contracts\CartServiceInterface;
+use App\Validators\CompositeCartValidator;
+use App\Validators\EmptyCartValidator;
+use App\Validators\MinOrderAmountValidator;
+use App\Validators\SingleSupplierCartValidator;
+use App\Validators\StockAvailabilityValidator;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -53,19 +55,19 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(CartValidatorInterface::class, fn () => new CompositeCartValidator(
             addToCartValidators: [
-                new SingleSupplierCartValidator(),
-                new StockAvailabilityValidator(),
+                new SingleSupplierCartValidator,
+                new StockAvailabilityValidator,
             ],
             checkoutValidators: [
-                new MinOrderAmountValidator(),
-                new EmptyCartValidator(),
+                new MinOrderAmountValidator,
+                new EmptyCartValidator,
             ]
         ));
 
         Gate::policy(Address::class, AddressPolicy::class);
         Gate::policy(Order::class, OrderPolicy::class);
         Gate::policy(Rating::class, RatingPolicy::class);
-
+        Gate::policy(Category::class, CategoryPolicy::class);
 
         Relation::morphMap([
             'user' => User::class,

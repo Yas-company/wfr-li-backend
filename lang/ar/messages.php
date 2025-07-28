@@ -163,4 +163,51 @@ return [
             'numeric' => 'يجب أن يكون الحد الأدنى للطلب رقماً',
         ],
     ],
+
+    // Category Messages
+    'categories' => [
+        'retrieved_successfully' => 'تم جلب الفئات بنجاح',
+        'created_successfully' => 'تم إنشاء الفئة بنجاح',
+        'updated_successfully' => 'تم تحديث الفئة بنجاح',
+        'deleted_successfully' => 'تم حذف الفئة بنجاح',
+    ],
+
+    // Product Messages
+    'products' => [
+        'retrieved_successfully' => 'تم جلب المنتجات بنجاح',
+        'created_successfully' => 'تم إنشاء المنتج بنجاح',
+        'updated_successfully' => 'تم تحديث المنتج بنجاح',
+        'deleted_successfully' => 'تم حذف المنتج بنجاح',
+    ],
+
+    // Supplier Messages
+    'suppliers' => [
+        'retrieved_successfully' => 'تم جلب الموردين بنجاح',
+    ],
+
+    // Field Messages
+    'fields' => [
+        'retrieved_successfully' => 'تم جلب الحقول بنجاح',
+    ],
+
+    // Error Messages
+    'errors' => [
+        'unauthorized_category_creation' => 'يمكن للموردين المعتمدين فقط إضافة الفئات.',
+        'unauthorized_category_access' => 'يمكن للموردين المعتمدين فقط عرض الفئات.',
+        'unauthorized_category_update' => 'يمكن للموردين المعتمدين فقط تحديث الفئات.',
+        'unauthorized_category_delete' => 'يمكن للموردين المعتمدين فقط حذف الفئات.',
+        'unauthorized_category_ownership' => 'يمكنك إدارة فئاتك الخاصة فقط.',
+        'category_creation_failed' => 'فشل في إنشاء الفئة. يرجى المحاولة مرة أخرى.',
+        'category_listing_failed' => 'فشل في تحميل الفئات. يرجى المحاولة مرة أخرى.',
+        'category_update_failed' => 'فشل في تحديث الفئة. يرجى المحاولة مرة أخرى.',
+        'category_deletion_failed' => 'فشل في حذف الفئة. يرجى المحاولة مرة أخرى.',
+        'category_has_products' => 'لا يمكن حذف الفئة. تحتوي على منتجات مرتبطة.',
+        'invalid_search_term' => 'يرجى تقديم مصطلح بحث صالح.',
+        'search_failed' => 'فشل البحث. يرجى المحاولة مرة أخرى.',
+        'search_term_min' => 'يجب أن يكون البحث أكثر من 3 أحرف.',
+        'search_term_max' => 'يجب أن يكون البحث أقل من 255 حرف.',
+        'search_term_regex' => 'يجب أن يكون البحث عبارة عن أحرف أو أرقام أو أحرف صغيرة أو أحرف كبيرة أو أحرف أخرى.',
+        'field_id_exists' => 'الحقل غير موجود.',
+        'field_id_integer' => 'الحقل يجب أن يكون رقماً.',
+    ],
 ];

@@ -163,4 +163,51 @@ return [
             'numeric' => 'The minimum order quantity must be a number',
         ],
     ],
+
+    // Category Messages
+    'categories' => [
+        'retrieved_successfully' => 'Categories retrieved successfully',
+        'created_successfully' => 'Category created successfully',
+        'updated_successfully' => 'Category updated successfully',
+        'deleted_successfully' => 'Category deleted successfully',
+    ],
+
+    // Product Messages
+    'products' => [
+        'retrieved_successfully' => 'Products retrieved successfully',
+        'created_successfully' => 'Product created successfully',
+        'updated_successfully' => 'Product updated successfully',
+        'deleted_successfully' => 'Product deleted successfully',
+    ],
+
+    // Supplier Messages
+    'suppliers' => [
+        'retrieved_successfully' => 'Suppliers retrieved successfully',
+    ],
+
+    // Field Messages
+    'fields' => [
+        'retrieved_successfully' => 'Fields retrieved successfully',
+    ],
+
+    // Error Messages
+    'errors' => [
+        'unauthorized_category_creation' => 'Only approved suppliers can add categories.',
+        'unauthorized_category_access' => 'Only approved suppliers can view categories.',
+        'unauthorized_category_update' => 'Only approved suppliers can update categories.',
+        'unauthorized_category_delete' => 'Only approved suppliers can delete categories.',
+        'unauthorized_category_ownership' => 'You can only manage your own categories.',
+        'category_creation_failed' => 'Failed to create category. Please try again.',
+        'category_listing_failed' => 'Failed to load categories. Please try again.',
+        'category_update_failed' => 'Failed to update category. Please try again.',
+        'category_deletion_failed' => 'Failed to delete category. Please try again.',
+        'category_has_products' => 'Cannot delete category. It has associated products.',
+        'invalid_search_term' => 'Please provide a valid search term.',
+        'search_failed' => 'Search failed. Please try again.',
+        'search_term_min' => 'Search term must be at least 3 characters long.',
+        'search_term_max' => 'Search term cannot exceed 255 characters.',
+        'search_term_regex' => 'Search term contains invalid characters.',
+        'field_id_exists' => 'The selected field does not exist.',
+        'field_id_integer' => 'Field ID must be a valid number.',
+    ],
 ];

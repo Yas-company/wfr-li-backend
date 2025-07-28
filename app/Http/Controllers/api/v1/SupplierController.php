@@ -4,11 +4,11 @@ namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AdsResource;
-use App\Http\Services\Contracts\SupplierServiceInterface;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\ProductResource;
-use Illuminate\Http\Request;
+use App\Http\Services\Contracts\SupplierServiceInterface;
 use App\Traits\ApiResponse;
+use Illuminate\Http\Request;
 
 class SupplierController extends Controller
 {
@@ -19,13 +19,15 @@ class SupplierController extends Controller
     public function ads($supplierId)
     {
         $ads = $this->supplierService->getAds($supplierId);
-        return $this->successResponse(AdsResource::collection($ads), 'تم جلب الإعلانات بنجاح');
+
+        return $this->successResponse(AdsResource::collection($ads), __('messages.success'));
     }
 
     public function categories($supplierId)
     {
         $categories = $this->supplierService->getCategories($supplierId);
-        return $this->successResponse(CategoryResource::collection($categories), 'تم جلب الأقسام بنجاح');
+
+        return $this->successResponse(CategoryResource::collection($categories), __('messages.categories.retrieved_successfully'));
     }
 
     public function products(Request $request, $supplierId)
@@ -40,7 +42,7 @@ class SupplierController extends Controller
 
         return $this->paginatedResponse($products,
             ProductResource::collection($products),
-            'تم جلب المنتجات بنجاح'
+            __('messages.success')
         );
 
     }
@@ -49,11 +51,10 @@ class SupplierController extends Controller
     {
         $product = $this->supplierService->getProductById($id);
 
-        if (!$product) {
-            return $this->notFoundResponse('المنتج غير موجود');
+        if (! $product) {
+            return $this->notFoundResponse(__('messages.product_not_found'));
         }
 
-        return $this->successResponse(new ProductResource($product), 'تم جلب بيانات المنتج');
+        return $this->successResponse(new ProductResource($product), __('messages.products.retrieved_successfully'));
     }
-
 }

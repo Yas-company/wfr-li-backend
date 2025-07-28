@@ -17,50 +17,50 @@ class ProductController extends Controller
 
     public function __construct(protected ProductServiceInterface $productService) {}
 
-
     public function index(Request $request)
     {
         $products = $this->productService->list($request->all());
 
-        return $this->paginatedResponse($products,ProductResource::collection($products)
-        );
+        return $this->paginatedResponse($products, ProductResource::collection($products), message: __('messages.products.retrieved_successfully'));
     }
-
 
     public function store(StoreProductRequest $request)
     {
         $product = $this->productService->create($request->all());
-        return $this->createdResponse(new ProductResource($product));
+
+        return $this->createdResponse(new ProductResource($product), __('messages.products.created_successfully'));
     }
 
     public function update(UpdateProductRequest $request, $id)
     {
         $product = $this->productService->update($id, $request->all());
-        return $this->successResponse(new ProductResource($product), 'Product updated successfully');
+
+        return $this->successResponse(new ProductResource($product), __('messages.products.updated_successfully'));
     }
 
     public function destroy($id)
     {
         $this->productService->delete($id);
-        return $this->successResponse(null, 'Delete deleted successfully');
+
+        return $this->successResponse(null, __('messages.products.deleted_successfully'));
     }
 
     public function expiredCount()
     {
-        return $this->successResponse(['expired' => $this->productService->countExpired()]);
+        return $this->successResponse(['expired' => $this->productService->countExpired()], __('messages.success'));
     }
 
     public function nearExpiryCount()
     {
-        return $this->successResponse(['near_expiry' => $this->productService->countNearExpiry()]);
+        return $this->successResponse(['near_expiry' => $this->productService->countNearExpiry()], __('messages.success'));
     }
 
     public function stockStatusCounts()
     {
         $data = $this->productService->countStockStatuses();
-        return $this->successResponse($data);
-    }
 
+        return $this->successResponse($data, __('messages.success'));
+    }
 
     public function show(Product $product)
     {
@@ -75,12 +75,13 @@ class ProductController extends Controller
             ->with('category')
             ->paginate(10);
 
-        return ProductResource::collection($products);
+        return $this->paginatedResponse($products, ProductResource::collection($products), message: __('messages.success'));
     }
 
     public function related(Product $product)
     {
         $related = $product->related();
-        return ProductResource::collection($related);
+
+        return $this->successResponse(ProductResource::collection($related), __('messages.success'));
     }
 }
