@@ -20,10 +20,11 @@ class OrderService
     public function getBuyerOrders(int $userId, OrderFilterDto $orderFilterDto): AbstractPaginator
     {
         return $this->baseOrderQuery($orderFilterDto)
-            ->addSelect(['users.name as supplier_name'])
+            ->addSelect(['users.name as supplier_name', 'users.image as supplier_image'])
             ->with(['ratings'])
             ->leftJoin('users', 'users.id', '=', 'orders.supplier_id')
             ->forBuyer($userId)
+            ->orderByDesc('orders.created_at')
             ->paginate(10);
     }
 
@@ -38,9 +39,10 @@ class OrderService
     public function getSupplierOrders(int $userId, OrderFilterDto $orderFilterDto): AbstractPaginator
     {
         return $this->baseOrderQuery($orderFilterDto)
-            ->addSelect(['users.name as buyer_name'])
+            ->addSelect(['users.name as buyer_name', 'order_details.tracking_number'])
             ->leftJoin('users', 'users.id', '=', 'orders.user_id')
             ->forSupplier($userId)
+            ->orderByDesc('orders.created_at')
             ->paginate(10);
     }
 
@@ -59,6 +61,8 @@ class OrderService
                 'orders.status',
                 'orders.user_id',
                 'orders.supplier_id',
+                'orders.total',
+                'orders.total_discount',
                 'orders.created_at',
                 'order_details.shipping_method',
                 'order_details.payment_status',

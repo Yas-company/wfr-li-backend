@@ -135,10 +135,41 @@ return [
     // Supplier Setting Messages
     'supplier_setting_updated' => 'تم تحديث إعدادات المورد بنجاح',
 
+
     // supplier profile messages
     'supplier_profile_updated' => 'تم تحديث ملف المورد بنجاح',
 
     // request supplier profile messages
     'phone_already_exists' => 'رقم الهاتف مسجل مسبقاً',
     'email_already_exists' => 'البريد الإلكتروني مسجل مسبقاً',
+
+    // Product Messages
+    'product' => [
+        'price' => [
+            'min' => 'يجب أن يكون السعر أكبر من 0.01',
+        ],
+        'quantity' => [
+            'min' => 'يجب أن يكون الكمية أكبر من 0',
+        ],
+        'category_id' => [
+            'exists' => ' الفئة غير موجودة او لا تنتمي للمورد',
+        ],
+        'unit_type' => [
+            'in' => 'نوع الوحدة غير صالح',
+        ],
+        'status' => [
+            'in' => 'الحالة غير صالحة',
+        ],
+        'image' => [
+            'required' => 'يجب أن يكون لديك صورة للمنتج',
+            'image' => 'يجب أن يكون الملف صورة',
+            'mimes' => 'يجب أن يكون الملف صورة',
+            'max' => 'يجب أن يكون الملف صورة',
+        ],
+        'min_order_quantity' => [
+            'required' => 'يجب أن يكون لديك حد أدنى للطلب',
+            'numeric' => 'يجب أن يكون الحد الأدنى للطلب رقماً',
+        ],
+    ],
+
 ];

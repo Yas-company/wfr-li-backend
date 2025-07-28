@@ -11,6 +11,7 @@ use App\Models\OrderDetail;
 use App\Exceptions\CartException;
 use Illuminate\Support\Facades\DB;
 use App\Enums\Settings\OrderSettings;
+use App\Services\OrderTrackingService;
 use App\Values\CartSupplierRequirement;
 use App\Contracts\CartValidatorInterface;
 use App\Http\Services\Payment\PaymentContext;
@@ -29,7 +30,8 @@ class CartService implements CartServiceInterface
      */
     public function __construct(
         private CartProductManager $cartProductManager,
-        protected CartValidatorInterface $cartValidator
+        protected CartValidatorInterface $cartValidator,
+        protected OrderTrackingService $orderTrackingService
     )
     {
         //
@@ -219,6 +221,7 @@ class CartService implements CartServiceInterface
                 'notes' => $checkoutData['notes'],
                 'payment_id' => $pyment_id,
                 'shipping_method' => $checkoutData['shipping_method'],
+                'tracking_number' => $this->orderTrackingService->generateTrackingNumber($user->id, $supplierId, $order->id),
             ]);
 
             $orderProducts = $cart->products->mapWithKeys(fn($item) => [
