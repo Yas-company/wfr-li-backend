@@ -26,7 +26,6 @@ class ProductFactory extends Factory
                 'en' => $this->faker->text(),
                 'ar' => $this->faker->text(),
             ],
-            'image' => $this->faker->imageUrl(),
             'price' => $this->faker->randomFloat(2, 10, 1000),
             'price_before_discount' => $this->faker->randomFloat(2, 10, 1000),
             'stock_qty' => $this->faker->numberBetween(10, 1000),
