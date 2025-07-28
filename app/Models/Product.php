@@ -2,23 +2,23 @@
 
 namespace App\Models;
 
+use App\Enums\ProductStatus;
 use App\Enums\UnitType;
 use App\Traits\Rateable;
-use App\Enums\ProductStatus;
-use Spatie\MediaLibrary\HasMedia;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
-use Spatie\Translatable\HasTranslations;
-use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Translatable\HasTranslations;
 
 class Product extends Model implements HasMedia
 {
     use HasFactory;
     use HasTranslations;
-    use Rateable;
     use InteractsWithMedia;
+    use Rateable;
 
     protected $guarded = [];
 
@@ -70,7 +70,7 @@ class Product extends Model implements HasMedia
         $this->addMediaCollection('images')
             ->useFallbackUrl('/images/logo.jpg')
             ->useFallbackPath(public_path('/images/logo.jpg'))
-            ->withResponsiveImages(); ;
+            ->withResponsiveImages();
     }
 
     public function favoritedByUsers()

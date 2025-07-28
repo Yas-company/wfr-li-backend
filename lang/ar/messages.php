@@ -135,7 +135,6 @@ return [
     // Supplier Setting Messages
     'supplier_setting_updated' => 'تم تحديث إعدادات المورد بنجاح',
 
-
     // supplier profile messages
     'supplier_profile_updated' => 'تم تحديث ملف المورد بنجاح',
 

@@ -4,11 +4,8 @@ namespace App\Providers;
 
 use App\Contracts\CartValidatorInterface;
 use App\Http\Services\Contracts\PaymentServiceInterface;
-use App\Services\Contracts\CartServiceInterface;
-use App\Services\Contracts\ProductServiceInterface;
 use App\Http\Services\Contracts\SupplierServiceInterface;
 use App\Http\Services\Payment\PaymentService;
-use App\Services\ProductService;
 use App\Http\Services\SupplierService;
 use App\Models\Address;
 use App\Models\Category;
@@ -21,16 +18,17 @@ use App\Policies\CategoryPolicy;
 use App\Policies\OrderPolicy;
 use App\Policies\RatingPolicy;
 use App\Services\Cart\CartService;
-use Illuminate\Support\Facades\Gate;
-use App\Validators\EmptyCartValidator;
-use Illuminate\Support\ServiceProvider;
+use App\Services\Contracts\CartServiceInterface;
+use App\Services\Contracts\ProductServiceInterface;
+use App\Services\ProductService;
 use App\Validators\CompositeCartValidator;
-
+use App\Validators\EmptyCartValidator;
 use App\Validators\MinOrderAmountValidator;
 use App\Validators\SingleSupplierCartValidator;
 use App\Validators\StockAvailabilityValidator;
 use Illuminate\Database\Eloquent\Relations\Relation;
-
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {

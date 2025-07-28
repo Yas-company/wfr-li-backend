@@ -2,22 +2,24 @@
 
 namespace Tests\Feature\Api\V1\Product;
 
+use App\Enums\UserRole;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
-use App\Enums\UserRole;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ProductMediaControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
     protected $user;
+
     protected $product;
+
     protected $category;
 
     protected function setUp(): void
@@ -76,7 +78,6 @@ class ProductMediaControllerTest extends TestCase
         }
     }
 
-
     public function test_supplier_cannot_attach_images_without_authentication()
     {
         $images = [UploadedFile::fake()->image('product.jpg')];
@@ -124,7 +125,6 @@ class ProductMediaControllerTest extends TestCase
         $this->assertCount(0, $this->product->fresh()->getMedia('images'));
     }
 
-
     public function test_supplier_cannot_attach_non_image_files()
     {
         $images = [UploadedFile::fake()->create('document.pdf', 100)];
@@ -136,10 +136,10 @@ class ProductMediaControllerTest extends TestCase
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors([
-                "images.0"=> [
-                    "The images.0 field must be an image.",
-                    "The images.0 field must be a file of type: jpeg, png, jpg, gif, webp."
-                ]
+                'images.0' => [
+                    'The images.0 field must be an image.',
+                    'The images.0 field must be a file of type: jpeg, png, jpg, gif, webp.',
+                ],
             ]);
 
         $this->assertCount(0, $this->product->fresh()->getMedia('images'));

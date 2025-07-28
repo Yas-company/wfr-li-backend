@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\api\v1\Product;
 
-use App\Models\Product;
-use App\Traits\ApiResponse;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ProductResource;
 use App\Http\Requests\Products\AttachMediaRequest;
+use App\Http\Resources\ProductResource;
+use App\Models\Product;
 use App\Services\Contracts\ProductServiceInterface;
+use App\Traits\ApiResponse;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ProductMediaController extends Controller
@@ -16,16 +16,12 @@ class ProductMediaController extends Controller
 
     /**
      * ProductMediaController constructor.
-     *
-     * @param ProductServiceInterface $productService
      */
     public function __construct(protected ProductServiceInterface $productService) {}
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param AttachMediaRequest $request
-     * @param Product $product
      *
      * @return JsonResponse
      */
@@ -39,8 +35,6 @@ class ProductMediaController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Product $product
-     * @param Media $media
      *
      * @return JsonResponse
      */
@@ -50,5 +44,4 @@ class ProductMediaController extends Controller
 
         return $this->successResponse(null, 'Media deleted successfully');
     }
-
 }

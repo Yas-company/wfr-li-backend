@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\User;
 use App\Models\Product;
+use App\Models\User;
 use App\Services\Contracts\ProductServiceInterface;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -12,7 +12,6 @@ class ProductService implements ProductServiceInterface
     /**
      * Display a listing of the resource.
      *
-     * @param array $filters
      *
      * @return Paginator
      */
@@ -29,8 +28,6 @@ class ProductService implements ProductServiceInterface
     /**
      * Store a newly created resource in storage.
      *
-     * @param array $data
-     * @param User $user
      *
      * @return Product
      */
@@ -44,8 +41,6 @@ class ProductService implements ProductServiceInterface
     /**
      * Update the specified resource in storage.
      *
-     * @param int $id
-     * @param array $data
      *
      * @return Product
      */
@@ -59,19 +54,16 @@ class ProductService implements ProductServiceInterface
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param int $id
      */
     public function delete(int $id)
     {
         $product = Product::findOrFail($id);
+
         return $product->delete();
     }
 
     /**
      * Display the number of products.
-     *
-     * @return int
      */
     public function countTotal(): int
     {
@@ -80,8 +72,6 @@ class ProductService implements ProductServiceInterface
 
     /**
      * Display the number of expired products.
-     *
-     * @return int
      */
     public function countExpired(): int
     {
@@ -90,9 +80,6 @@ class ProductService implements ProductServiceInterface
 
     /**
      * Display the number of near expiry products.
-     *
-     * @return int
-     *
      */
     public function countNearExpiry(): int
     {
@@ -101,8 +88,6 @@ class ProductService implements ProductServiceInterface
 
     /**
      * Display the stock status counts.
-     *
-     * @return array
      */
     public function countStockStatuses(): array
     {
@@ -115,7 +100,6 @@ class ProductService implements ProductServiceInterface
     /**
      * Attach media to the product.
      *
-     * @param Product $product
      *
      * @return Product
      */
@@ -123,9 +107,9 @@ class ProductService implements ProductServiceInterface
     {
         $product->addMultipleMediaFromRequest(['images'])
             ->each(function ($fileAdder) {
-                $fileAdder->sanitizingFileName(function($fileName) {
-                            return strtolower(str_replace(['#', '/', '\\', ' '], '-', $fileName));
-                        })
+                $fileAdder->sanitizingFileName(function ($fileName) {
+                    return strtolower(str_replace(['#', '/', '\\', ' '], '-', $fileName));
+                })
                     ->toMediaCollection('images');
             });
 
@@ -135,14 +119,13 @@ class ProductService implements ProductServiceInterface
     /**
      * Remove media from the product.
      *
-     * @param Product $product
-     * @param Media $media
      *
      * @return Product
      */
     public function removeMedia(Product $product, Media $media)
     {
         $media->delete();
+
         return $product;
     }
 }
