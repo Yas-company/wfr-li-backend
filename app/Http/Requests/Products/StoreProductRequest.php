@@ -30,7 +30,6 @@ class StoreProductRequest extends FormRequest
             'unit_type' => ['required', Rule::in(UnitType::values())],
             'status' => ['required', Rule::in(ProductStatus::values())],
             'category_id' => ['required', Rule::exists('categories', 'id')->where('supplier_id', auth()->user()->id)],
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'min_order_quantity' => 'required|numeric|min:1',
         ];
     }
@@ -43,10 +42,6 @@ class StoreProductRequest extends FormRequest
             'category_id.exists' => __('messages.product.category_id.exists'),
             'unit_type.in' => __('messages.product.unit_type.in'),
             'status.in' => __('messages.product.status.in'),
-            'image.required' => __('messages.product.image.required'),
-            'image.image' => __('messages.product.image.image'),
-            'image.mimes' => __('messages.product.image.mimes'),
-            'image.max' => __('messages.product.image.max'),
             'min_order_quantity.required' => __('messages.product.min_order_quantity.required'),
             'min_order_quantity.numeric' => __('messages.product.min_order_quantity.numeric'),
         ];

@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\api\v1\ProductController;
+use App\Http\Controllers\api\v1\Product\ProductController;
+use App\Http\Controllers\api\v1\Product\ProductMediaController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->prefix('products')->group(function () {
@@ -9,6 +10,8 @@ Route::middleware('auth:sanctum')->prefix('products')->group(function () {
     Route::get('/expired/count', [ProductController::class, 'expiredCount'])->name('products.expired.count');
     Route::get('/near-expiry/count', [ProductController::class, 'nearExpiryCount'])->name('products.near-expiry.count');
     Route::get('/stock-status/count', [ProductController::class, 'stockStatusCounts'])->name('products.stock-status.count');
+    Route::post('/{product}/attach-media', [ProductMediaController::class, 'store'])->name('products.attach-media');
+    Route::delete('/{product}/media/{media}', [ProductMediaController::class, 'destroy'])->name('products.media.destroy');
 });
 
 Route::middleware('auth:sanctum')->prefix('products')->group(function () {
