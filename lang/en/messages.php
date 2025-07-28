@@ -164,7 +164,7 @@ return [
             'required' => 'You must have an image for the product',
             'image' => 'The file must be an image',
             'mimes' => 'The file must be an image',
-            'max' => 'The file must be an image',
+            'max' => 'You must attach at most 5 images',
         ],
         'min_order_quantity' => [
             'required' => 'You must have a minimum order quantity for the product',
