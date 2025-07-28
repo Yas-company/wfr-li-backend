@@ -6,9 +6,7 @@ use App\Enums\UnitType;
 use App\Traits\Rateable;
 use App\Enums\ProductStatus;
 use Spatie\MediaLibrary\HasMedia;
-use Spatie\Image\Enums\BorderType;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Image\Enums\CropPosition;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -158,7 +156,6 @@ class Product extends Model implements HasMedia
     {
         return $query->where('is_active', true);
     }
-
 
     /**
      * Get the attributes that should be appended to the model's array form.

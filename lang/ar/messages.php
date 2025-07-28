@@ -135,6 +135,14 @@ return [
     // Supplier Setting Messages
     'supplier_setting_updated' => 'تم تحديث إعدادات المورد بنجاح',
 
+
+    // supplier profile messages
+    'supplier_profile_updated' => 'تم تحديث ملف المورد بنجاح',
+
+    // request supplier profile messages
+    'phone_already_exists' => 'رقم الهاتف مسجل مسبقاً',
+    'email_already_exists' => 'البريد الإلكتروني مسجل مسبقاً',
+
     // Product Messages
     'product' => [
         'price' => [
@@ -163,4 +171,5 @@ return [
             'numeric' => 'يجب أن يكون الحد الأدنى للطلب رقماً',
         ],
     ],
+
 ];
