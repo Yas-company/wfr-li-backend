@@ -135,6 +135,14 @@ return [
     // Supplier Setting Messages
     'supplier_setting_updated' => 'تم تحديث إعدادات المورد بنجاح',
 
+
+    // supplier profile messages
+    'supplier_profile_updated' => 'تم تحديث ملف المورد بنجاح',
+
+    // request supplier profile messages
+    'phone_already_exists' => 'رقم الهاتف مسجل مسبقاً',
+    'email_already_exists' => 'البريد الإلكتروني مسجل مسبقاً',
+
     // Product Messages
     'product' => [
         'price' => [
@@ -156,7 +164,7 @@ return [
             'required' => 'يجب أن يكون لديك صورة للمنتج',
             'image' => 'يجب أن يكون الملف صورة',
             'mimes' => 'يجب أن يكون الملف صورة',
-            'max' => 'يجب أن يكون الملف صورة',
+            'max' => 'يجب إرفاق على الأكثر 5 صورة',
         ],
         'min_order_quantity' => [
             'required' => 'يجب أن يكون لديك حد أدنى للطلب',
@@ -210,4 +218,5 @@ return [
         'field_id_exists' => 'الحقل غير موجود.',
         'field_id_integer' => 'الحقل يجب أن يكون رقماً.',
     ],
+
 ];

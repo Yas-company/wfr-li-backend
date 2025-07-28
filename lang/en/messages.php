@@ -135,6 +135,14 @@ return [
     // Supplier Setting Messages
     'supplier_setting_updated' => 'Supplier setting updated successfully',
 
+
+    // supplier profile messages
+    'supplier_profile_updated' => 'Supplier profile updated successfully',
+
+    // request supplier profile messages
+    'phone_already_exists' => 'Phone number already exists',
+    'email_already_exists' => 'Email already exists',
+
     // Product Messages
     'product' => [
         'price' => [
@@ -156,13 +164,14 @@ return [
             'required' => 'You must have an image for the product',
             'image' => 'The file must be an image',
             'mimes' => 'The file must be an image',
-            'max' => 'The file must be an image',
+            'max' => 'You must attach at most 5 images',
         ],
         'min_order_quantity' => [
             'required' => 'You must have a minimum order quantity for the product',
             'numeric' => 'The minimum order quantity must be a number',
         ],
     ],
+
 
     // Category Messages
     'categories' => [
@@ -210,4 +219,5 @@ return [
         'field_id_exists' => 'The selected field does not exist.',
         'field_id_integer' => 'Field ID must be a valid number.',
     ],
+
 ];
