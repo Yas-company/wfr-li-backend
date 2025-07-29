@@ -135,7 +135,6 @@ return [
     // Supplier Setting Messages
     'supplier_setting_updated' => 'Supplier setting updated successfully',
 
-
     // supplier profile messages
     'supplier_profile_updated' => 'Supplier profile updated successfully',
 
@@ -171,5 +170,8 @@ return [
             'numeric' => 'The minimum order quantity must be a number',
         ],
     ],
+
+    // Supplier Image Messages
+    'supplier_image_changed' => 'Supplier image changed successfully',
 
 ];

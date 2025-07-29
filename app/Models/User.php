@@ -3,16 +3,16 @@
 namespace App\Models;
 
 use App\Enums\UserRole;
-use App\Traits\Rateable;
 use App\Enums\UserStatus;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Traits\Rateable;
 use Illuminate\Contracts\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
@@ -126,8 +126,9 @@ class User extends Authenticatable
 
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'products')
-            ->withTimestamps();
+        // return $this->belongsToMany(Product::class, 'products')
+        //     ->withTimestamps();
+        return $this->hasMany(Product::class, 'supplier_id');
     }
 
     public function categories()
