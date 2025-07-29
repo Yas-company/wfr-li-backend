@@ -157,6 +157,15 @@ class Product extends Model implements HasMedia
         return $query->where('is_active', true);
     }
 
+    public function scopePublished($query)
+    {
+        return $query->where('status', ProductStatus::PUBLISHED);
+    }
+
+    public function scopeForUsers()
+    {
+        return $this->isActive()->published();
+    }
     /**
      * Get the attributes that should be appended to the model's array form.
      */

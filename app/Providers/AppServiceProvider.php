@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Policies\OrderPolicy;
 use App\Policies\RatingPolicy;
 use App\Policies\AddressPolicy;
+use App\Policies\ProductPolicy;
 use App\Services\ProductService;
 use App\Services\Cart\CartService;
 use Illuminate\Support\Facades\Gate;
@@ -65,6 +66,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Address::class, AddressPolicy::class);
         Gate::policy(Order::class, OrderPolicy::class);
         Gate::policy(Rating::class, RatingPolicy::class);
+        Gate::policy(Product::class, ProductPolicy::class);
 
 
         Relation::morphMap([

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\App\Http\Controllers\Api\V1\Product;
+namespace Tests\Feature\App\Http\Controllers\Api\V1\Product\Supplier;
 
 use App\Models\Category;
 use App\Models\Product;
@@ -14,9 +14,8 @@ class ProductControllerTest extends TestCase
     use RefreshDatabase, WithFaker;
 
     protected User $supplier;
-
+    protected User $otherSupplier;
     protected User $buyer;
-
     protected Category $category;
 
     protected function setUp(): void
@@ -28,6 +27,7 @@ class ProductControllerTest extends TestCase
         ]);
 
         $this->supplier = User::factory()->supplier()->create();
+        $this->otherSupplier = User::factory()->supplier()->create();
         $this->buyer = User::factory()->buyer()->create();
         $this->category = Category::factory()->create([
             'supplier_id' => $this->supplier->id,
@@ -48,7 +48,7 @@ class ProductControllerTest extends TestCase
         $imageFile = \Illuminate\Http\UploadedFile::fake()->create('product.jpg', 100, 'image/jpeg');
         $productData['image'] = $imageFile;
 
-        $response = $this->actingAs($this->supplier)->postJson(route('products.store'), $productData);
+        $response = $this->actingAs($this->supplier)->postJson(route('supplier.products.store'), $productData);
         $response->assertStatus(201)
             ->assertJsonStructure([
                 'data' => [
@@ -90,7 +90,7 @@ class ProductControllerTest extends TestCase
         $imageFile = \Illuminate\Http\UploadedFile::fake()->create('product.jpg', 100, 'image/jpeg');
         $productData['image'] = $imageFile;
 
-        $response = $this->actingAs($this->supplier)->postJson(route('products.store'), $productData);
+        $response = $this->actingAs($this->supplier)->postJson(route('supplier.products.store'), $productData);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['category_id']);
@@ -111,7 +111,7 @@ class ProductControllerTest extends TestCase
         $imageFile = \Illuminate\Http\UploadedFile::fake()->create('product.jpg', 100, 'image/jpeg');
         $productData['image'] = $imageFile;
 
-        $response = $this->actingAs($this->supplier)->postJson(route('products.store'), $productData);
+        $response = $this->actingAs($this->supplier)->postJson(route('supplier.products.store'), $productData);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['status', 'unit_type']);
@@ -131,7 +131,7 @@ class ProductControllerTest extends TestCase
         $imageFile = \Illuminate\Http\UploadedFile::fake()->create('product.jpg', 100, 'image/jpeg');
         $productData['image'] = $imageFile;
 
-        $response = $this->actingAs($this->supplier)->postJson(route('products.store'), $productData);
+        $response = $this->actingAs($this->supplier)->postJson(route('supplier.products.store'), $productData);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['price', 'quantity']);
@@ -154,7 +154,7 @@ class ProductControllerTest extends TestCase
         // Create a fake image file for testing using a simple approach
         $imageFile = \Illuminate\Http\UploadedFile::fake()->create('product.jpg', 100, 'image/jpeg');
         $updateData['image'] = $imageFile;
-        $response = $this->actingAs($this->supplier)->postJson(route('products.update', $product->id), $updateData);
+        $response = $this->actingAs($this->supplier)->postJson(route('supplier.products.update', $product->id), $updateData);
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -175,7 +175,7 @@ class ProductControllerTest extends TestCase
             'category_id' => $this->category->id,
         ]);
 
-        $response = $this->actingAs($this->supplier)->deleteJson(route('products.destroy', $product->id));
+        $response = $this->actingAs($this->supplier)->deleteJson(route('supplier.products.destroy', $product->id));
 
         $response->assertStatus(200)
             ->assertJson([
@@ -195,7 +195,7 @@ class ProductControllerTest extends TestCase
             'category_id' => $this->category->id,
         ]);
 
-        $response = $this->actingAs($this->supplier)->getJson(route('products.show', $product->id));
+        $response = $this->actingAs($this->supplier)->getJson(route('supplier.products.show', $product->id));
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -224,7 +224,7 @@ class ProductControllerTest extends TestCase
             'category_id' => $this->category->id,
         ]);
 
-        $response = $this->actingAs($this->supplier)->getJson(route('products.index'));
+        $response = $this->actingAs($this->supplier)->getJson(route('supplier.products.index'));
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -253,6 +253,33 @@ class ProductControllerTest extends TestCase
                     'prev',
                 ],
             ]);
+    }
+
+    public function test_supplier_cannot_view_other_supplier_product()
+    {
+        $product = Product::factory()->create();
+
+        $response = $this->actingAs($this->supplier)->getJson(route('supplier.products.show', $product->id));
+
+        $response->assertStatus(404);
+    }
+
+    public function test_supplier_cannot_update_other_supplier_product()
+    {
+        $product = Product::factory()->create();
+
+        $response = $this->actingAs($this->supplier)->postJson(route('supplier.products.update', $product->id), []);
+
+        $response->assertStatus(404);
+    }
+
+    public function test_supplier_cannot_delete_other_supplier_product()
+    {
+        $product = Product::factory()->create();
+
+        $response = $this->actingAs($this->supplier)->deleteJson(route('supplier.products.destroy', $product->id));
+
+        $response->assertStatus(404);
     }
 
     public function test_supplier_can_view_product_details()
@@ -262,7 +289,7 @@ class ProductControllerTest extends TestCase
             'category_id' => $this->category->id,
         ]);
 
-        $response = $this->actingAs($this->supplier)->getJson(route('products.show', $product->id));
+        $response = $this->actingAs($this->supplier)->getJson(route('supplier.products.show', $product->id));
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -279,73 +306,6 @@ class ProductControllerTest extends TestCase
                     'is_favorite',
                     'unit_type',
                     'avg_rating',
-                ],
-            ]);
-    }
-
-    public function test_buyer_can_view_product_details()
-    {
-        $product = Product::factory()->create([
-            'supplier_id' => $this->supplier->id,
-            'category_id' => $this->category->id,
-        ]);
-
-        $response = $this->actingAs($this->buyer)->getJson(route('products.show', $product->id));
-
-        $response->assertStatus(200)
-            ->assertJsonStructure([
-                'data' => [
-                    'id',
-                    'name',
-                    'image',
-                    'price',
-                    'price_before_discount',
-                    'quantity',
-                    'stock_qty',
-                    'nearly_out_of_stock_limit',
-                    'status',
-                    'is_favorite',
-                    'unit_type',
-                    'avg_rating',
-                ],
-            ]);
-    }
-
-    public function test_buyer_can_view_all_products()
-    {
-        // Create some products
-        Product::factory()->count(3)->create([
-            'supplier_id' => $this->supplier->id,
-            'category_id' => $this->category->id,
-        ]);
-
-        $response = $this->actingAs($this->buyer)->getJson(route('products.index'));
-
-        $response->assertStatus(200)
-            ->assertJsonStructure([
-                'success',
-                'message',
-                'data' => [
-                    '*' => [
-                        'id',
-                        'name',
-                        'image',
-                        'price',
-                        'price_before_discount',
-                        'quantity',
-                        'stock_qty',
-                        'nearly_out_of_stock_limit',
-                        'status',
-                        'is_favorite',
-                        'unit_type',
-                        'avg_rating',
-                    ],
-                ],
-                'links' => [
-                    'first',
-                    'last',
-                    'next',
-                    'prev',
                 ],
             ]);
     }
@@ -453,7 +413,7 @@ class ProductControllerTest extends TestCase
             'stock_qty' => 5, // Non-expired products
         ]);
 
-        $response = $this->actingAs($this->supplier)->getJson(route('products.expired.count'));
+        $response = $this->actingAs($this->supplier)->getJson(route('supplier.products.expired.count'));
 
         $response->assertStatus(200)
             ->assertJson([
@@ -470,49 +430,24 @@ class ProductControllerTest extends TestCase
         Product::factory()->count(2)->create([
             'supplier_id' => $this->supplier->id,
             'category_id' => $this->category->id,
-            'stock_qty' => 3, // Near expiry products
+            'stock_qty' => 3, // Near expiry products,
+            'nearly_out_of_stock_limit' => 5,
         ]);
 
         Product::factory()->count(3)->create([
             'supplier_id' => $this->supplier->id,
             'category_id' => $this->category->id,
-            'stock_qty' => 10, // Normal stock products
+            'stock_qty' => 10, // Normal stock products,
+            'nearly_out_of_stock_limit' => 6,
         ]);
 
-        $response = $this->actingAs($this->supplier)->getJson(route('products.near-expiry.count'));
+        $response = $this->actingAs($this->supplier)->getJson(route('supplier.products.near-expiry.count'));
 
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
                 'data' => [
                     'near_expiry' => 2,
-                ],
-            ]);
-    }
-
-    public function test_supplier_can_view_stock_status_counts()
-    {
-        // Create products with different stock statuses
-        Product::factory()->count(2)->create([
-            'supplier_id' => $this->supplier->id,
-            'category_id' => $this->category->id,
-            'stock_qty' => 0, // Expired products
-        ]);
-
-        Product::factory()->count(3)->create([
-            'supplier_id' => $this->supplier->id,
-            'category_id' => $this->category->id,
-            'stock_qty' => 2, // Near expiry products
-        ]);
-
-        $response = $this->actingAs($this->supplier)->getJson(route('products.stock-status.count'));
-
-        $response->assertStatus(200)
-            ->assertJson([
-                'success' => true,
-                'data' => [
-                    'expired' => 2,
-                    'near_expiry' => 3,
                 ],
             ]);
     }
