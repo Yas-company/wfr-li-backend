@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\App\Http\Controllers\Api\V1;
+namespace Tests\Feature\App\Http\Controllers\Api\V1\Order\Buyer;
 
 use Tests\TestCase;
 use App\Models\User;
@@ -14,7 +14,7 @@ use App\Models\OrderProduct;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class BuyerOrderControllerTest extends TestCase
+class OrderControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 

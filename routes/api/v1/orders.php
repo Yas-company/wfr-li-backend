@@ -1,8 +1,8 @@
 <?php
 
 use App\Enums\UserRole;
-use App\Http\Controllers\api\v1\BuyerOrderController;
-use App\Http\Controllers\api\v1\SupplierOrderController;
+use App\Http\Controllers\api\v1\Order\Buyer\OrderController as BuyerOrderController;
+use App\Http\Controllers\api\v1\Order\Supplier\OrderController as SupplierOrderController;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Support\Facades\Route;
 
