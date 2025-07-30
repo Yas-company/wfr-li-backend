@@ -25,7 +25,7 @@ class ProductService implements ProductServiceInterface
                 ->allowedFilters([
                     AllowedFilter::exact('category_id'),
                     AllowedFilter::custom('name', new JsonColumnFilter),
-                    'price',
+                    AllowedFilter::exact('price'),
                 ])
                 ->allowedSorts([
                     'id',
@@ -59,6 +59,7 @@ class ProductService implements ProductServiceInterface
                 ->allowedSorts([
                     'id',
                     'created_at',
+                    'price'
                 ])
                 ->allowedIncludes([
                     'category',
