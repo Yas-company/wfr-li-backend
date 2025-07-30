@@ -11,7 +11,7 @@ use App\Models\OrderDetail;
 use App\Exceptions\CartException;
 use Illuminate\Support\Facades\DB;
 use App\Enums\Settings\OrderSettings;
-use App\Services\OrderTrackingService;
+use App\Services\Order\OrderTrackingService;
 use App\Values\CartSupplierRequirement;
 use App\Contracts\CartValidatorInterface;
 use App\Http\Services\Payment\PaymentContext;

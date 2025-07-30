@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\api\v1;
+namespace App\Http\Controllers\api\v1\Supplier;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\SupplierSettingRequest;
-use App\Http\Resources\SupplierResource;
-use App\Services\SupplierSettingService;
+use App\Http\Requests\Supplier\SupplierSettingRequest;
+use App\Http\Resources\Supplier\SupplierResource;
+use App\Services\Supplier\SupplierSettingService;
 use App\Traits\ApiResponse;
 use Illuminate\Support\Facades\Auth;
 

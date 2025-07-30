@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\api\v1\HomeController;
+use App\Http\Controllers\api\v1\Buyer\HomeController;
 use App\Http\Controllers\api\v1\InterestController;
 use Illuminate\Support\Facades\Route;
 

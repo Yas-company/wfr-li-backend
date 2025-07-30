@@ -4,10 +4,10 @@ namespace App\Http\Controllers\api\v1;
 
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\SearchSupplierRequest;
+use App\Http\Requests\Buyer\SearchSupplierRequest;
 use App\Http\Resources\FieldResource;
-use App\Http\Resources\SupplierDetailsResource;
-use App\Http\Resources\SupplierResource;
+use App\Http\Resources\Supplier\SupplierDetailsResource;
+use App\Http\Resources\Supplier\SupplierResource;
 use App\Http\Resources\UserResource;
 use App\Http\Services\UserService;
 use App\Models\User;

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ToggleFavoriteRequest;
+use App\Http\Requests\Buyer\ToggleFavoriteRequest;
 use App\Http\Resources\FavoriteProductResource;
 use App\Http\Resources\ProductResource;
 use App\Services\FavoriteService;

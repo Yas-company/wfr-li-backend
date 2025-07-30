@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Order;
 
 use App\Dtos\OrderFilterDto;
 use App\Exceptions\CartException;

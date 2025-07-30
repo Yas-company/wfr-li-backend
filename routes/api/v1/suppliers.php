@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\api\v1\SupplierProfileController;
-use App\Http\Controllers\api\v1\SupplierSettingController;
+use App\Http\Controllers\api\v1\Supplier\SupplierProfileController;
+use App\Http\Controllers\api\v1\Supplier\SupplierSettingController;
 use App\Http\Controllers\api\v1\UserController;
 use Illuminate\Support\Facades\Route;
 

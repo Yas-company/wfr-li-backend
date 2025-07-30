@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\api\v1;
+namespace App\Http\Controllers\api\v1\Supplier;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\SupplierImageRequest;
-use App\Http\Requests\UpdateSupplierRequest;
-use App\Http\Resources\SupplierResource;
+use App\Http\Requests\Supplier\SupplierImageRequest;
+use App\Http\Requests\Supplier\UpdateSupplierRequest;
+use App\Http\Resources\Supplier\SupplierResource;
 use App\Http\Services\OtpService;
-use App\Services\SupplierProfileService;
+use App\Services\Supplier\SupplierProfileService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

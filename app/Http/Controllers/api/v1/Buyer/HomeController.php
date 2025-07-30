@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\api\v1;
+namespace App\Http\Controllers\api\v1\Buyer;
 
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\HomePageBuyerResource;
+use App\Http\Resources\Buyer\HomePageBuyerResource;
 use App\Models\Category;
 use App\Models\Page;
 use App\Models\User;

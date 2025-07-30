@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Buyer;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class VerifyOtpAuthRequest extends FormRequest
+class ToggleFavoriteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +23,8 @@ class VerifyOtpAuthRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone' => ['required', 'string', 'unique:users,phone'],
-            'otp' => ['required', 'string', 'size:6'],
+            'product_id' => ['required', Rule::exists('products', 'id')->where('is_active', true)],
+            'is_favorite' => 'required|boolean',
         ];
     }
 }

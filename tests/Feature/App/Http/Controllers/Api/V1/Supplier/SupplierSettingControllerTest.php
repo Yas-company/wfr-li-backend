@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\App\Http\Controllers\Api\V1;
+namespace Tests\Feature\App\Http\Controllers\Api\V1\Supplier;
 
 use App\Enums\UserRole;
 use App\Enums\UserStatus;

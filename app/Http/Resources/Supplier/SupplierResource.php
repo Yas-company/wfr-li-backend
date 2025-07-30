@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Supplier;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SupplierDetailsResource extends JsonResource
+class SupplierResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -19,9 +19,8 @@ class SupplierDetailsResource extends JsonResource
             'name' => $this->name,
             'image' => $this->image ? asset('storage/'.$this->image) : null,
             'rating' => 4.7,
-            'fields' => FieldResource::collection($this->whenLoaded('fields')),
-            'categories' => CategoryResource::collection($this->whenLoaded('categories')),
-            'supplier_status' => $this->supplier->status,
+            'fields' => FieldResource::collection($this->fields),
+            'supplier_status' => $this->supplier?->status ?? true,
         ];
     }
 }

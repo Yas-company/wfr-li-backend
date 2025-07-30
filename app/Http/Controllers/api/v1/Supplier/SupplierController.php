@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\v1;
+namespace App\Http\Controllers\api\v1\Supplier;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AdsResource;

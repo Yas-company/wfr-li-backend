@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Supplier;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RequestOtpAuthRequest extends FormRequest
+class SupplierSettingRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,7 @@ class RequestOtpAuthRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone' => ['required', 'string', 'unique:users,phone'],
+            'status' => 'required|boolean',
         ];
     }
 }

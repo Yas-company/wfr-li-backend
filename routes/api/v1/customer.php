@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\api\v1\SupplierController;
+use App\Http\Controllers\api\v1\Supplier\SupplierController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->prefix('supplier')

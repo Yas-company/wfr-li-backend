@@ -1,7 +1,7 @@
 <?php
 
 use App\Enums\UserRole;
-use App\Http\Controllers\api\v1\HomeController;
+use App\Http\Controllers\api\v1\Buyer\HomeController;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Support\Facades\Route;
 
