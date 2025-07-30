@@ -2,20 +2,18 @@
 
 namespace App\Services;
 
-use App\Models\Order;
 use App\Dtos\OrderFilterDto;
+use App\Exceptions\CartException;
+use App\Models\Order;
+use App\Services\Contracts\CartServiceInterface;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pagination\AbstractPaginator;
 
 class OrderService
 {
     /**
      * Get the buyer orders.
-     *
-     * @param int $userId
-     * @param OrderFilterDto $orderFilterDto
-     *
-     * @return AbstractPaginator
      */
     public function getBuyerOrders(int $userId, OrderFilterDto $orderFilterDto): AbstractPaginator
     {
@@ -30,11 +28,6 @@ class OrderService
 
     /**
      * Get the supplier orders.
-     *
-     * @param int $userId
-     * @param OrderFilterDto $orderFilterDto
-     *
-     * @return AbstractPaginator
      */
     public function getSupplierOrders(int $userId, OrderFilterDto $orderFilterDto): AbstractPaginator
     {
@@ -48,10 +41,6 @@ class OrderService
 
     /**
      * Get the base order query.
-     *
-     * @param OrderFilterDto $orderFilterDto
-     *
-     * @return Builder
      */
     private function baseOrderQuery(OrderFilterDto $orderFilterDto): Builder
     {
@@ -79,5 +68,43 @@ class OrderService
             ->when($orderFilterDto->startDate && $orderFilterDto->endDate, function ($query) use ($orderFilterDto) {
                 $query->whereBetween('orders.created_at', [$orderFilterDto->startDate->startOfDay(), $orderFilterDto->endDate->endOfDay()]);
             });
+    }
+
+    public function reorder(Order $order, $user): array
+    {
+        $cartService = app(CartServiceInterface::class);
+
+        $addedCount = 0;
+        $errors = [];
+        $succeededProducts = [];
+
+        $cartService->clearCart($user);
+
+        foreach ($order->products as $product) {
+            try {
+
+                $cartService->addToCart($user, $product->product_id, $product->quantity);
+                $addedCount++;
+                $succeededProducts[] = [
+                    'product_id' => $product->product_id,
+                    'quantity' => $product->quantity,
+                    'name' => $product->product->name ?? 'Unknown Product',
+                ];
+
+            } catch (CartException $e) {
+
+                $errors[] = $e->getMessage();
+            } catch (ModelNotFoundException $e) {
+
+                $errors[] = 'Product not found';
+            }
+        }
+
+        return [
+            'success' => true,
+            'added_count' => $addedCount,
+            'errors' => $errors,
+            'succeeded_products' => $succeededProducts,
+        ];
     }
 }
