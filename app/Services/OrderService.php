@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Dtos\OrderFilterDto;
 use App\Exceptions\CartException;
 use App\Models\Order;
+use App\Models\User;
 use App\Services\Contracts\CartServiceInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -12,6 +13,12 @@ use Illuminate\Pagination\AbstractPaginator;
 
 class OrderService
 {
+
+    public function __construct(protected CartServiceInterface $cartService)
+    {
+        //
+    }
+
     /**
      * Get the buyer orders.
      */
@@ -70,20 +77,18 @@ class OrderService
             });
     }
 
-    public function reorder(Order $order, $user): array
+    public function reorder(Order $order, User $user): array
     {
-        $cartService = app(CartServiceInterface::class);
-
         $addedCount = 0;
         $errors = [];
         $succeededProducts = [];
 
-        $cartService->clearCart($user);
+        $this->cartService->clearCart($user);
 
         foreach ($order->products as $product) {
             try {
 
-                $cartService->addToCart($user, $product->product_id, $product->quantity);
+                $this->cartService->addToCart($user, $product->product_id, $product->quantity);
                 $addedCount++;
                 $succeededProducts[] = [
                     'product_id' => $product->product_id,

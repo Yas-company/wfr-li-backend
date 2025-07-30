@@ -2,16 +2,17 @@
 
 namespace Tests\Feature\App\Http\Controllers\Api\V1;
 
-use App\Enums\UserRole;
-use App\Enums\UserStatus;
-use App\Models\Address;
-use App\Models\Order;
-use App\Models\OrderProduct;
-use App\Models\Product;
-use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use App\Models\User;
+use App\Models\Order;
+use App\Enums\UserRole;
+use App\Models\Address;
+use App\Models\Product;
+use App\Enums\UserStatus;
+use App\Enums\ProductStatus;
+use App\Models\OrderProduct;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class BuyerOrderControllerTest extends TestCase
 {
@@ -234,11 +235,15 @@ class BuyerOrderControllerTest extends TestCase
         $availableProduct = Product::factory()->create([
             'supplier_id' => $this->supplier->id,
             'stock_qty' => 10,
+            'status' => ProductStatus::PUBLISHED,
+            'is_active' => true,
         ]);
 
         $unavailableProduct = Product::factory()->create([
             'supplier_id' => $this->supplier->id,
             'stock_qty' => 0,
+            'status' => ProductStatus::PUBLISHED,
+            'is_active' => true,
         ]);
 
         $order = Order::factory()->create([
@@ -280,6 +285,8 @@ class BuyerOrderControllerTest extends TestCase
         $product = Product::factory()->create([
             'supplier_id' => $this->supplier->id,
             'stock_qty' => 5,
+            'status' => ProductStatus::PUBLISHED,
+            'is_active' => true,
         ]);
 
         $order = Order::factory()->create([
@@ -338,6 +345,8 @@ class BuyerOrderControllerTest extends TestCase
         $products = Product::factory()->count($productCount)->create([
             'supplier_id' => $supplierId,
             'stock_qty' => 10,
+            'status' => ProductStatus::PUBLISHED,
+            'is_active' => true,
         ]);
 
         foreach ($products as $product) {

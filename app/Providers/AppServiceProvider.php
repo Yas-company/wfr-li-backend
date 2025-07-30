@@ -18,6 +18,7 @@ use App\Validators\EmptyCartValidator;
 use Illuminate\Support\ServiceProvider;
 use App\Contracts\CartValidatorInterface;
 use App\Validators\CompositeCartValidator;
+use App\Validators\ProductStatusValidator;
 use App\Validators\MinOrderAmountValidator;
 use App\Http\Services\Payment\PaymentService;
 use App\Validators\StockAvailabilityValidator;
@@ -55,6 +56,7 @@ class AppServiceProvider extends ServiceProvider
             addToCartValidators: [
                 new SingleSupplierCartValidator(),
                 new StockAvailabilityValidator(),
+                new ProductStatusValidator(),
             ],
             checkoutValidators: [
                 new MinOrderAmountValidator(),
