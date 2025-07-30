@@ -22,6 +22,7 @@ return [
         'not_found' => 'لم يتم العثور على السلة',
         'item_not_found' => 'لم يتم العثور على عنصر السلة',
         'invalid_quantity' => 'الكمية غير صالحة',
+        'invalid_product' => 'المنتج غير صالح',
         'product_not_found' => 'لم يتم العثور على المنتج',
         'insufficient_stock' => 'الكمية غير متوفرة في المخزون',
         'cannot_mix_products_from_different_suppliers' => 'لا يمكن دمج المنتجات من مزودين مختلفين',
@@ -171,7 +172,12 @@ return [
         ],
     ],
 
+
     // Supplier Image Messages
     'supplier_image_changed' => 'تم تحديث صورة المورد بنجاح',
+
+    // Order Messages
+    'order_reordered' => 'تم إعادة الطلب بنجاح',
+
 
 ];

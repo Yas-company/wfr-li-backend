@@ -22,6 +22,7 @@ return [
         'not_found' => 'Cart not found',
         'item_not_found' => 'Cart item not found',
         'invalid_quantity' => 'Invalid quantity',
+        'invalid_product' => 'Invalid product',
         'product_not_found' => 'Product not found',
         'insufficient_stock' => 'Insufficient stock',
         'cannot_mix_products_from_different_suppliers' => 'Cannot mix products from different suppliers',
@@ -171,7 +172,13 @@ return [
         ],
     ],
 
+
     // Supplier Image Messages
     'supplier_image_changed' => 'Supplier image changed successfully',
+
+    // Order Messages
+    'order_reordered' => 'Order reordered successfully',
+    'some_products_are_unavailable' => 'Some products are unavailable',
+
 
 ];
