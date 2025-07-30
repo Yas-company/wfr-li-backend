@@ -22,6 +22,7 @@ return [
         'not_found' => 'لم يتم العثور على السلة',
         'item_not_found' => 'لم يتم العثور على عنصر السلة',
         'invalid_quantity' => 'الكمية غير صالحة',
+        'invalid_product' => 'المنتج غير صالح',
         'product_not_found' => 'لم يتم العثور على المنتج',
         'insufficient_stock' => 'الكمية غير متوفرة في المخزون',
         'cannot_mix_products_from_different_suppliers' => 'لا يمكن دمج المنتجات من مزودين مختلفين',
@@ -135,7 +136,6 @@ return [
     // Supplier Setting Messages
     'supplier_setting_updated' => 'تم تحديث إعدادات المورد بنجاح',
 
-
     // supplier profile messages
     'supplier_profile_updated' => 'تم تحديث ملف المورد بنجاح',
 
@@ -171,5 +171,8 @@ return [
             'numeric' => 'يجب أن يكون الحد الأدنى للطلب رقماً',
         ],
     ],
+
+    // Order Messages
+    'order_reordered' => 'تم إعادة الطلب بنجاح',
 
 ];
