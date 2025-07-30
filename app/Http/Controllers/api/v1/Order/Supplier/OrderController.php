@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\v1;
+namespace App\Http\Controllers\api\v1\Order\Supplier;
 
 use App\Models\Order;
 use App\Traits\ApiResponse;
@@ -14,7 +14,7 @@ use App\Http\Requests\Order\FilterOrderRequest;
 use App\Http\Resources\Order\SupplierOrderListingResource;
 use Illuminate\Http\JsonResponse;
 
-class SupplierOrderController extends Controller
+class OrderController extends Controller
 {
     use ApiResponse;
 

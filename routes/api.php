@@ -20,4 +20,5 @@ Route::prefix('v1')->group(function () {
     require base_path('routes/api/v1/orders.php');
     require base_path('routes/api/v1/ratings.php');
     require base_path('routes/api/v1/favorite.php');
+    require base_path('routes/api/v1/metrics.php');
 });

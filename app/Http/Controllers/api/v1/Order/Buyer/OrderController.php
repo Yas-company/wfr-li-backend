@@ -1,28 +1,25 @@
 <?php
 
-namespace App\Http\Controllers\api\v1;
+namespace App\Http\Controllers\api\v1\Order\Buyer;
 
-use App\Models\Order;
-use App\Traits\ApiResponse;
 use App\Dtos\OrderFilterDto;
-use App\Services\OrderService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Order\FilterOrderRequest;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Resources\OrderResource;
-use Symfony\Component\HttpFoundation\Response;
 use App\Http\Resources\Order\BuyerOrderListingResource;
-use Illuminate\Database\Eloquent\Casts\Json;
+use App\Http\Resources\OrderResource;
+use App\Models\Order;
+use App\Services\OrderService;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
-class BuyerOrderController extends Controller
+class OrderController extends Controller
 {
     use ApiResponse;
 
     /**
      * BuyerOrderController constructor.
-     *
-     * @param OrderService $orderService
      */
     public function __construct(protected OrderService $orderService)
     {
@@ -31,10 +28,6 @@ class BuyerOrderController extends Controller
 
     /**
      * Display a listing of the user's orders.
-     *
-     * @param FilterOrderRequest $request
-     *
-     * @return JsonResponse
      */
     public function index(FilterOrderRequest $request): JsonResponse
     {
@@ -46,10 +39,6 @@ class BuyerOrderController extends Controller
 
     /**
      * Display the specified order.
-     *
-     * @param Order $order
-     *
-     * @return JsonResponse
      */
     public function show(Order $order): JsonResponse
     {
@@ -61,6 +50,23 @@ class BuyerOrderController extends Controller
             data: [
                 'order' => OrderResource::make($order),
             ],
+            statusCode: Response::HTTP_OK
+        );
+    }
+
+    public function reorder(Order $order): JsonResponse
+    {
+        $this->authorize('viewAsBuyer', $order);
+
+        $result = $this->orderService->reorder($order, Auth::user());
+
+        return $this->successResponse(
+            data: [
+                'added_count' => $result['added_count'],
+                'succeeded_products' => $result['succeeded_products'],
+                'errors' => $result['errors'],
+            ],
+            message: __('messages.order_reordered'),
             statusCode: Response::HTTP_OK
         );
     }

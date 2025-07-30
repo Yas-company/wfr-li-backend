@@ -2,19 +2,23 @@
 
 namespace App\Models;
 
-use App\Enums\ProductStatus;
 use App\Enums\UnitType;
 use App\Traits\Rateable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Enums\ProductStatus;
+use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Product extends Model
+class Product extends Model implements HasMedia
 {
     use HasFactory;
     use HasTranslations;
     use Rateable;
+    use InteractsWithMedia;
 
     protected $guarded = [];
 
@@ -22,11 +26,11 @@ class Product extends Model
 
     protected $fillable = [
         'name',
-        'image',
         'price',
         'quantity',
-        'min_order_quantity', // ✅ أضفناه هنا
+        'min_order_quantity',
         'stock_qty',
+        'nearly_out_of_stock_limit',
         'unit_type',
         'status',
         'is_active',
@@ -44,17 +48,29 @@ class Product extends Model
         'status' => ProductStatus::class,
     ];
 
-    protected $appends = ['is_favorite'];
+    protected $appends = [];
 
     protected $with = ['category', 'supplier'];
 
-    public function getImageUrlAttribute()
+    public function registerMediaConversions(?Media $media = null): void
     {
-        if (! $this->image) {
-            return asset('images/logo.jpeg');
-        }
+        $this->addMediaConversion('thumb')
+            ->width(150)
+            ->height(150)
+            ->sharpen(10);
 
-        return asset('storage/'.$this->image);
+        $this->addMediaConversion('preview')
+            ->width(400)
+            ->height(400)
+            ->sharpen(10);
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('images')
+            ->useFallbackUrl('/images/logo.jpg')
+            ->useFallbackPath(public_path('/images/logo.jpg'))
+            ->withResponsiveImages(); ;
     }
 
     public function favoritedByUsers()
@@ -74,6 +90,10 @@ class Product extends Model
 
     public function getIsFavoriteAttribute()
     {
+        if (! Auth::check() || ! Auth::user()->isBuyer()) {
+            return null;
+        }
+
         // Check if the currentUserFavorite relationship is already loaded
         if ($this->relationLoaded('currentUserFavorite')) {
             return $this->currentUserFavorite && $this->currentUserFavorite->is_favorite;
@@ -135,5 +155,20 @@ class Product extends Model
     public function scopeIsActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    /**
+     * Get the attributes that should be appended to the model's array form.
+     */
+    public function getAppends()
+    {
+        $appends = parent::getAppends();
+
+        // Only append is_favorite for buyers
+        if (Auth::check() && Auth::user()->isBuyer()) {
+            $appends[] = 'is_favorite';
+        }
+
+        return $appends;
     }
 }

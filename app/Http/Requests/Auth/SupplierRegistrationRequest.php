@@ -2,20 +2,27 @@
 
 namespace App\Http\Requests\Auth;
 
-use App\Enums\UserRole;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
-class RegisterRequest extends FormRequest
+class SupplierRegistrationRequest extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     */
     public function authorize(): bool
     {
         return true;
     }
 
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
     public function rules(): array
     {
-        $rules = [
+        return [
             'name' => ['required', 'string', 'max:255'],
             'phone' => [
                 'required',
@@ -30,21 +37,8 @@ class RegisterRequest extends FormRequest
                     if ($exists) {
                         $fail(__('messages.validation.unique.phone'));
                     }
-
-                    // For buyers, also check unverified accounts
-                    if ($role === UserRole::BUYER->value) {
-                        $unverifiedExists = \App\Models\User::where('phone', $value)
-                            ->where('is_verified', false)
-                            ->whereNull('deleted_at')
-                            ->exists();
-
-                        if ($unverifiedExists) {
-                            $fail(__('messages.validation.unique.phone'));
-                        }
-                    }
                 },
             ],
-            'country_code' => ['required'],
             'address' => ['required', 'array'],
             'address.name' => ['required', 'string'],
             'address.street' => ['required', 'string'],
@@ -61,29 +55,6 @@ class RegisterRequest extends FormRequest
                 'string',
                 'email',
                 'max:255',
-                function ($attribute, $value, $fail) {
-                    $role = $this->validated('role');
-                    if ($value && $role === UserRole::BUYER->value) {
-                        $exists = \App\Models\User::where('email', $value)
-                            ->where('is_verified', true)
-                            ->whereNull('deleted_at')
-                            ->exists();
-
-                        if ($exists) {
-                            $fail(__('messages.validation.unique.email'));
-                        }
-
-                        // Also check unverified accounts for buyers
-                        $unverifiedExists = \App\Models\User::where('email', $value)
-                            ->where('is_verified', false)
-                            ->whereNull('deleted_at')
-                            ->exists();
-
-                        if ($unverifiedExists) {
-                            $fail(__('messages.validation.unique.email'));
-                        }
-                    }
-                },
             ],
             'password' => ['required', 'confirmed', Password::min(8)
                 ->letters()
@@ -91,19 +62,12 @@ class RegisterRequest extends FormRequest
                 ->numbers()
                 ->symbols(),
             ],
-            'role' => ['required', 'string', 'in:'.implode(',', UserRole::values())],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
+            'license_attachment' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
+            'commercial_register_attachment' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
+            'fields' => ['required', 'array'],
+            'fields.*' => ['required', 'exists:fields,id'],
         ];
-
-        // Add supplier-specific validation rules
-        if ($this->request->get('role') === UserRole::SUPPLIER->value) {
-            $rules['license_attachment'] = ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'];
-            $rules['commercial_register_attachment'] = ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'];
-            $rules['fields'] = ['required', 'array'];
-            $rules['fields.*'] = ['required', 'exists:fields,id'];
-        }
-
-        return $rules;
     }
 
     public function messages(): array
@@ -127,8 +91,6 @@ class RegisterRequest extends FormRequest
             'password.mixed_case' => __('messages.validation.password.mixed_case'),
             'password.numbers' => __('messages.validation.password.numbers'),
             'password.symbols' => __('messages.validation.password.symbols'),
-            'role.required' => __('messages.validation.required.role'),
-            'role.in' => __('messages.validation.in.role'),
             'license_attachment.required' => __('messages.validation.required.license_attachment'),
             'license_attachment.file' => __('messages.validation.file.license_attachment'),
             'license_attachment.mimes' => __('messages.validation.mimes.license_attachment'),

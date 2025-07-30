@@ -5,7 +5,6 @@ namespace App\Http\Services;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use App\Models\User;
-use App\Models\UserField;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -28,42 +27,38 @@ class UserService
     {
         $buyer = Auth::user();
 
-        if (!$buyer) {
+        if (! $buyer) {
             return ['error' => 'User not authenticated'];
         }
 
-
-        $query = User::with('fields')->where('role', UserRole::SUPPLIER)
+        $query = User::with('fields', 'supplier')->where('role', UserRole::SUPPLIER)
             ->where('status', UserStatus::APPROVED);
 
         // Check if distance filtering is needed
         $hasDistanceFilter = $request->has('distance');
         $search = $request->input('search');
 
-
         if ($hasDistanceFilter) {
             $distance = $request->input('distance');
 
             // Validate distance input
-            if (!is_numeric($distance) || $distance <= 0) {
+            if (! is_numeric($distance) || $distance <= 0) {
                 return ['error' => 'Invalid distance value'];
             }
 
-
             $buyerAddress = $buyer->defaultAddress;
-            if (!$buyerAddress || !$buyerAddress->latitude || !$buyerAddress->longitude) {
+            if (! $buyerAddress || ! $buyerAddress->latitude || ! $buyerAddress->longitude) {
                 return ['error' => 'Buyer location not available'];
             }
 
             $latitude = $buyerAddress->latitude;
             $longitude = $buyerAddress->longitude;
 
-
-            $query = $query->join('addresses', function($join) {
+            $query = $query->join('addresses', function ($join) {
                 $join->on('users.id', '=', 'addresses.user_id')
-                     ->where('addresses.is_default', '=', true);
+                    ->where('addresses.is_default', '=', true);
             })
-            ->selectRaw("
+                ->selectRaw('
                 users.*,
                 (6371 * acos(
                     cos(radians(?)) *
@@ -72,22 +67,21 @@ class UserService
                     sin(radians(?)) *
                     sin(radians(addresses.latitude))
                 )) AS distance
-            ", [$latitude, $longitude, $latitude])
-            ->having('distance', '<=', $distance)
-            ->orderBy('distance');
+            ', [$latitude, $longitude, $latitude])
+                ->having('distance', '<=', $distance)
+                ->orderBy('distance');
 
             // Handle search functionality after join (specify table name to avoid ambiguity)
             if ($search) {
-                $query = $query->where('users.name', 'like', '%' . $search . '%');
+                $query = $query->where('users.name', 'like', '%'.$search.'%');
             }
         } else {
             if ($search) {
-                $query = $query->where('name', 'like', '%' . $search . '%');
+                $query = $query->where('name', 'like', '%'.$search.'%');
             }
         }
 
-
-        $suppliers = $query->with('fields')->paginate(10);
+        $suppliers = $query->with('fields', 'supplier')->paginate(10);
 
         // Process field names for display
         foreach ($suppliers as $supplier) {
@@ -107,47 +101,50 @@ class UserService
     public function show(int $user_id)
     {
         $user = User::find($user_id);
-        if (!$user || $user->role !== UserRole::SUPPLIER || $user->status !== UserStatus::APPROVED) {
+        if (! $user || $user->role !== UserRole::SUPPLIER || $user->status !== UserStatus::APPROVED) {
             return ['error' => 'Supplier not found'];
         }
         $user->load(['categories', 'fields']);
+
         return $user;
     }
+
     public function searchSuppliers($request)
     {
         $search = $request->search;
-        $suppliers = User::where('name', 'like', '%' . $search . '%')
+        $suppliers = User::where('name', 'like', '%'.$search.'%')
             ->where('role', UserRole::SUPPLIER)
             ->where('status', UserStatus::APPROVED)
             ->with('fields')
             ->paginate(10);
+
         return $suppliers;
     }
+
     public function filter($request)
     {
         $buyer = Auth::user();
         $distance = $request->input('distance');
-        if(!$distance){
+        if (! $distance) {
             return ['error' => 'Distance is required'];
         } else {
             // Get buyer's default address
             $buyerAddress = $buyer->defaultAddress;
-            if (!$buyerAddress || !$buyerAddress->latitude || !$buyerAddress->longitude) {
+            if (! $buyerAddress || ! $buyerAddress->latitude || ! $buyerAddress->longitude) {
                 return ['error' => 'Buyer location not available'];
             }
 
             $latitude = $buyerAddress->latitude;
             $longitude = $buyerAddress->longitude;
 
-
             $users = DB::table('users')
-                ->join('addresses', function($join) {
+                ->join('addresses', function ($join) {
                     $join->on('users.id', '=', 'addresses.user_id')
-                         ->where('addresses.is_default', '=', true);
+                        ->where('addresses.is_default', '=', true);
                 })
                 ->where('users.role', UserRole::SUPPLIER)
                 ->select('users.*')
-                ->selectRaw("
+                ->selectRaw('
                     (6371 * acos(
                         cos(radians(?)) *
                         cos(radians(addresses.latitude)) *
@@ -155,11 +152,10 @@ class UserService
                         sin(radians(?)) *
                         sin(radians(addresses.latitude))
                     )) AS distance
-                ", [$latitude, $longitude, $latitude])
+                ', [$latitude, $longitude, $latitude])
                 ->having('distance', '<=', $distance)
                 ->orderBy('distance')
                 ->paginate(10);
-
 
             $userIds = $users->pluck('id')->toArray();
 
@@ -169,7 +165,6 @@ class UserService
                 ->select('user_fields.user_id', 'fields.*')
                 ->get()
                 ->groupBy('user_id');
-
 
             foreach ($users as $user) {
                 $user->fields = $fields->get($user->id, collect())->values();
@@ -181,6 +176,7 @@ class UserService
                 }
             }
         }
+
         return $users;
     }
 }

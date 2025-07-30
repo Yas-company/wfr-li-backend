@@ -6,27 +6,28 @@ use App\Models\User;
 use App\Models\Order;
 use App\Models\Rating;
 use App\Models\Address;
+use App\Models\Product;
 use App\Policies\OrderPolicy;
 use App\Policies\RatingPolicy;
 use App\Policies\AddressPolicy;
+use App\Services\ProductService;
 use App\Services\Cart\CartService;
 use Illuminate\Support\Facades\Gate;
-use App\Http\Services\ProductService;
 use App\Http\Services\SupplierService;
 use App\Validators\EmptyCartValidator;
 use Illuminate\Support\ServiceProvider;
 use App\Contracts\CartValidatorInterface;
 use App\Validators\CompositeCartValidator;
+use App\Validators\ProductStatusValidator;
 use App\Validators\MinOrderAmountValidator;
 use App\Http\Services\Payment\PaymentService;
 use App\Validators\StockAvailabilityValidator;
 use App\Validators\SingleSupplierCartValidator;
 use App\Services\Contracts\CartServiceInterface;
+use App\Services\Contracts\ProductServiceInterface;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use App\Http\Services\Contracts\PaymentServiceInterface;
-use App\Http\Services\Contracts\ProductServiceInterface;
 use App\Http\Services\Contracts\SupplierServiceInterface;
-use App\Models\Product;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,7 +36,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        if ($this->app->environment('local') && class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
+            $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
+            $this->app->register(TelescopeServiceProvider::class);
+        }
     }
 
     /**
@@ -52,6 +56,7 @@ class AppServiceProvider extends ServiceProvider
             addToCartValidators: [
                 new SingleSupplierCartValidator(),
                 new StockAvailabilityValidator(),
+                new ProductStatusValidator(),
             ],
             checkoutValidators: [
                 new MinOrderAmountValidator(),

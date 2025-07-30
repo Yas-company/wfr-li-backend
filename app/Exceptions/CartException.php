@@ -27,6 +27,11 @@ class CartException extends Exception
         return new self(__('messages.cart.item_not_found'), Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
+    public static function invalidProduct(): self
+    {
+        return new self(__('messages.cart.invalid_product'), Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
     public static function insufficientMinOrderAmount(string $supplierName, float $minOrderAmount): self
     {
         return new self(

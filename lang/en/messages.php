@@ -22,6 +22,7 @@ return [
         'not_found' => 'Cart not found',
         'item_not_found' => 'Cart item not found',
         'invalid_quantity' => 'Invalid quantity',
+        'invalid_product' => 'Invalid product',
         'product_not_found' => 'Product not found',
         'insufficient_stock' => 'Insufficient stock',
         'cannot_mix_products_from_different_suppliers' => 'Cannot mix products from different suppliers',
@@ -48,6 +49,7 @@ return [
     'profile_failed' => 'Failed to get profile',
     'account_not_verified' => 'Your account is not verified. Please verify your phone number first',
     'invalid_credentials' => 'Invalid credentials',
+    'invalid_phone' => 'Invalid phone number',
 
     // Password Change Messages
     'password_changed_successful' => 'Password changed successfully',
@@ -130,4 +132,48 @@ return [
     // Favorite Messages
     'favorite_status_updated_successfully' => 'Favorite status updated successfully',
     'favorites_fetched_successfully' => 'Favorites fetched successfully',
+
+    // Supplier Setting Messages
+    'supplier_setting_updated' => 'Supplier setting updated successfully',
+
+    // supplier profile messages
+    'supplier_profile_updated' => 'Supplier profile updated successfully',
+
+    // request supplier profile messages
+    'phone_already_exists' => 'Phone number already exists',
+    'email_already_exists' => 'Email already exists',
+
+    // Product Messages
+    'product' => [
+        'price' => [
+            'min' => 'The price must be greater than 0.01',
+        ],
+        'quantity' => [
+            'min' => 'The quantity must be greater than 0',
+        ],
+        'category_id' => [
+            'exists' => 'The selected category does not belong to the supplier or does not exist',
+        ],
+        'unit_type' => [
+            'in' => 'Invalid unit type',
+        ],
+        'status' => [
+            'in' => 'Invalid status',
+        ],
+        'image' => [
+            'required' => 'You must have an image for the product',
+            'image' => 'The file must be an image',
+            'mimes' => 'The file must be an image',
+            'max' => 'You must attach at most 5 images',
+        ],
+        'min_order_quantity' => [
+            'required' => 'You must have a minimum order quantity for the product',
+            'numeric' => 'The minimum order quantity must be a number',
+        ],
+    ],
+
+    // Order Messages
+    'order_reordered' => 'Order reordered successfully',
+    'some_products_are_unavailable' => 'Some products are unavailable',
+
 ];

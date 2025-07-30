@@ -12,11 +12,13 @@ class ProductResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'image' => $this->image ? asset('storage/' . $this->image) : null,
+            'images' => MediaResource::collection($this->getMedia('images')),
+            'image' => $this->getFirstMediaUrl('images'),
             'price' => $this->price,
             'price_before_discount' => $this->price_before_discount,
             'quantity' => $this->quantity,
             'stock_qty' => $this->stock_qty,
+            'nearly_out_of_stock_limit' => $this->nearly_out_of_stock_limit,
             'status' => $this->status,
             'is_favorite' => $this->is_favorite,
             'unit_type' => $this->unit_type,
@@ -25,5 +27,4 @@ class ProductResource extends JsonResource
             'avg_rating' => $this->averageRating(),
         ];
     }
-
 }

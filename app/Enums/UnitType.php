@@ -35,5 +35,53 @@ enum UnitType: int
     case INCH = 25;       // بوصة (2.54 سم تقريبًا)
     case FOOT = 26;       // قدم (30.48 سم)
     case YARD = 27;       // ياردة (91.44 سم)
-}
 
+    public static function values(): array
+    {
+        return array_column(self::cases(), 'value');
+    }
+
+    public function getArabicLabel(): string
+    {
+        return match ($this) {
+            self::PIECE => 'قطعة',
+            self::DOZEN => 'درزن (12 قطعة)',
+            self::HALF_DOZEN => 'نصف درزن (6 قطع)',
+            self::SET => 'طقم',
+            self::PACK => 'عبوة',
+            self::BOX => 'صندوق',
+            self::CARTON => 'كرتونة',
+            self::ROLL => 'لفة',
+            self::STRIP => 'شريط',
+            self::TABLET => 'حبة',
+            self::PAIR => 'زوج',
+            self::KG => 'كيلوجرام',
+            self::G => 'جرام',
+            self::MG => 'مليجرام',
+            self::TON => 'طن',
+            self::OUNCE => 'أوقية',
+            self::POUND => 'باوند',
+            self::LITER => 'لتر',
+            self::ML => 'مليلتر',
+            self::GALLON => 'جالون',
+            self::BOTTLE => 'زجاجة',
+            self::CAN => 'علبة',
+            self::METER => 'متر',
+            self::CM => 'سنتيمتر',
+            self::MM => 'مليمتر',
+            self::INCH => 'بوصة',
+            self::FOOT => 'قدم',
+            self::YARD => 'ياردة',
+        };
+    }
+
+    public static function getOptions(): array
+    {
+        $options = [];
+        foreach (self::cases() as $case) {
+            $options[$case->value] = $case->getArabicLabel();
+        }
+
+        return $options;
+    }
+}
