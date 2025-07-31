@@ -1,7 +1,4 @@
 *
 !private/
 !public/
-!imports/
-!imports/*
 !.gitignore
-v
