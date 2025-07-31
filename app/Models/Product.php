@@ -20,13 +20,13 @@ class Product extends Model implements HasMedia
     use Rateable;
     use InteractsWithMedia;
 
-    protected $guarded = [];
-
     public $translatable = ['name', 'description'];
 
     protected $fillable = [
         'name',
         'price',
+        'price_before_discount',
+        'description',
         'quantity',
         'min_order_quantity',
         'stock_qty',

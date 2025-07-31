@@ -62,7 +62,7 @@ return [
 
         'imports' => [
             'driver' => 'local',
-            'root' => storage_path('app/imports'),
+            'root' => storage_path('imports'),
             'serve' => true,
             'throw' => false,
             'report' => false,

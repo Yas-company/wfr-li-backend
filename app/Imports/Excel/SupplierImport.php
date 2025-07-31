@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Imports;
+namespace App\Imports\Excel;
 
+use App\Enums\UserRole;
+use App\Enums\UserStatus;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToModel;
@@ -13,6 +15,8 @@ class SupplierImport implements ToModel, WithHeadingRow, WithProgressBar
 {
     use Importable;
 
+    protected User $createdSupplier;
+
     /**
     * @param array $row
     *
@@ -20,16 +24,29 @@ class SupplierImport implements ToModel, WithHeadingRow, WithProgressBar
     */
     public function model(array $row)
     {
-        return new User([
-            'id' => $row['id'],
+        if(empty($row['name'])) {
+            return null;
+        }
+
+        $user = new User([
             'name' => $row['name'],
             'phone' => $row['phone'],
             'country_code' => $row['country_code'],
             'business_name' => $row['business_name'],
             'email' => $row['email'],
-            'role' => $row['role'],
+            'role' => UserRole::SUPPLIER,
             'password' => Hash::make($row['password']),
-            'status' => $row['status'],
+            'status' => UserStatus::APPROVED,
+            'is_verified' => true,
         ]);
+
+        $this->createdSupplier = $user;
+
+        return $user;
+    }
+
+    public function createdSupplier(): User
+    {
+        return $this->createdSupplier;
     }
 }
