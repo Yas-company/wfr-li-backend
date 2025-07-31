@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\v1\SupplierController;
 use App\Http\Controllers\api\v1\SupplierProfileController;
 use App\Http\Controllers\api\v1\SupplierSettingController;
 use App\Http\Controllers\api\v1\UserController;
@@ -14,4 +15,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::put('/suppliers/setting', [SupplierSettingController::class, 'update']);
 
     Route::put('/suppliers/profile', [SupplierProfileController::class, 'updateSupplierProfile'])->name('suppliers.profile.update');
+
+    Route::get('/suppliers/products/available', [SupplierController::class, 'getAvailableProducts']);
+    Route::get('/suppliers/products/nearly-out-of-stock', [SupplierController::class, 'getNearlyOutOfStockProducts']);
+    Route::get('/suppliers/products/out-of-stock', [SupplierController::class, 'getOutOfStockProducts']);
 });

@@ -50,4 +50,21 @@ class SupplierService implements SupplierServiceInterface
             ->with(['category', 'currentUserFavorite', 'ratings'])
             ->first();
     }
+
+ 
+
+    public function getAvailableProducts(int $supplierId): LengthAwarePaginator
+    {
+        return Product::where('supplier_id', $supplierId)->isActive()->where('stock_qty', '>', 'nearly_out_of_stock_limit')->paginate(10);
+    }
+
+    public function getNearlyOutOfStockProducts(int $supplierId): LengthAwarePaginator
+    {
+        return Product::where('supplier_id', $supplierId)->isActive()->where('stock_qty', '<=', 'nearly_out_of_stock_limit')->where('stock_qty', '>', 0)->paginate(10);
+    }
+
+    public function getOutOfStockProducts(int $supplierId): LengthAwarePaginator
+    {
+        return Product::where('supplier_id', $supplierId)->isActive()->where('stock_qty', '<=', 0)->paginate(10);
+    }
 }

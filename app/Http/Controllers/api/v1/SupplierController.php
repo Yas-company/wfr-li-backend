@@ -4,11 +4,12 @@ namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AdsResource;
-use App\Http\Services\Contracts\SupplierServiceInterface;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\ProductResource;
-use Illuminate\Http\Request;
+use App\Http\Services\Contracts\SupplierServiceInterface;
 use App\Traits\ApiResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SupplierController extends Controller
 {
@@ -19,12 +20,14 @@ class SupplierController extends Controller
     public function ads($supplierId)
     {
         $ads = $this->supplierService->getAds($supplierId);
+
         return $this->successResponse(AdsResource::collection($ads), 'تم جلب الإعلانات بنجاح');
     }
 
     public function categories($supplierId)
     {
         $categories = $this->supplierService->getCategories($supplierId);
+
         return $this->successResponse(CategoryResource::collection($categories), 'تم جلب الأقسام بنجاح');
     }
 
@@ -49,11 +52,34 @@ class SupplierController extends Controller
     {
         $product = $this->supplierService->getProductById($id);
 
-        if (!$product) {
+        if (! $product) {
             return $this->notFoundResponse('المنتج غير موجود');
         }
 
         return $this->successResponse(new ProductResource($product), 'تم جلب بيانات المنتج');
+    }
+
+
+
+    public function getAvailableProducts()
+    {
+        $products = $this->supplierService->getAvailableProducts(Auth::user()->id);
+
+        return $this->paginatedResponse($products, ProductResource::collection($products), 'تم جلب المنتجات المتوفرة بنجاح');
+    }
+
+    public function getNearlyOutOfStockProducts()
+    {
+        $products = $this->supplierService->getNearlyOutOfStockProducts(Auth::user()->id);
+
+        return $this->paginatedResponse($products, ProductResource::collection($products), 'تم جلب المنتجات القريبة من النفاذ بنجاح');
+    }
+
+    public function getOutOfStockProducts()
+    {
+        $products = $this->supplierService->getOutOfStockProducts(Auth::user()->id);
+
+        return $this->paginatedResponse($products, ProductResource::collection($products), 'تم جلب المنتجات المنتهية المخزون بنجاح');
     }
 
 }
