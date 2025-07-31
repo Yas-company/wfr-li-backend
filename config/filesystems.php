@@ -59,6 +59,15 @@ return [
             'throw' => false,
             'report' => false,
         ],
+
+        'imports' => [
+            'driver' => 'local',
+            'root' => storage_path('imports'),
+            'serve' => true,
+            'throw' => false,
+            'report' => false,
+        ],
+
         'media' => [
             'driver' => 'local',
             'root'   => public_path('media'),
