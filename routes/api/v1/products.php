@@ -8,6 +8,10 @@ use App\Http\Controllers\api\v1\Product\Buyer\ProductController as BuyerProductC
 use App\Http\Middleware\RoleMiddleware;
 
 Route::middleware(['auth:sanctum', RoleMiddleware::class .':'.UserRole::SUPPLIER->value])->prefix('supplier/products')->group(function () {
+    Route::get('/available', [ProductController::class, 'getAvailableProducts'])->name('supplier.products.available');
+    Route::get('/out-of-stock', [ProductController::class, 'getOutOfStockProducts'])->name('supplier.products.out-of-stock');
+    Route::get('/nearly-out-of-stock', [ProductController::class, 'getNearlyOutOfStockProducts'])->name('supplier.products.nearly-out-of-stock');
+
     Route::get('/', [ProductController::class, 'index'])->name('supplier.products.index');
     Route::get('/{product}', [ProductController::class, 'show'])->name('supplier.products.show');
     Route::post('/', [ProductController::class, 'store'])->name('supplier.products.store');
