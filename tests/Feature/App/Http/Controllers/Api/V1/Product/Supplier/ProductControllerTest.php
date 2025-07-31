@@ -451,4 +451,267 @@ class ProductControllerTest extends TestCase
                 ],
             ]);
     }
+
+    public function test_supplier_can_view_available_products()
+    {
+        // Clear any existing products for this supplier
+        Product::where('supplier_id', $this->supplier->id)->delete();
+        
+        // Create available products (stock_qty > nearly_out_of_stock_limit)
+        Product::factory()->count(3)->create([
+            'supplier_id' => $this->supplier->id,
+            'category_id' => $this->category->id,
+            'stock_qty' => 15,
+            'nearly_out_of_stock_limit' => 10,
+            'is_active' => true,
+        ]);
+
+        // Create nearly out-of-stock products (stock_qty < nearly_out_of_stock_limit)
+        Product::factory()->count(2)->create([
+            'supplier_id' => $this->supplier->id,
+            'category_id' => $this->category->id,
+            'stock_qty' => 5,
+            'nearly_out_of_stock_limit' => 10,
+            'is_active' => true,
+        ]);
+
+        // Create out-of-stock products
+        Product::factory()->create([
+            'supplier_id' => $this->supplier->id,
+            'category_id' => $this->category->id,
+            'stock_qty' => 0,
+            'nearly_out_of_stock_limit' => 10,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($this->supplier)->getJson(route('supplier.products.available'));
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    '*' => [
+                        'id',
+                        'name',
+                        'image',
+                        'price',
+                        'price_before_discount',
+                        'quantity',
+                        'stock_qty',
+                        'nearly_out_of_stock_limit',
+                        'status',
+                        'is_favorite',
+                        'unit_type',
+                        'avg_rating',
+                    ],
+                ],
+                'links' => [
+                    'first',
+                    'last',
+                    'next',
+                    'prev',
+                ],
+            ]);
+
+        // Assert that only available products are returned
+        $responseData = $response->json('data');
+        $this->assertCount(3, $responseData);
+        
+        foreach ($responseData as $product) {
+            $this->assertGreaterThan($product['nearly_out_of_stock_limit'], $product['stock_qty']);
+        }
+    }
+
+    public function test_supplier_can_view_out_of_stock_products()
+    {
+        // Clear any existing products for this supplier
+        Product::where('supplier_id', $this->supplier->id)->delete();
+        
+        // Create available products
+        Product::factory()->count(2)->create([
+            'supplier_id' => $this->supplier->id,
+            'category_id' => $this->category->id,
+            'stock_qty' => 10,
+            'is_active' => true,
+        ]);
+
+        // Create out-of-stock products (stock_qty = 0)
+        Product::factory()->count(3)->create([
+            'supplier_id' => $this->supplier->id,
+            'category_id' => $this->category->id,
+            'stock_qty' => 0,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($this->supplier)->getJson(route('supplier.products.out-of-stock'));
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    '*' => [
+                        'id',
+                        'name',
+                        'image',
+                        'price',
+                        'price_before_discount',
+                        'quantity',
+                        'stock_qty',
+                        'nearly_out_of_stock_limit',
+                        'status',
+                        'is_favorite',
+                        'unit_type',
+                        'avg_rating',
+                    ],
+                ],
+                'links' => [
+                    'first',
+                    'last',
+                    'next',
+                    'prev',
+                ],
+            ]);
+
+        // Assert that only out-of-stock products are returned
+        $responseData = $response->json('data');
+        $this->assertCount(3, $responseData);
+        
+        foreach ($responseData as $product) {
+            $this->assertEquals(0, $product['stock_qty']);
+        }
+    }
+
+    public function test_supplier_can_view_nearly_out_of_stock_products()
+    {
+        // Create a fresh supplier and category for this test to avoid conflicts
+        $testSupplier = User::factory()->supplier()->create();
+        $testCategory = Category::factory()->create(['supplier_id' => $testSupplier->id]);
+        
+        // Create nearly out-of-stock products (stock_qty < nearly_out_of_stock_limit and stock_qty > 0)
+        $nearlyOutOfStockProducts = collect();
+        for ($i = 0; $i < 3; $i++) {
+            $product = new Product([
+                'supplier_id' => $testSupplier->id,
+                'category_id' => $testCategory->id,
+                'name' => ['en' => 'Nearly Out Product ' . $i, 'ar' => 'Nearly Out Product ' . $i],
+                'description' => ['en' => 'Test Description', 'ar' => 'Test Description'],
+                'price' => 100.00,
+                'price_before_discount' => 120.00,
+                'stock_qty' => 50,  // Start with high stock
+                'nearly_out_of_stock_limit' => 5,
+                'quantity' => 10,
+                'unit_type' => 1,
+                'status' => 1,
+                'is_active' => true,
+                'is_featured' => false,
+                'min_order_quantity' => 1,
+            ]);
+            $product->save();
+            
+            // Now reduce the stock to simulate sales/usage - make it nearly out of stock
+            $product->stock_qty = 3;  // LESS than nearly_out_of_stock_limit (5)
+            $product->save();
+            
+            $nearlyOutOfStockProducts->push($product);
+        }
+
+        // Create available products (stock_qty > nearly_out_of_stock_limit) - should not be returned
+        for ($i = 0; $i < 2; $i++) {
+            $availableProduct = Product::create([
+                'supplier_id' => $testSupplier->id,
+                'category_id' => $testCategory->id,
+                'name' => ['en' => 'Available Product ' . $i, 'ar' => 'Available Product ' . $i],
+                'description' => ['en' => 'Test Description', 'ar' => 'Test Description'],
+                'price' => 100.00,
+                'price_before_discount' => 120.00,
+                'stock_qty' => 50,  // Start with high stock
+                'nearly_out_of_stock_limit' => 5,
+                'quantity' => 10,
+                'unit_type' => 1,
+                'status' => 1,
+                'is_active' => true,
+                'is_featured' => false,
+                'min_order_quantity' => 1,
+            ]);
+            
+            // Keep stock high - still available (no reduction needed for available products)
+            // stock_qty (50) > nearly_out_of_stock_limit (5) = Available
+        }
+
+        // Create out-of-stock products (stock_qty = 0) - should not be returned
+        $outOfStockProduct = Product::create([
+            'supplier_id' => $testSupplier->id,
+            'category_id' => $testCategory->id,
+            'name' => ['en' => 'Out of Stock Product', 'ar' => 'Out of Stock Product'],
+            'description' => ['en' => 'Test Description', 'ar' => 'Test Description'],
+            'price' => 100.00,
+            'price_before_discount' => 120.00,
+            'stock_qty' => 30,  // Start with good stock
+            'nearly_out_of_stock_limit' => 5,
+            'quantity' => 10,
+            'unit_type' => 1,
+            'status' => 1,
+            'is_active' => true,
+            'is_featured' => false,
+            'min_order_quantity' => 1,
+        ]);
+        
+        // Completely sell out the product - reduce stock to 0
+        $outOfStockProduct->stock_qty = 0;  
+        $outOfStockProduct->save();
+
+        $response = $this->actingAs($testSupplier)->getJson(route('supplier.products.nearly-out-of-stock'));
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    '*' => [
+                        'id',
+                        'name',
+                        'image',
+                        'price',
+                        'price_before_discount',
+                        'quantity',
+                        'stock_qty',
+                        'nearly_out_of_stock_limit',
+                        'status',
+                        'is_favorite',
+                        'unit_type',
+                        'avg_rating',
+                    ],
+                ],
+                'links' => [
+                    'first',
+                    'last',
+                    'next',
+                    'prev',
+                ],
+            ]);
+
+        // Assert that only nearly out-of-stock products are returned
+        $responseData = $response->json('data');
+        
+        // The response should contain exactly 3 nearly out-of-stock products
+        $this->assertCount(3, $responseData);
+        
+        // Verify each returned product meets the criteria
+        foreach ($responseData as $product) {
+            // For nearly out of stock: stock_qty < nearly_out_of_stock_limit
+            // So we assert: stock_qty is less than nearly_out_of_stock_limit
+            $this->assertTrue($product['stock_qty'] < $product['nearly_out_of_stock_limit'], 
+                "Product ID {$product['id']}: stock_qty ({$product['stock_qty']}) should be LESS than nearly_out_of_stock_limit ({$product['nearly_out_of_stock_limit']})");
+            // stock_qty should be greater than 0 (not out of stock)
+            $this->assertGreaterThan(0, $product['stock_qty'], 
+                "Product ID {$product['id']}: stock_qty ({$product['stock_qty']}) should be greater than 0");
+        }
+        
+        // Verify the returned products are the ones we created
+        $returnedIds = collect($responseData)->pluck('id')->sort()->values();
+        $expectedIds = $nearlyOutOfStockProducts->pluck('id')->sort()->values();
+        $this->assertEquals($expectedIds->toArray(), $returnedIds->toArray());
+    }
 }
