@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Supplier;
 
 use Illuminate\Http\Request;
+use App\Http\Resources\FieldResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class SupplierResource extends JsonResource
