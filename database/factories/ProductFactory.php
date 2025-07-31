@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -36,7 +37,8 @@ class ProductFactory extends Factory
             'is_active' => true,
             'is_featured' => $this->faker->boolean(20),
             'min_order_quantity' => $this->faker->numberBetween(2, 10),
-            'category_id' => Category::factory()
+            'category_id' => Category::factory(),
+            'supplier_id' => User::factory(),
         ];
     }
 }

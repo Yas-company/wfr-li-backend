@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\v1\Product;
+namespace App\Http\Controllers\api\v1\Product\Supplier;
 
 use App\Models\Product;
 use App\Traits\ApiResponse;
