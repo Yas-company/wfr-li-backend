@@ -17,7 +17,7 @@ class CartProductResource extends JsonResource
         return [
             'id' => $this->product->id,
             'product_name' => $this->product->name,
-            'product_image' => $this->product->image ? asset('storage/' . $this->product->image) : null,
+            'product_image' => $this->product->getFirstMediaUrl('images'),
             'product_price' => $this->product->price,
             'price_before_discount' => $this->product->price_before_discount,
             'quantity' => $this->quantity,
