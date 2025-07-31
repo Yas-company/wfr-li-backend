@@ -29,7 +29,7 @@ class OrderResource extends JsonResource
                     return [
                         'id' => $product->id,
                         'name' => $product->name,
-                        'image' => $product->image_url,
+                        'image' => $product->getFirstMediaUrl('images'),
                         'price' => $product->price,
                         'price_before_discount' => $product->price_before_discount,
                         'order_price' => $item->price,

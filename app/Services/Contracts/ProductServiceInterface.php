@@ -7,14 +7,14 @@ use App\Models\Product;
 
 interface ProductServiceInterface
 {
-    public function list(array $filters);
-    public function create(array $data, User $user);
-    public function update(int $id, array $data);
-    public function delete(int $id);
-    public function countTotal(): int;
-    public function countExpired(): int;
-    public function countNearExpiry(): int;
-    public function countStockStatuses(): array;
+    public function getSupplierProducts(int $supplierId);
+    public function getProductsForBuyer();
+    public function store(array $data, User $user);
+    public function update(Product $product, array $data);
+    public function delete(Product $product);
+    public function countTotal(User $user): int;
+    public function countExpired(User $user): int;
+    public function countNearExpiry(User $user): int;
     public function attachMedia(Product $product);
     public function getAvailableProducts(int $supplierId): \Illuminate\Pagination\LengthAwarePaginator;
     public function getNearlyOutOfStockProducts(int $supplierId): \Illuminate\Pagination\LengthAwarePaginator;

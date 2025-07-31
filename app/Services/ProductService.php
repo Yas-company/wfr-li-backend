@@ -4,6 +4,9 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\Product;
+use App\Filters\JsonColumnFilter;
+use Spatie\QueryBuilder\QueryBuilder;
+use Spatie\QueryBuilder\AllowedFilter;
 use App\Services\Contracts\ProductServiceInterface;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -17,14 +20,54 @@ class ProductService implements ProductServiceInterface
      *
      * @return Paginator
      */
-    public function list(array $filters)
+    public function getSupplierProducts(int $supplierId)
     {
-        return Product::query()
-            ->when(isset($filters['category_id']), function ($query) use ($filters) {
-                $query->where('category_id', $filters['category_id']);
-            })
-            ->latest()
-            ->paginate(10);
+        return QueryBuilder::for(Product::class)
+                ->allowedFilters([
+                    AllowedFilter::exact('category_id'),
+                    AllowedFilter::custom('name', new JsonColumnFilter),
+                    AllowedFilter::exact('price'),
+                ])
+                ->allowedSorts([
+                    'id',
+                    'created_at',
+                ])
+                ->allowedIncludes([
+                    'category',
+                    'supplier',
+                ])
+                ->defaultSort('id')
+                ->where('supplier_id', $supplierId)
+                ->paginate(10);
+    }
+
+        /**
+     * Display a listing of the resource.
+     *
+     * @param array $filters
+     *
+     * @return Paginator
+     */
+    public function getProductsForBuyer()
+    {
+        return QueryBuilder::for(Product::query()->forUsers())
+                ->allowedFilters([
+                    AllowedFilter::exact('category_id'),
+                    AllowedFilter::exact('supplier_id'),
+                    AllowedFilter::custom('name', new JsonColumnFilter),
+                    'price',
+                ])
+                ->allowedSorts([
+                    'id',
+                    'created_at',
+                    'price'
+                ])
+                ->allowedIncludes([
+                    'category',
+                    'supplier',
+                ])
+                ->defaultSort('id')
+                ->paginate(10);
     }
 
     /**
@@ -35,7 +78,7 @@ class ProductService implements ProductServiceInterface
      *
      * @return Product
      */
-    public function create(array $data, User $user)
+    public function store(array $data, User $user)
     {
         $data['supplier_id'] = $user->id;
 
@@ -45,14 +88,13 @@ class ProductService implements ProductServiceInterface
     /**
      * Update the specified resource in storage.
      *
-     * @param int $id
+     * @param Product $product
      * @param array $data
      *
      * @return Product
      */
-    public function update(int $id, array $data)
+    public function update(Product $product, array $data)
     {
-        $product = Product::findOrFail($id);
         $product->update($data);
 
         return $product;
@@ -61,11 +103,10 @@ class ProductService implements ProductServiceInterface
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param Product $product
      */
-    public function delete(int $id)
+    public function delete(Product $product)
     {
-        $product = Product::findOrFail($id);
         return $product->delete();
     }
 
@@ -74,9 +115,9 @@ class ProductService implements ProductServiceInterface
      *
      * @return int
      */
-    public function countTotal(): int
+    public function countTotal(User $user): int
     {
-        return Product::count();
+        return Product::where('supplier_id', $user->id)->count();
     }
 
     /**
@@ -84,9 +125,9 @@ class ProductService implements ProductServiceInterface
      *
      * @return int
      */
-    public function countExpired(): int
+    public function countExpired(User $user): int
     {
-        return Product::where('stock_qty', 0)->count();
+        return Product::where('supplier_id', $user->id)->where('stock_qty', 0)->count();
     }
 
     /**
@@ -95,22 +136,9 @@ class ProductService implements ProductServiceInterface
      * @return int
      *
      */
-    public function countNearExpiry(): int
+    public function countNearExpiry(User $user): int
     {
-        return Product::where('stock_qty', '<', 5)->count(); // مثال: أقل من 5
-    }
-
-    /**
-     * Display the stock status counts.
-     *
-     * @return array
-     */
-    public function countStockStatuses(): array
-    {
-        return [
-            'expired' => Product::where('stock_qty', 0)->count(),
-            'near_expiry' => Product::where('stock_qty', '<', 5)->where('stock_qty', '>', 0)->count(),
-        ];
+        return Product::where('supplier_id', $user->id)->whereColumn('stock_qty', '<', 'nearly_out_of_stock_limit')->count();
     }
 
     /**
