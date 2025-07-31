@@ -51,7 +51,7 @@ class ProductMediaControllerTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)
-            ->postJson(route('products.attach-media', $this->product), [
+            ->postJson(route('supplier.products.attach-media', $this->product), [
                 'images' => $images,
             ]);
 
@@ -81,7 +81,7 @@ class ProductMediaControllerTest extends TestCase
     {
         $images = [UploadedFile::fake()->image('product.jpg')];
 
-        $response = $this->postJson(route('products.attach-media', $this->product), [
+        $response = $this->postJson(route('supplier.products.attach-media', $this->product), [
             'images' => $images,
         ]);
 
@@ -92,7 +92,7 @@ class ProductMediaControllerTest extends TestCase
     public function test_supplier_cannot_attach_empty_image_array()
     {
         $response = $this->actingAs($this->user)
-            ->postJson(route('products.attach-media', $this->product), [
+            ->postJson(route('supplier.products.attach-media', $this->product), [
                 'images' => [],
             ]);
 
@@ -114,7 +114,7 @@ class ProductMediaControllerTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)
-            ->postJson(route('products.attach-media', $this->product), [
+            ->postJson(route('supplier.products.attach-media', $this->product), [
                 'images' => $images,
             ]);
 
@@ -130,7 +130,7 @@ class ProductMediaControllerTest extends TestCase
         $images = [UploadedFile::fake()->create('document.pdf', 100)];
 
         $response = $this->actingAs($this->user)
-            ->postJson(route('products.attach-media', $this->product), [
+            ->postJson(route('supplier.products.attach-media', $this->product), [
                 'images' => $images,
             ]);
 
@@ -150,7 +150,7 @@ class ProductMediaControllerTest extends TestCase
         $images = [UploadedFile::fake()->image('product.jpg')->size(3000)];
 
         $response = $this->actingAs($this->user)
-            ->postJson(route('products.attach-media', $this->product), [
+            ->postJson(route('supplier.products.attach-media', $this->product), [
                 'images' => $images,
             ]);
 
@@ -165,7 +165,7 @@ class ProductMediaControllerTest extends TestCase
         $images = [UploadedFile::fake()->image('product.jpg')];
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson(route('products.attach-media', 999), [
+            ->postJson(route('supplier.products.attach-media', 999), [
                 'images' => $images,
             ]);
 
@@ -180,7 +180,7 @@ class ProductMediaControllerTest extends TestCase
         ];
 
         $this->actingAs($this->user)
-            ->postJson(route('products.attach-media', $this->product), [
+            ->postJson(route('supplier.products.attach-media', $this->product), [
                 'images' => $images,
             ]);
 
@@ -188,7 +188,7 @@ class ProductMediaControllerTest extends TestCase
         $media2 = $this->product->getLastMedia('images');
 
         $response = $this->actingAs($this->user)
-            ->deleteJson(route('products.media.destroy', [$this->product, $media1]));
+            ->deleteJson(route('supplier.products.media.destroy', [$this->product, $media1]));
 
         $response->assertStatus(200)
             ->assertJson(['message' => 'Media deleted successfully']);
@@ -201,7 +201,7 @@ class ProductMediaControllerTest extends TestCase
     public function test_supplier_cannot_delete_non_existent_media()
     {
         $response = $this->actingAs($this->user)
-            ->deleteJson(route('products.media.destroy', [$this->product, 999]));
+            ->deleteJson(route('supplier.products.media.destroy', [$this->product, 999]));
 
         $response->assertStatus(404);
     }
@@ -214,14 +214,14 @@ class ProductMediaControllerTest extends TestCase
         ];
 
         $this->actingAs($this->user)
-            ->postJson(route('products.attach-media', $this->product), [
+            ->postJson(route('supplier.products.attach-media', $this->product), [
                 'images' => $images,
             ]);
 
         $media = $this->product->getFirstMedia('images');
 
         $response = $this->actingAs($this->user)
-            ->deleteJson(route('products.media.destroy', [999, $media->id]));
+            ->deleteJson(route('supplier.products.media.destroy', [999, $media->id]));
 
         $response->assertStatus(404);
     }

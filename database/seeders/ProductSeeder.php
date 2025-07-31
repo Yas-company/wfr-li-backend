@@ -76,7 +76,6 @@ class ProductSeeder extends Seeder
                 Product::create([
                     'name' => $productNames[$nameIndex],
                     'description' => $productDescriptions[$descIndex],
-                    'image' => null, // You can add real image paths here if needed
                     'price' => $basePrice,
                     'price_before_discount' => $discount > 0 ? $priceBeforeDiscount : null,
                     'quantity' => rand(10, 100),

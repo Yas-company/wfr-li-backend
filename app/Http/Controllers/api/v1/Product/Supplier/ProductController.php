@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\v1\Product;
+namespace App\Http\Controllers\api\v1\Product\Supplier;
 
 use App\Models\Product;
 use App\Traits\ApiResponse;
@@ -32,9 +32,25 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $products = $this->productService->list($request->all());
+        $products = $this->productService->getSupplierProducts(auth()->id());
 
-        return $this->paginatedResponse($products,ProductResource::collection($products));
+        return $this->paginatedResponse($products, ProductResource::collection($products));
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param Product $product
+     *
+     * @return ProductResource
+     */
+    public function show(Product $product)
+    {
+        $this->authorize('view', $product);
+
+        $product->load(['ratings']);
+
+        return new ProductResource($product);
     }
 
     /**
@@ -46,7 +62,7 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        $product = $this->productService->create($request->validated(), auth()->user());
+        $product = $this->productService->store($request->validated(), auth()->user());
 
         return $this->createdResponse(new ProductResource($product));
     }
@@ -59,9 +75,9 @@ class ProductController extends Controller
      *
      * @return JsonResponse
      */
-    public function update(UpdateProductRequest $request, $id)
+    public function update(UpdateProductRequest $request, Product $product)
     {
-        $product = $this->productService->update($id, $request->all());
+        $product = $this->productService->update($product, $request->validated());
 
         return $this->successResponse(new ProductResource($product), 'Product updated successfully');
     }
@@ -73,9 +89,11 @@ class ProductController extends Controller
      *
      * @return JsonResponse
      */
-    public function destroy($id)
+    public function destroy(Product $product)
     {
-        $this->productService->delete($id);
+        $this->authorize('delete', $product);
+
+        $this->productService->delete($product);
 
         return $this->successResponse(null, 'Delete deleted successfully');
     }
@@ -87,7 +105,7 @@ class ProductController extends Controller
      */
     public function expiredCount()
     {
-        return $this->successResponse(['expired' => $this->productService->countExpired()]);
+        return $this->successResponse(['expired' => $this->productService->countExpired(auth()->user())]);
     }
 
     /**
@@ -97,50 +115,9 @@ class ProductController extends Controller
      */
     public function nearExpiryCount()
     {
-        return $this->successResponse(['near_expiry' => $this->productService->countNearExpiry()]);
+        return $this->successResponse(['near_expiry' => $this->productService->countNearExpiry(auth()->user())]);
     }
 
-    /**
-     * Display the stock status counts.
-     *
-     * @return JsonResponse
-     */
-    public function stockStatusCounts()
-    {
-        $data = $this->productService->countStockStatuses();
-
-        return $this->successResponse($data);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param Product $product
-     *
-     * @return ProductResource
-     */
-    public function show(Product $product)
-    {
-        $product->load(['ratings']);
-
-        return new ProductResource($product);
-    }
-
-    /**
-     * Display a filtered listing of the resource.
-     *
-     * @param Request $request
-     *
-     * @return ProductResource
-     */
-    public function filter(Request $request)
-    {
-        $products = Product::filterAndSearch($request->all())
-            ->with('category')
-            ->paginate(10);
-
-        return ProductResource::collection($products);
-    }
 
     /**
      * Display the related products.

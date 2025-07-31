@@ -20,13 +20,13 @@ class Product extends Model implements HasMedia
     use Rateable;
     use InteractsWithMedia;
 
-    protected $guarded = [];
-
     public $translatable = ['name', 'description'];
 
     protected $fillable = [
         'name',
         'price',
+        'price_before_discount',
+        'description',
         'quantity',
         'min_order_quantity',
         'stock_qty',
@@ -157,6 +157,15 @@ class Product extends Model implements HasMedia
         return $query->where('is_active', true);
     }
 
+    public function scopePublished($query)
+    {
+        return $query->where('status', ProductStatus::PUBLISHED);
+    }
+
+    public function scopeForUsers()
+    {
+        return $this->isActive()->published();
+    }
     /**
      * Get the attributes that should be appended to the model's array form.
      */
