@@ -12,9 +12,4 @@ interface SupplierServiceInterface
 
     public function getProductById(int $id): ?\App\Models\Product;
 
-    public function getAvailableProducts(int $supplierId): \Illuminate\Contracts\Pagination\LengthAwarePaginator;
-
-    public function getNearlyOutOfStockProducts(int $supplierId): \Illuminate\Contracts\Pagination\LengthAwarePaginator;
-
-    public function getOutOfStockProducts(int $supplierId): \Illuminate\Contracts\Pagination\LengthAwarePaginator;
 }

@@ -9,7 +9,7 @@ use App\Http\Resources\ProductResource;
 use App\Http\Services\Contracts\SupplierServiceInterface;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+
 
 class SupplierController extends Controller
 {
@@ -21,14 +21,14 @@ class SupplierController extends Controller
     {
         $ads = $this->supplierService->getAds($supplierId);
 
-        return $this->successResponse(AdsResource::collection($ads), 'تم جلب الإعلانات بنجاح');
+    return $this->successResponse(AdsResource::collection($ads), __('messages.ads.retrieved_successfully'));
     }
 
     public function categories($supplierId)
     {
         $categories = $this->supplierService->getCategories($supplierId);
 
-        return $this->successResponse(CategoryResource::collection($categories), 'تم جلب الأقسام بنجاح');
+        return $this->successResponse(CategoryResource::collection($categories), __('messages.categories.retrieved_successfully'));
     }
 
     public function products(Request $request, $supplierId)
@@ -43,7 +43,7 @@ class SupplierController extends Controller
 
         return $this->paginatedResponse($products,
             ProductResource::collection($products),
-            'تم جلب المنتجات بنجاح'
+            __('messages.products.retrieved_successfully')
         );
 
     }
@@ -53,33 +53,11 @@ class SupplierController extends Controller
         $product = $this->supplierService->getProductById($id);
 
         if (! $product) {
-            return $this->notFoundResponse('المنتج غير موجود');
+            return $this->notFoundResponse(__('messages.product.not_found'));
         }
 
-        return $this->successResponse(new ProductResource($product), 'تم جلب بيانات المنتج');
+        return $this->successResponse(new ProductResource($product), __('messages.product.retrieved_successfully'));
     }
 
-
-
-    public function getAvailableProducts()
-    {
-        $products = $this->supplierService->getAvailableProducts(Auth::user()->id);
-
-        return $this->paginatedResponse($products, ProductResource::collection($products), 'تم جلب المنتجات المتوفرة بنجاح');
-    }
-
-    public function getNearlyOutOfStockProducts()
-    {
-        $products = $this->supplierService->getNearlyOutOfStockProducts(Auth::user()->id);
-
-        return $this->paginatedResponse($products, ProductResource::collection($products), 'تم جلب المنتجات القريبة من النفاذ بنجاح');
-    }
-
-    public function getOutOfStockProducts()
-    {
-        $products = $this->supplierService->getOutOfStockProducts(Auth::user()->id);
-
-        return $this->paginatedResponse($products, ProductResource::collection($products), 'تم جلب المنتجات المنتهية المخزون بنجاح');
-    }
 
 }

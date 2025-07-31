@@ -175,4 +175,20 @@ return [
     // Order Messages
     'order_reordered' => 'تم إعادة الطلب بنجاح',
 
+    // Supplier Messages
+
+    'products' => [
+        'retrieved_successfully' => 'تم جلب المنتجات بنجاح',
+        'not_found' => 'لم يتم العثور على المنتج',
+    ],
+
+    'ads' => [
+        'retrieved_successfully' => 'تم جلب الإعلانات بنجاح',
+    ],
+
+    'categories' => [
+        'retrieved_successfully' => 'تم جلب الفئات بنجاح',
+    ],
+    
+
 ];

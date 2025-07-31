@@ -180,7 +180,7 @@ class ProductControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Delete deleted successfully',
+                'message' => 'Product deleted successfully',
             ]);
 
         $this->assertDatabaseMissing('products', [

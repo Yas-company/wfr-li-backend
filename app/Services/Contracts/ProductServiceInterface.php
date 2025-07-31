@@ -16,4 +16,7 @@ interface ProductServiceInterface
     public function countNearExpiry(): int;
     public function countStockStatuses(): array;
     public function attachMedia(Product $product);
+    public function getAvailableProducts(int $supplierId): \Illuminate\Pagination\LengthAwarePaginator;
+    public function getNearlyOutOfStockProducts(int $supplierId): \Illuminate\Pagination\LengthAwarePaginator;
+    public function getOutOfStockProducts(int $supplierId): \Illuminate\Pagination\LengthAwarePaginator;
 }
