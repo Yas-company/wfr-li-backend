@@ -133,24 +133,39 @@ class ProductController extends Controller
         return ProductResource::collection($related);
     }
 
+    /**
+     * Display the available products.
+     *
+     * @return JsonResponse
+     */
     public function getAvailableProducts()
     {
         $products = $this->productService->getAvailableProducts(auth()->user()->id);
 
-        return $this->paginatedResponse($products, ProductResource::collection($products), __('messages.products.retrieved_successfully'));
+        return $this->paginatedResponse($products, ProductResource::collection($products));
     }
 
+    /**
+     * Display the nearly out of stock products.
+     *
+     * @return JsonResponse
+     */
     public function getNearlyOutOfStockProducts()
     {
         $products = $this->productService->getNearlyOutOfStockProducts(auth()->user()->id);
 
-        return $this->paginatedResponse($products, ProductResource::collection($products), __('messages.products.retrieved_successfully'));
+        return $this->paginatedResponse($products, ProductResource::collection($products));
     }
 
+    /**
+     * Display the out of stock products.
+     *
+     * @return JsonResponse
+     */
     public function getOutOfStockProducts()
     {
         $products = $this->productService->getOutOfStockProducts(auth()->user()->id);
 
-        return $this->paginatedResponse($products, ProductResource::collection($products), __('messages.products.retrieved_successfully'));
+        return $this->paginatedResponse($products, ProductResource::collection($products));
     }
 }
