@@ -19,13 +19,13 @@ class SupplierController extends Controller
     public function ads($supplierId)
     {
         $ads = $this->supplierService->getAds($supplierId);
-        return $this->successResponse(AdsResource::collection($ads), 'تم جلب الإعلانات بنجاح');
+        return $this->successResponse(AdsResource::collection($ads), __('messages.ads.retrieved_successfully'));
     }
 
     public function categories($supplierId)
     {
         $categories = $this->supplierService->getCategories($supplierId);
-        return $this->successResponse(CategoryResource::collection($categories), 'تم جلب الأقسام بنجاح');
+        return $this->successResponse(CategoryResource::collection($categories), __('messages.categories.retrieved_successfully'));
     }
 
     public function products(Request $request, $supplierId)
@@ -40,7 +40,7 @@ class SupplierController extends Controller
 
         return $this->paginatedResponse($products,
             ProductResource::collection($products),
-            'تم جلب المنتجات بنجاح'
+            __('messages.products.retrieved_successfully')
         );
 
     }
@@ -50,10 +50,10 @@ class SupplierController extends Controller
         $product = $this->supplierService->getProductById($id);
 
         if (!$product) {
-            return $this->notFoundResponse('المنتج غير موجود');
+            return $this->notFoundResponse(__('messages.products.not_found'));
         }
 
-        return $this->successResponse(new ProductResource($product), 'تم جلب بيانات المنتج');
+        return $this->successResponse(new ProductResource($product), __('messages.products.retrieved_successfully'));
     }
 
 }

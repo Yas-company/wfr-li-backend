@@ -176,4 +176,16 @@ return [
     'order_reordered' => 'Order reordered successfully',
     'some_products_are_unavailable' => 'Some products are unavailable',
 
+    'products' => [
+        'retrieved_successfully' => 'Products retrieved successfully',
+        'not_found' => 'Product not found',
+    ],
+
+    'ads' => [
+        'retrieved_successfully' => 'Ads retrieved successfully',
+    ],
+
+    'categories' => [
+        'retrieved_successfully' => 'Categories retrieved successfully',
+    ],
 ];
