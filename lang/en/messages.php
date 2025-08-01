@@ -188,4 +188,8 @@ return [
     'categories' => [
         'retrieved_successfully' => 'Categories retrieved successfully',
     ],
+
+    'suppliers' => [
+        'image_changed' => 'Supplier image changed successfully',
+    ],
 ];

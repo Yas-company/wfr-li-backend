@@ -14,4 +14,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::put('/suppliers/setting', [SupplierSettingController::class, 'update']);
 
     Route::put('/suppliers/profile', [SupplierProfileController::class, 'updateSupplierProfile'])->name('suppliers.profile.update');
+    Route::post('/suppliers/image', [SupplierProfileController::class, 'changeSupplierImage'])->name('suppliers.image.change');
+
 });
