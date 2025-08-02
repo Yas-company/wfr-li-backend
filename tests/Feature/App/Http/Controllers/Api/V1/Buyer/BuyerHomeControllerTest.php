@@ -69,7 +69,6 @@ class BuyerHomeControllerTest extends TestCase
                                 'is_favorite',
                                 'unit_type',
                                 'category',
-                                'avg_rating',
                             ],
                         ],
                     ],
@@ -260,7 +259,7 @@ class BuyerHomeControllerTest extends TestCase
                 'id', 'name', 'description', 'images', 'image', 'price',
                 'price_before_discount', 'quantity', 'stock_qty', 
                 'nearly_out_of_stock_limit', 'status', 'is_favorite',
-                'unit_type', 'category', 'avg_rating'
+                'unit_type', 'category'
             ];
             
             foreach ($requiredFields as $field) {

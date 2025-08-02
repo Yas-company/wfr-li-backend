@@ -44,7 +44,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        $product->load(['ratings']);
+        $product->load(['ratings', 'category', 'category.field']);
 
         return new ProductResource($product);
     }
@@ -58,7 +58,7 @@ class ProductController extends Controller
      */
     public function related(Product $product)
     {
-        $related = $product->related();
+        $related = $product->related()->load(['category', 'category.field']);
 
         return ProductResource::collection($related);
     }
