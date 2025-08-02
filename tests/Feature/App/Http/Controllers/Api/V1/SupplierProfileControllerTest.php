@@ -138,6 +138,48 @@ class SupplierProfileControllerTest extends TestCase
             'email' => 'old@example.com',
         ]);
     }
+        /**
+     * Test supplier can update image when they don't have an old photo.
+     */
+    public function test_supplier_can_update_image_without_old_photo()
+    {
+        $supplier = $this->createSupplier(['image' => null]);
+        $token = $supplier->createToken('test')->plainTextToken;
+
+        $response = $this->changeSupplierImage($token);
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('users', [
+            'id' => $supplier->id,
+        ]);
+
+        // Check that the image field is not null after update
+        $supplier->refresh();
+        $this->assertNotNull($supplier->image);
+        $this->assertStringContainsString('users/', $supplier->image);
+    }
+
+    /**
+     * Test supplier can update image when they have an old photo.
+     */
+    public function test_supplier_can_update_image_with_old_photo()
+    {
+        $supplier = $this->createSupplier(['image' => 'users/old-image.jpg']);
+        $token = $supplier->createToken('test')->plainTextToken;
+
+        $response = $this->changeSupplierImage($token);
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('users', [
+            'id' => $supplier->id,
+        ]);
+
+        // Check that the image field has been updated
+        $supplier->refresh();
+        $this->assertNotNull($supplier->image);
+        $this->assertStringContainsString('users/', $supplier->image);
+        $this->assertNotEquals('users/old-image.jpg', $supplier->image);
+    }
 
     protected function requestOtpAuth(string $phone, string $token)
     {
@@ -157,5 +199,13 @@ class SupplierProfileControllerTest extends TestCase
     protected function updateSupplierProfile(array $data, string $token)
     {
         return $this->withToken($token)->putJson(route('suppliers.profile.update'), $data);
+    }
+
+    protected function changeSupplierImage(string $token)
+    {
+        return $this->withToken($token)
+            ->postJson(route('suppliers.image.change'), [
+                'image' => \Illuminate\Http\UploadedFile::fake()->image('test-image.jpg', 100, 100),
+            ]);
     }
 }
