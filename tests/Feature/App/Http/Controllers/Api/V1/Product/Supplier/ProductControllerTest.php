@@ -63,7 +63,7 @@ class ProductControllerTest extends TestCase
                     'status',
                     'is_favorite',
                     'unit_type',
-                    'avg_rating',
+              
                 ],
             ]);
 
@@ -211,7 +211,7 @@ class ProductControllerTest extends TestCase
                     'status',
                     'is_favorite',
                     'unit_type',
-                    'avg_rating',
+          
                 ],
             ]);
     }
@@ -243,7 +243,7 @@ class ProductControllerTest extends TestCase
                         'status',
                         'is_favorite',
                         'unit_type',
-                        'avg_rating',
+                    
                     ],
                 ],
                 'links' => [
@@ -305,7 +305,7 @@ class ProductControllerTest extends TestCase
                     'status',
                     'is_favorite',
                     'unit_type',
-                    'avg_rating',
+                  
                 ],
             ]);
     }
@@ -392,7 +392,7 @@ class ProductControllerTest extends TestCase
                         'status',
                         'is_favorite',
                         'unit_type',
-                        'avg_rating',
+                       
                     ],
                 ],
             ]);
@@ -503,7 +503,6 @@ class ProductControllerTest extends TestCase
                         'status',
                         'is_favorite',
                         'unit_type',
-                        'avg_rating',
                     ],
                 ],
                 'links' => [
@@ -563,7 +562,6 @@ class ProductControllerTest extends TestCase
                         'status',
                         'is_favorite',
                         'unit_type',
-                        'avg_rating',
                     ],
                 ],
                 'links' => [
@@ -681,7 +679,6 @@ class ProductControllerTest extends TestCase
                         'status',
                         'is_favorite',
                         'unit_type',
-                        'avg_rating',
                     ],
                 ],
                 'links' => [
