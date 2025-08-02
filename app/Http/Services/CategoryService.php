@@ -5,19 +5,18 @@ namespace App\Http\Services;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Gate;
 
 class CategoryService
 {
-    public function storeCategory($request)
+    public function storeCategory($data, $user)
     {
-        $user = Auth::user();
 
-        if (!$this->canManageCategories($user)) {
-
-            return ['error' => 'Only approved suppliers can add categories.'];
+        if (! Gate::allows('canManageCategories', Category::class)) {
+            return ['error' => __('messages.errors.unauthorized_category_creation')];
         }
 
-        $data = $request->validated();
+     
         $data['supplier_id'] = $user->id;
 
         if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
@@ -33,42 +32,56 @@ class CategoryService
         return $category->load('field')->loadCount('products');
     }
 
-    public function index()
+    public function index($data, $user)
     {
-        $user = Auth::user();
-        if (!$this->canManageCategories($user)) {
-            return ['error' => 'Only approved suppliers can view categories.'];
+        if (! Gate::allows('canManageCategories', Category::class)) {
+            return ['error' => __('messages.errors.unauthorized_category_access')];
         }
-            $categories = Category::with('field')->withCount('products')->where('supplier_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
-            //->get();
 
-        return $categories;
+        $query = Category::with('field')->withCount('products')
+            ->where('supplier_id', $user->id)
+            ->orderBy('created_at', 'desc');
+
+        // Apply search filter
+        if (isset($data['search']) && ! empty($data['search'])) {
+            $searchTerm = $data['search'];
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name->en', 'like', "%{$searchTerm}%")
+                    ->orWhere('name->ar', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        // Apply field filter
+        if (isset($data['field_id']) && ! empty($data['field_id'])) {
+            $query->where('field_id', $data['field_id']);
+        }
+
+        return $query->paginate(10);
     }
 
     public function show(Category $category)
     {
-        $user = Auth::user();
-        if (!$this->canManageCategories($user)) {
-            return ['error' => 'Only approved suppliers can view categories.'];
+
+        if (! Gate::allows('canManageCategories', Category::class)) {
+            return ['error' => __('messages.errors.unauthorized_category_access')];
         }
-        if (!$this->ownsCategory($user, $category)) {
-            return ['error' => 'You can only view your own categories.'];
+        if (! Gate::allows('ownCategory', $category)) {
+            return ['error' => __('messages.errors.unauthorized_category_ownership')];
         }
+
         return $category->load('field')->loadCount('products');
     }
 
-    public function update($request, Category $category)
+    public function update($data, Category $category)
     {
-        $user = Auth::user();
-        if (!$this->canManageCategories($user)) {
-            return ['error' => 'Only approved suppliers can update categories.'];
+        if (! Gate::allows('canManageCategories', Category::class)) {
+            return ['error' => __('messages.errors.unauthorized_category_update')];
         }
-        if (!$this->ownsCategory($user, $category)) {
-            return ['error' => 'You can only update your own categories.'];
+        if (! Gate::allows('ownCategory', $category)) {
+            return ['error' => __('messages.errors.unauthorized_category_ownership')];
         }
-        $data = $request->validated();
+
+        
         if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
             // Delete old image if it exists
             if ($category->image && Storage::disk('public')->exists($category->image)) {
@@ -83,15 +96,14 @@ class CategoryService
 
     public function destroy(Category $category)
     {
-        $user = Auth::user();
-        if (!$this->canManageCategories($user)) {
-            return ['error' => 'Only approved suppliers can delete categories.'];
+        if (! Gate::allows('canManageCategories', Category::class)) {
+            return ['error' => __('messages.errors.unauthorized_category_delete')];
         }
-        if (!$this->ownsCategory($user, $category)) {
-            return ['error' => 'You can only delete your own categories.'];
+        if (! Gate::allows('ownCategory', $category)) {
+            return ['error' => __('messages.errors.unauthorized_category_ownership')];
         }
         if ($category->products()->exists()) {
-            return ['error' => 'Cannot delete category. It has associated products.'];
+            return ['error' => __('messages.errors.category_has_products')];
         }
         return $category->delete();
     }
@@ -113,19 +125,4 @@ class CategoryService
         return $categories;
     }
 
-    /**
-     * Check if user can manage categories.
-     */
-    private function canManageCategories($user): bool
-    {
-        return $user && $user->isSupplier() && $user->isApproved();
-    }
-
-    /**
-     * Check if user owns the category.
-     */
-    private function ownsCategory($user, Category $category): bool
-    {
-        return $category->supplier_id === $user->id;
-    }
 }

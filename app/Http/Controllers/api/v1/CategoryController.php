@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Category\IndexCategoryRequest;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Http\Requests\Category\SearchCategoryRequest;
@@ -25,16 +26,17 @@ class CategoryController extends Controller
     /**
      * Display a listing of the supplier's categories.
      */
-    public function index()
+    public function index(IndexCategoryRequest $request)
     {
-        $result = $this->categoryService->index();
+        $data = $request->validated();
+        $result = $this->categoryService->index($data, auth()->user());
 
         if (isset($result['error'])) {
-            return $this->errorResponse($result['error'], 500);
+            return $this->errorResponse($result['error'], null, 500);
         }
 
         // Return the resource collection directly for proper pagination structure
-        return $this->paginatedResponse($result, CategoryResource::collection($result), 'Categories retrieved successfully', 200);
+        return $this->paginatedResponse($result, CategoryResource::collection($result), __('messages.categories.retrieved_successfully'), 200);
     }
 
     /**
@@ -48,7 +50,7 @@ class CategoryController extends Controller
             return $this->errorResponse($result['error'], 500);
         }
 
-        return $this->successResponse( new CategoryResource($result), 'Category retrieved successfully', 200);
+        return $this->successResponse( new CategoryResource($result), __('messages.category.retrieved_successfully'), 200);
 
     }
 
@@ -57,13 +59,14 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        $result = $this->categoryService->storeCategory($request);
+        $data = $request->validated();
+        $result = $this->categoryService->storeCategory($data, auth()->user());
 
         if (isset($result['error'])) {
             return $this->errorResponse($result['error'], 500);
         }
 
-        return $this->successResponse( new CategoryResource($result), 'Category created successfully', 200);
+        return $this->successResponse( new CategoryResource($result), __('messages.category.created_successfully'), 200);
 
     }
 
@@ -72,13 +75,14 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-        $result = $this->categoryService->update($request, $category);
+        $data = $request->validated();
+        $result = $this->categoryService->update($data, $category);
 
         if (isset($result['error'])) {
             return $this->errorResponse($result['error'], 500);
         }
 
-        return $this->successResponse( new CategoryResource($result), 'Category updated successfully', 200);
+        return $this->successResponse( new CategoryResource($result), __('messages.category.updated_successfully'), 200);
 
     }
 
@@ -93,7 +97,7 @@ class CategoryController extends Controller
             return $this->errorResponse($result['error'], 500);
         }
 
-        return $this->successResponse( null, 'Category deleted successfully', 200);
+        return $this->successResponse( null, __('messages.category.deleted_successfully'), 200);
 
     }
 
@@ -104,7 +108,7 @@ class CategoryController extends Controller
             return $this->errorResponse($result['error'], 500);
         }
 
-        return $this->successResponse( CategoryResource::collection($result), 'Categories retrieved successfully', 200);
+        return $this->successResponse( CategoryResource::collection($result), __('messages.categories.retrieved_successfully'), 200);
     }
 
     public function search(SearchCategoryRequest $request)
@@ -114,7 +118,7 @@ class CategoryController extends Controller
             return $this->errorResponse($result['error'], 500);
         }
 
-        return $this->paginatedResponse($result, CategoryResource::collection($result), 'Categories retrieved successfully', 200);
+        return $this->paginatedResponse($result, CategoryResource::collection($result), __('messages.categories.retrieved_successfully'), 200);
     }
 
     /**

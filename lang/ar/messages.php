@@ -192,4 +192,19 @@ return [
         'image_changed' => 'تم تحديث صورة المورد بنجاح',
     ],
 
+    'category' => [
+        'retrieved_successfully' => 'تم جلب الفئة بنجاح',
+        'created_successfully' => 'تم إنشاء الفئة بنجاح',
+        'updated_successfully' => 'تم تحديث الفئة بنجاح',
+        'deleted_successfully' => 'تم حذف الفئة بنجاح',
+    ],
+
+    'errors' => [
+        'unauthorized_category_access' => 'غير مصرح للوصول إلى الفئات',
+        'unauthorized_category_creation' => 'غير مصرح لإنشاء فئة',
+        'unauthorized_category_update' => 'غير مصرح لتحديث الفئة',
+        'unauthorized_category_delete' => 'غير مصرح لحذف الفئة',
+        'unauthorized_category_ownership' => 'غير مصرح للتعامل مع الفئة',
+    ],
+
 ];
