@@ -50,7 +50,7 @@ class Product extends Model implements HasMedia
 
     protected $appends = [];
 
-    protected $with = ['category', 'supplier'];
+    // protected $with = ['category', 'supplier'];
 
     public function registerMediaConversions(?Media $media = null): void
     {
@@ -68,12 +68,12 @@ class Product extends Model implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('images')
-            ->useFallbackUrl('/images/logo.jpg')
+        ->useFallbackUrl('/images/logo.jpg')
             ->useFallbackPath(public_path('/images/logo.jpg'))
             ->withResponsiveImages(); ;
     }
 
-    public function favoritedByUsers()
+public function favoritedByUsers()
     {
         return $this->belongsToMany(User::class, 'favorites')->where('is_favorite', true)->withTimestamps();
     }

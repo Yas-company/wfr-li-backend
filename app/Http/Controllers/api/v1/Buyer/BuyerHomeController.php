@@ -26,9 +26,11 @@ class BuyerHomeController extends Controller
                     ->with([
                         'media',
                         'currentUserFavorite',
-                        'ratings'
-                    ])
-                    ->withAvg('ratings', 'rating');
+                        'ratings',
+                        'category',
+                        'category.field',
+                    ]);
+          
             }])
             ->select('id', 'name', 'image')
             ->latest()
