@@ -18,18 +18,23 @@ class BuyerHomeController extends Controller
      */
     public function getSuppliersAndProducts()
     {
-
         $data = User::role(UserRole::SUPPLIER->value)
             ->with(['products' => function ($query) {
                 $query
                     ->latest()
-                    ->take(10);
+                    ->take(10)
+                    ->with([
+                        'media',
+                        'currentUserFavorite',
+                        'ratings'
+                    ])
+                    ->withAvg('ratings', 'rating');
             }])
             ->select('id', 'name', 'image')
             ->latest()
             ->take(4)
             ->get();
 
-        return $this->successResponse( HomePageBuyerResource::collection($data));
+        return $this->successResponse(HomePageBuyerResource::collection($data));
     }
 }
