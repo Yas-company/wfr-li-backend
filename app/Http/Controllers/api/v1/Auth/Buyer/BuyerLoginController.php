@@ -40,7 +40,7 @@ class BuyerLoginController extends Controller
         $user = User::where('phone', $request->validated('phone'))->first();
 
         return $this->successResponse([
-            'user' => new UserResource($user),
+            'user' => new UserResource($user->load('organizations')),
             'token' => $user->createToken('auth-token')->plainTextToken,
         ], __('messages.login_successful'));
     }
