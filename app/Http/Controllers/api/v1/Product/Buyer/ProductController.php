@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\api\v1\Product\Buyer;
 
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Product\SimilarProductResource;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Services\Contracts\ProductServiceInterface;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\ProductResource;
-use App\Services\Contracts\ProductServiceInterface;
 
 class ProductController extends Controller
 {
@@ -15,16 +16,12 @@ class ProductController extends Controller
 
     /**
      * ProductController constructor.
-     *
-     * @param ProductServiceInterface $productService
      */
     public function __construct(protected ProductServiceInterface $productService) {}
-
 
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
      *
      * @return JsonResponse
      */
@@ -38,7 +35,6 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Product $product
      *
      * @return ProductResource
      */
@@ -52,7 +48,6 @@ class ProductController extends Controller
     /**
      * Display the related products.
      *
-     * @param Product $product
      *
      * @return ProductResource
      */
@@ -61,5 +56,18 @@ class ProductController extends Controller
         $related = $product->related();
 
         return ProductResource::collection($related);
+    }
+
+    /**
+     * Get similar products.
+     *
+     *
+     * @return SimilarProductResource
+     */
+    public function getSimilarProducts(Product $product)
+    {
+        $similarProducts = $this->productService->getSimilarProducts($product);
+
+        return $this->successResponse(ProductResource::collection($similarProducts), __('messages.products.similar_products_retrieved_successfully'));
     }
 }

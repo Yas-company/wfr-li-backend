@@ -200,4 +200,28 @@ class ProductService implements ProductServiceInterface
     {
         return Product::where('supplier_id', $supplierId)->isActive()->where('stock_qty', '<=', 0)->paginate(10);
     }
+
+    /**
+     * Get the similar products.
+     */
+    public function getSimilarProducts(Product $product)
+    {
+        $products = Product::where('category_id', $product->category_id)
+            ->where('id', '!=', $product->id)
+            ->isActive()
+        ->with(['media', 'currentUserFavorite', 'category', 'category.field', 'ratings', 'ratings.user'])
+            ->take(5)
+            ->get();
+
+        if ($products->count() == 0) {
+            $products = Product::where('supplier_id', $product->supplier_id)
+                ->where('id', '!=', $product->id)
+                ->isActive()
+                ->with(['media', 'currentUserFavorite', 'ratings', 'category', 'category.field', 'supplier'])
+                ->take(5)
+                ->get();
+        }
+
+        return $products;
+    }
 }

@@ -1,13 +1,13 @@
 <?php
 
 use App\Enums\UserRole;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\api\v1\Product\Buyer\ProductController as BuyerProductController;
 use App\Http\Controllers\api\v1\Product\Supplier\ProductController;
 use App\Http\Controllers\api\v1\Product\Supplier\ProductMediaController;
-use App\Http\Controllers\api\v1\Product\Buyer\ProductController as BuyerProductController;
 use App\Http\Middleware\RoleMiddleware;
+use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth:sanctum', RoleMiddleware::class .':'.UserRole::SUPPLIER->value])->prefix('supplier/products')->group(function () {
+Route::middleware(['auth:sanctum', RoleMiddleware::class.':'.UserRole::SUPPLIER->value])->prefix('supplier/products')->group(function () {
     Route::get('/available', [ProductController::class, 'getAvailableProducts'])->name('supplier.products.available');
     Route::get('/out-of-stock', [ProductController::class, 'getOutOfStockProducts'])->name('supplier.products.out-of-stock');
     Route::get('/nearly-out-of-stock', [ProductController::class, 'getNearlyOutOfStockProducts'])->name('supplier.products.nearly-out-of-stock');
@@ -25,7 +25,8 @@ Route::middleware(['auth:sanctum', RoleMiddleware::class .':'.UserRole::SUPPLIER
     Route::delete('/{product}/media/{media}', [ProductMediaController::class, 'destroy'])->name('supplier.products.media.destroy');
 });
 
-Route::middleware(['auth:sanctum', RoleMiddleware::class .':'.UserRole::BUYER->value])->prefix('buyer/products')->group(function () {
+Route::middleware(['auth:sanctum', RoleMiddleware::class.':'.UserRole::BUYER->value])->prefix('buyer/products')->group(function () {
     Route::get('/', [BuyerProductController::class, 'index'])->name('buyer.products.index');
     Route::get('/{product}', [BuyerProductController::class, 'show'])->name('buyer.products.show');
+    Route::get('/{product}/similar', [BuyerProductController::class, 'getSimilarProducts'])->name('buyer.products.similar');
 });
