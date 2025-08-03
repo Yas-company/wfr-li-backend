@@ -33,6 +33,7 @@ class BuyerHomeController extends Controller
                 'ratings',
                 'category',
                 'category.field',
+                'ratings.user'
             ])
             ->get()
             ->groupBy('supplier_id');
