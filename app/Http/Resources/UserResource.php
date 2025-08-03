@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\Organization\OrganizationResource;
 
 class UserResource extends JsonResource
 {
@@ -29,6 +30,8 @@ class UserResource extends JsonResource
             'fields' => FieldResource::collection($this->whenLoaded('fields')),
             'categories' => CategoryResource::collection($this->whenLoaded('categories')),
             'addresses' => AddressResource::collection($this->whenLoaded('addresses')),
+            'organization' => OrganizationResource::make($this->whenLoaded('organization')),
+            'organizations' => OrganizationResource::collection($this->whenLoaded('organizations')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
