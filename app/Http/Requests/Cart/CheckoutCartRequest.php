@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Cart;
 
+use App\Enums\Order\OrderType;
 use Illuminate\Validation\Rule;
 use App\Enums\Order\PaymentMethod;
 use App\Enums\Order\ShippingMethod;
@@ -29,6 +30,7 @@ class CheckoutCartRequest extends FormRequest
             'payment_method' => ['required', Rule::in(PaymentMethod::cases())],
             'notes' => ['nullable', 'string'],
             'shipping_method' => ['required', Rule::in(ShippingMethod::cases())],
+            'order_type' => ['required', Rule::in(OrderType::cases())],
         ];
     }
 }

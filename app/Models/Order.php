@@ -21,7 +21,8 @@ class Order extends Model
         'total',
         'total_discount',
         'status',
-        'supplier_id'
+        'supplier_id',
+        'order_type',
     ];
 
 

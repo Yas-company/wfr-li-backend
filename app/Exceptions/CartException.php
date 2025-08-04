@@ -41,5 +41,10 @@ class CartException extends Exception
             ),
             code: Response::HTTP_UNPROCESSABLE_ENTITY
         );
-}
+    }
+
+    public static function orderTypeNotAllowed(): self
+    {
+        return new self(__('messages.cart.order_type_not_allowed'), Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
 }

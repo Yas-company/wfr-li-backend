@@ -189,4 +189,9 @@ class User extends Authenticatable
     {
         return $this->role->value === $role;
     }
+
+    public function isOrganization(): bool
+    {
+        return $this->organizations()->exists();
+    }
 }

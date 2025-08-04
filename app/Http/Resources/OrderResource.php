@@ -15,6 +15,7 @@ class OrderResource extends JsonResource
             'status' => $this->status,
             'total' => $this->total,
             'total_discount' => $this->total_discount,
+            'order_type' => $this->order_type,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'deleted_at' => $this->deleted_at,

@@ -8,6 +8,9 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Values\CartTotals;
 use App\Models\OrderDetail;
+use App\Dtos\CartCheckoutDto;
+use App\Enums\Order\OrderType;
+use App\Enums\Order\OrderStatus;
 use App\Exceptions\CartException;
 use Illuminate\Support\Facades\DB;
 use App\Enums\Settings\OrderSettings;
@@ -184,43 +187,44 @@ class CartService implements CartServiceInterface
      * Checkout the cart.
      *
      * @param User $user
-     * @param array $checkoutData
+     * @param CartCheckoutDto $cartCheckoutDto
      *
      * @return Order
      */
-    public function checkout(User $user, array $checkoutData): Order
+    public function checkout(User $user, CartCheckoutDto $cartCheckoutDto): Order
     {
+        if(
+            OrderType::tryFrom($cartCheckoutDto->orderType) === OrderType::ORGANIZATION &&
+            ! $user->isOrganization()
+        ) {
+            throw CartException::orderTypeNotAllowed();
+        }
+
         $cart = $this->getCart($user);
         $this->cartValidator->validateCheckout($cart);
 
-        $strategy = PaymentFactory::make($checkoutData['payment_method']);
-        $context = new PaymentContext();
-        $context->setStrategy($strategy);
-
-        return DB::transaction(function() use ($cart, $user, $checkoutData,$context) {
+        return DB::transaction(function() use ($cart, $user, $cartCheckoutDto) {
 
             $totals = $this->getCartTotals($cart);
             $supplierId = $cart->products->first()->product->supplier_id;
             $cartProductIds = $cart->products->pluck('product_id')->toArray();
-            Product::whereIn('id', $cartProductIds)->lockForUpdate()->get();
+            Product::whereIn('id', $cartProductIds)->get();
 
             $order = Order::create([
                 'user_id' => $user->id,
                 'total' => $totals->total,
                 'total_discount' => $totals->discount,
-                'status' => 'pending',
+                'status' => OrderStatus::PENDING,
                 'supplier_id' => $supplierId,
+                'order_type' => $cartCheckoutDto->orderType,
             ]);
-
-           $pyment_id =  $context->createPayment($checkoutData, $totals->discount);
 
             OrderDetail::create([
                 'order_id' => $order->id,
-                'shipping_address_id' => $checkoutData['shipping_address_id'],
-                'payment_method' => $checkoutData['payment_method'],
-                'notes' => $checkoutData['notes'],
-                'payment_id' => $pyment_id,
-                'shipping_method' => $checkoutData['shipping_method'],
+                'shipping_address_id' => $cartCheckoutDto->shippingAddressId,
+                'payment_method' => $cartCheckoutDto->paymentMethod,
+                'notes' => $cartCheckoutDto->notes,
+                'shipping_method' => $cartCheckoutDto->shippingMethod,
                 'tracking_number' => $this->orderTrackingService->generateTrackingNumber($user->id, $supplierId, $order->id),
             ]);
 
@@ -231,13 +235,8 @@ class CartService implements CartServiceInterface
                     'price' => $item->price,
                 ]
             ])->toArray();
+
             $order->products()->createMany($orderProducts);
-
-            foreach ($cart->products as $item) {
-                Product::where('id', $item->product_id)
-                    ->decrement('stock_qty', $item->quantity);
-            }
-
 
             $this->cartProductManager->clear($cart);
 
