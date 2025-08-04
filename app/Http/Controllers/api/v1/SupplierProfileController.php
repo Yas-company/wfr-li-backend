@@ -5,7 +5,7 @@ namespace App\Http\Controllers\api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Supplier\SupplierImageRequest;
 use App\Http\Requests\UpdateSupplierRequest;
-use App\Http\Resources\SupplierResource;
+use App\Http\Resources\Supplier\SupplierUpdatedResource;
 use App\Http\Services\OtpService;
 use App\Services\SupplierProfileService;
 use App\Traits\ApiResponse;
@@ -43,9 +43,10 @@ class SupplierProfileController extends Controller
             $data['is_verified'] = true;
         }
 
-        $this->supplierProfileService->updateSupplierProfile($data, Auth::user());
+        $supplier = $this->supplierProfileService->updateSupplierProfile($data, Auth::user());
 
         return $this->successResponse(
+            data: new SupplierUpdatedResource($supplier),
             message: __('messages.supplier_profile_updated'),
             statusCode: Response::HTTP_OK
         );
@@ -64,7 +65,7 @@ class SupplierProfileController extends Controller
         $supplier = $this->supplierProfileService->changeSupplierImage($data, Auth::user());
 
         return $this->successResponse(
-            new SupplierResource($supplier),
+            data: new SupplierUpdatedResource($supplier),
             message: __('messages.suppliers.image_changed'),
             statusCode: Response::HTTP_OK
         );
