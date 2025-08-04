@@ -12,7 +12,8 @@ class Category extends Model
 
     protected $guarded = [];
 
-    // public $translatable = ['name'];
+    public $translatable = ['name'];
+
     public $casts = [
         'name' => 'array',
     ];
