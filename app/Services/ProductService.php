@@ -184,7 +184,7 @@ class ProductService implements ProductServiceInterface
         return Product::where('supplier_id', $supplierId)
         ->isActive()
         ->whereColumn('stock_qty', '>', 'nearly_out_of_stock_limit')
-        ->with(['media', 'favorites','ratings', 'category', 'category.field'])
+        ->with(['media', 'favorites','ratings', 'category', 'category.field', 'ratings.user'])
         ->paginate(10);
     }
 
@@ -198,7 +198,7 @@ class ProductService implements ProductServiceInterface
             ->isActive()
             ->whereColumn('stock_qty', '<=', 'nearly_out_of_stock_limit')
             ->where('stock_qty', '>', 0)
-            ->with(['media', 'favorites','ratings', 'category', 'category.field'])
+            ->with(['media', 'favorites','ratings', 'category', 'category.field', 'ratings.user'])
             ->paginate(10);
     }
 
@@ -210,7 +210,7 @@ class ProductService implements ProductServiceInterface
         return Product::where('supplier_id', $supplierId)
             ->isActive()
             ->where('stock_qty', '<=', 0)
-            ->with(['media', 'favorites','ratings', 'category', 'category.field'])
+            ->with(['media', 'favorites','ratings', 'category', 'category.field', 'ratings.user'])
             ->paginate(10);
     }
 }
