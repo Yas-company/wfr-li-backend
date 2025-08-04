@@ -192,6 +192,6 @@ class User extends Authenticatable
 
     public function isOrganization(): bool
     {
-        return $this->organizations()->exists();
+        return $this->organizations()->approved()->exists();
     }
 }

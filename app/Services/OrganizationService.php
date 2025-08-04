@@ -7,6 +7,7 @@ use App\Models\Organization;
 use Illuminate\Support\Facades\DB;
 use App\Dtos\OrganizationCreationDto;
 use App\Enums\Organization\OrganizationRole;
+use App\Enums\Organization\OrganizationStatus;
 
 class OrganizationService
 {
@@ -28,6 +29,7 @@ class OrganizationService
                 'tax_number' => $data->taxNumber,
                 'commercial_register_number' => $data->commercialRegisterNumber,
                 'created_by' => $user->id,
+                'status' => OrganizationStatus::PENDING,
             ]);
 
             $organization->users()->attach($user->id, [
