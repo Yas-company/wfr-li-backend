@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\api\v1;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Supplier\SupplierImageRequest;
-use App\Http\Requests\UpdateSupplierRequest;
-use App\Http\Resources\Supplier\SupplierUpdatedResource;
-use App\Http\Services\OtpService;
-use App\Services\SupplierProfileService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
+use App\Http\Services\OtpService;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Services\SupplierProfileService;
+use App\Http\Requests\UpdateSupplierRequest;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Http\Requests\Supplier\SupplierImageRequest;
 
 class SupplierProfileController extends Controller
 {
@@ -46,7 +46,7 @@ class SupplierProfileController extends Controller
         $supplier = $this->supplierProfileService->updateSupplierProfile($data, Auth::user());
 
         return $this->successResponse(
-            data: new SupplierUpdatedResource($supplier),
+            data: new UserResource($supplier),
             message: __('messages.supplier_profile_updated'),
             statusCode: Response::HTTP_OK
         );
@@ -65,7 +65,7 @@ class SupplierProfileController extends Controller
         $supplier = $this->supplierProfileService->changeSupplierImage($data, Auth::user());
 
         return $this->successResponse(
-            data: new SupplierUpdatedResource($supplier),
+            data: new UserResource($supplier),
             message: __('messages.suppliers.image_changed'),
             statusCode: Response::HTTP_OK
         );

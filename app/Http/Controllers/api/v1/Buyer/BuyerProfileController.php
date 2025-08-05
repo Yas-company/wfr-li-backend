@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\api\v1\Buyer;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Buyer\BuyerImageRequest;
-use App\Http\Requests\Buyer\UpdateBuyerRequest;
-use App\Http\Resources\Buyer\BuyerUpdatedResource;
+use App\Http\Requests\Buyer\UpdateBuyerImageRequest;
+use App\Http\Requests\Buyer\UpdateBuyerProfileRequest;
+use App\Http\Resources\UserResource;
 use App\Http\Services\OtpService;
 use App\Services\Buyer\BuyerProfileService;
 use App\Traits\ApiResponse;
@@ -26,7 +26,7 @@ class BuyerProfileController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateBuyerProfile(UpdateBuyerRequest $request, OtpService $otpService)
+    public function updateBuyerProfile(UpdateBuyerProfileRequest $request, OtpService $otpService)
     {
 
         $data = $request->validated();
@@ -45,7 +45,7 @@ class BuyerProfileController extends Controller
         $buyer = $this->buyerProfileService->updateBuyerProfile($data, Auth::user());
 
         return $this->successResponse(
-            data: new BuyerUpdatedResource($buyer),
+            data: new UserResource($buyer),
             message: __('messages.buyer.profile_updated'),
             statusCode: Response::HTTP_OK
         );
@@ -56,13 +56,13 @@ class BuyerProfileController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function changeBuyerImage(BuyerImageRequest $request)
+    public function changeBuyerImage(UpdateBuyerImageRequest $request)
     {
         $data = $request->validated();
         $buyer = $this->buyerProfileService->changeBuyerImage($data, Auth::user());
 
         return $this->successResponse(
-            data: new BuyerUpdatedResource($buyer),
+            data: new UserResource($buyer),
             message: __('messages.buyer.image_updated'),
             statusCode: Response::HTTP_OK
         );
