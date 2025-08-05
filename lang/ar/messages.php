@@ -179,6 +179,7 @@ return [
     'products' => [
         'retrieved_successfully' => 'تم جلب المنتجات بنجاح',
         'not_found' => 'لم يتم العثور على المنتج',
+        'similar_products_retrieved_successfully' => 'تم جلب المنتجات المماثلة بنجاح',
     ],
 
     'ads' => [

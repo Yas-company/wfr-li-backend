@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\api\v1\Buyer;
 
+use App\Enums\ProductStatus;
 use App\Enums\UserRole;
+use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Buyer\HomePageBuyerResource;
 use App\Models\Product;
@@ -21,12 +23,14 @@ class BuyerHomeController extends Controller
     public function getSuppliersAndProducts()
     {
         $suppliers = User::role(UserRole::SUPPLIER->value)
+            ->where('status', UserStatus::APPROVED)
             ->select('id', 'name', 'image')
             ->latest()
             ->take(4)
             ->get();
 
         $allProducts = Product::whereIn('supplier_id', $suppliers->pluck('id'))
+            ->published()
             ->with([
                 'media',
                 'currentUserFavorite',
@@ -35,6 +39,7 @@ class BuyerHomeController extends Controller
                 'category.field',
                 'ratings.user'
             ])
+            ->latest() 
             ->get()
             ->groupBy('supplier_id');
 

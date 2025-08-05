@@ -180,6 +180,7 @@ return [
     'products' => [
         'retrieved_successfully' => 'Products retrieved successfully',
         'not_found' => 'Product not found',
+        'similar_products_retrieved_successfully' => 'Similar products retrieved successfully',
     ],
 
     'ads' => [
