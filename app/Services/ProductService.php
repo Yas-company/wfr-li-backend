@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\ProductStatus;
 use App\Models\User;
 use App\Models\Product;
 use App\Filters\JsonColumnFilter;
@@ -212,5 +213,33 @@ class ProductService implements ProductServiceInterface
             ->where('stock_qty', '<=', 0)
             ->with(['media', 'favorites','ratings', 'category', 'category.field', 'ratings.user'])
             ->paginate(10);
+    }
+
+    /**
+     * Get the similar products.
+     */
+    public function getSimilarProducts(Product $product)
+    {
+        $products = Product::where('category_id', $product->category_id)
+            ->published()
+            ->where('id', '!=', $product->id)
+            ->isActive()
+            ->with(['media', 'currentUserFavorite', 'category', 'category.field', 'ratings', 'ratings.user'])
+            ->take(5)
+            ->latest()
+            ->get();
+
+        if ($products->count() == 0) {
+            $products = Product::where('supplier_id', $product->supplier_id)
+                ->published()
+                ->where('id', '!=', $product->id)
+                ->isActive()
+                ->with(['media', 'currentUserFavorite', 'ratings', 'category', 'category.field', 'supplier'])
+                ->take(5)
+                ->latest()
+                ->get();
+        }
+
+        return $products;
     }
 }
