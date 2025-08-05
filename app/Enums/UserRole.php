@@ -2,22 +2,26 @@
 
 namespace App\Enums;
 
+use App\Traits\HasLabel;
+
 enum UserRole: string
 {
+    use HasLabel;
+
     case VISITOR = 'visitor';
     case ADMIN = 'admin';
     case BUYER = 'buyer';
     case SUPPLIER = 'supplier';
 
-    public function label(): string
-    {
-        return match($this) {
-            self::ADMIN => 'Admin',
-            self::BUYER => 'Buyer',
-            self::VISITOR => 'Visitor',
-            self::SUPPLIER => 'Supplier',
-        };
-    }
+    // public function label(): string
+    // {
+    //     return match($this) {
+    //         self::ADMIN => 'Admin',
+    //         self::BUYER => 'Buyer',
+    //         self::VISITOR => 'Visitor',
+    //         self::SUPPLIER => 'Supplier',
+    //     };
+    // }
 
     public static function values(): array
     {

@@ -39,7 +39,7 @@ class SupplierRegistrationControllerTest extends TestCase
                     'message',
                 ],
             ])
-            ->assertJsonPath('data.user.role', UserRole::SUPPLIER->value)
+            ->assertJsonPath('data.user.role', UserRole::SUPPLIER->label())
             ->assertJsonPath('data.user.is_verified', false);
 
         $user = User::where('phone', $data['phone'])->first();

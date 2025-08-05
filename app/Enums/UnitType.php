@@ -2,8 +2,12 @@
 
 namespace App\Enums;
 
+use App\Traits\HasLabel;
+
 enum UnitType: int
 {
+    use HasLabel;
+
     case PIECE = 0;       // قطعة واحدة (منتج فردي)
     case DOZEN = 1;       // درزن (12 قطعة)
     case HALF_DOZEN = 2;  // نصف درزن (6 قطع)
@@ -41,45 +45,45 @@ enum UnitType: int
         return array_column(self::cases(), 'value');
     }
 
-    public function getArabicLabel(): string
-    {
-        return match ($this) {
-            self::PIECE => 'قطعة',
-            self::DOZEN => 'درزن (12 قطعة)',
-            self::HALF_DOZEN => 'نصف درزن (6 قطع)',
-            self::SET => 'طقم',
-            self::PACK => 'عبوة',
-            self::BOX => 'صندوق',
-            self::CARTON => 'كرتونة',
-            self::ROLL => 'لفة',
-            self::STRIP => 'شريط',
-            self::TABLET => 'حبة',
-            self::PAIR => 'زوج',
-            self::KG => 'كيلوجرام',
-            self::G => 'جرام',
-            self::MG => 'مليجرام',
-            self::TON => 'طن',
-            self::OUNCE => 'أوقية',
-            self::POUND => 'باوند',
-            self::LITER => 'لتر',
-            self::ML => 'مليلتر',
-            self::GALLON => 'جالون',
-            self::BOTTLE => 'زجاجة',
-            self::CAN => 'علبة',
-            self::METER => 'متر',
-            self::CM => 'سنتيمتر',
-            self::MM => 'مليمتر',
-            self::INCH => 'بوصة',
-            self::FOOT => 'قدم',
-            self::YARD => 'ياردة',
-        };
-    }
+    // public function getArabicLabel(): string
+    // {
+    //     return match ($this) {
+    //         self::PIECE => 'قطعة',
+    //         self::DOZEN => 'درزن (12 قطعة)',
+    //         self::HALF_DOZEN => 'نصف درزن (6 قطع)',
+    //         self::SET => 'طقم',
+    //         self::PACK => 'عبوة',
+    //         self::BOX => 'صندوق',
+    //         self::CARTON => 'كرتونة',
+    //         self::ROLL => 'لفة',
+    //         self::STRIP => 'شريط',
+    //         self::TABLET => 'حبة',
+    //         self::PAIR => 'زوج',
+    //         self::KG => 'كيلوجرام',
+    //         self::G => 'جرام',
+    //         self::MG => 'مليجرام',
+    //         self::TON => 'طن',
+    //         self::OUNCE => 'أوقية',
+    //         self::POUND => 'باوند',
+    //         self::LITER => 'لتر',
+    //         self::ML => 'مليلتر',
+    //         self::GALLON => 'جالون',
+    //         self::BOTTLE => 'زجاجة',
+    //         self::CAN => 'علبة',
+    //         self::METER => 'متر',
+    //         self::CM => 'سنتيمتر',
+    //         self::MM => 'مليمتر',
+    //         self::INCH => 'بوصة',
+    //         self::FOOT => 'قدم',
+    //         self::YARD => 'ياردة',
+    //     };
+    // }
 
     public static function getOptions(): array
     {
         $options = [];
         foreach (self::cases() as $case) {
-            $options[$case->value] = $case->getArabicLabel();
+            $options[$case->value] = $case->label();
         }
 
         return $options;

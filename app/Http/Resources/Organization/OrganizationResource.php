@@ -19,7 +19,7 @@ class OrganizationResource extends JsonResource
             'name' => $this->name,
             'tax_number' => $this->tax_number,
             'commercial_register_number' => $this->commercial_register_number,
-            'status' => $this->status,
+            'status' => $this->status->label(),
             'owner' => OrganizationUserResource::make($this->whenLoaded('owner')),
             'members' => OrganizationUserResource::collection($this->whenLoaded('users')),
         ];
