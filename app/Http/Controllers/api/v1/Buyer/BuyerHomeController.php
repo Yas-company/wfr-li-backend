@@ -30,7 +30,7 @@ class BuyerHomeController extends Controller
             ->get();
 
         $allProducts = Product::whereIn('supplier_id', $suppliers->pluck('id'))
-            ->where('status', ProductStatus::PUBLISHED)
+            ->published()
             ->with([
                 'media',
                 'currentUserFavorite',
