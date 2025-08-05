@@ -23,6 +23,7 @@ class SupplierOrderListingResource extends JsonResource
             'tracking_number' => $this->tracking_number,
             'shipping_method' => $this->shipping_method,
             'payment_status' => $this->payment_status,
+            'order_type' => $this->order_type,
         ];
     }
 }

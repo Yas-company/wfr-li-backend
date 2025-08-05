@@ -7,7 +7,9 @@ use App\Models\User;
 use App\Models\Organization;
 use App\Enums\Organization\OrganizationRole;
 use Illuminate\Foundation\Testing\WithFaker;
+use App\Enums\Organization\OrganizationStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 
 class OrganizationControllerTest extends TestCase
 {
@@ -170,6 +172,7 @@ class OrganizationControllerTest extends TestCase
             'name' => 'Organization Name',
             'tax_number' => '3212121212121212',
             'commercial_register_number' => '1212121',
+            'status' => OrganizationStatus::APPROVED,
         ]);
 
         $response = $this->actingAs($this->buyer)->postJson(route('buyer.organizations.store'), [
@@ -203,6 +206,7 @@ class OrganizationControllerTest extends TestCase
             'name' => 'Organization Name',
             'tax_number' => '3212121212121212',
             'commercial_register_number' => '1212121',
+            'status' => OrganizationStatus::APPROVED,
         ]);
 
         $response = $this->actingAs($this->buyer)->postJson(route('buyer.organizations.store'), [
@@ -236,6 +240,7 @@ class OrganizationControllerTest extends TestCase
             'name' => 'Organization Name',
             'tax_number' => '3212121212121212',
             'commercial_register_number' => '1212121',
+            'status' => OrganizationStatus::APPROVED,
         ]);
 
         $response = $this->actingAs($this->buyer)->postJson(route('buyer.organizations.store'), [
@@ -261,6 +266,321 @@ class OrganizationControllerTest extends TestCase
             'tax_number' => '3212121212121212',
             'commercial_register_number' => '1212121',
             'created_by' => $this->buyer->id,
+        ]);
+    }
+
+    public function test_buyer_can_register_as_organization_with_existing_pending_name()
+    {
+        Organization::factory()->create([
+            'name' => 'Organization Name',
+            'tax_number' => '3212121212121212',
+            'commercial_register_number' => '1212121',
+            'status' => OrganizationStatus::PENDING,
+        ]);
+
+        $response = $this->actingAs($this->buyer)->postJson(route('buyer.organizations.store'), [
+            'name' => 'Organization Name',
+            'tax_number' => '3212121212121211',
+            'commercial_register_number' => '1212122',
+        ]);
+
+        $organizationId = $response->json('data.id');
+
+        $response->assertStatus(201)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'name',
+                    'tax_number',
+                    'commercial_register_number',
+                    'owner',
+                    'members',
+                ],
+            ]);
+
+        $this->assertDatabaseHas('organizations', [
+            'name' => 'Organization Name',
+            'tax_number' => '3212121212121211',
+            'commercial_register_number' => '1212122',
+            'created_by' => $this->buyer->id,
+        ]);
+
+        $this->assertDatabaseHas('organization_user', [
+            'organization_id' => $organizationId,
+            'user_id' => $this->buyer->id,
+            'role' => OrganizationRole::OWNER,
+        ]);
+    }
+
+    public function test_buyer_can_register_as_organization_with_existing_pending_tax_number()
+    {
+        Organization::factory()->create([
+            'name' => 'Organization Name',
+            'tax_number' => '3212121212121212',
+            'commercial_register_number' => '1212121',
+            'status' => OrganizationStatus::PENDING,
+        ]);
+
+        $response = $this->actingAs($this->buyer)->postJson(route('buyer.organizations.store'), [
+            'name' => 'Different Organization Name',
+            'tax_number' => '3212121212121212',
+            'commercial_register_number' => '1212122',
+        ]);
+
+        $organizationId = $response->json('data.id');
+
+        $response->assertStatus(201)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'name',
+                    'tax_number',
+                    'commercial_register_number',
+                    'owner',
+                    'members',
+                ],
+            ]);
+
+        $this->assertDatabaseHas('organizations', [
+            'name' => 'Different Organization Name',
+            'tax_number' => '3212121212121212',
+            'commercial_register_number' => '1212122',
+            'created_by' => $this->buyer->id,
+        ]);
+
+        $this->assertDatabaseHas('organization_user', [
+            'organization_id' => $organizationId,
+            'user_id' => $this->buyer->id,
+            'role' => OrganizationRole::OWNER,
+        ]);
+    }
+
+    public function test_buyer_can_register_as_organization_with_existing_pending_commercial_register_number()
+    {
+        Organization::factory()->create([
+            'name' => 'Organization Name',
+            'tax_number' => '3212121212121212',
+            'commercial_register_number' => '1212121',
+            'status' => OrganizationStatus::PENDING,
+        ]);
+
+        $response = $this->actingAs($this->buyer)->postJson(route('buyer.organizations.store'), [
+            'name' => 'Different Organization Name',
+            'tax_number' => '3212121212121211',
+            'commercial_register_number' => '1212121',
+        ]);
+
+        $organizationId = $response->json('data.id');
+
+        $response->assertStatus(201)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'name',
+                    'tax_number',
+                    'commercial_register_number',
+                    'owner',
+                    'members',
+                ],
+            ]);
+
+        $this->assertDatabaseHas('organizations', [
+            'name' => 'Different Organization Name',
+            'tax_number' => '3212121212121211',
+            'commercial_register_number' => '1212121',
+            'created_by' => $this->buyer->id,
+        ]);
+
+        $this->assertDatabaseHas('organization_user', [
+            'organization_id' => $organizationId,
+            'user_id' => $this->buyer->id,
+            'role' => OrganizationRole::OWNER,
+        ]);
+    }
+
+    public function test_buyer_can_register_as_organization_with_existing_rejected_name()
+    {
+        Organization::factory()->create([
+            'name' => 'Organization Name',
+            'tax_number' => '3212121212121212',
+            'commercial_register_number' => '1212121',
+            'status' => OrganizationStatus::REJECTED,
+        ]);
+
+        $response = $this->actingAs($this->buyer)->postJson(route('buyer.organizations.store'), [
+            'name' => 'Organization Name',
+            'tax_number' => '3212121212121211',
+            'commercial_register_number' => '1212122',
+        ]);
+
+        $organizationId = $response->json('data.id');
+
+        $response->assertStatus(201)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'name',
+                    'tax_number',
+                    'commercial_register_number',
+                    'owner',
+                    'members',
+                ],
+            ]);
+
+        $this->assertDatabaseHas('organizations', [
+            'name' => 'Organization Name',
+            'tax_number' => '3212121212121211',
+            'commercial_register_number' => '1212122',
+            'created_by' => $this->buyer->id,
+        ]);
+
+        $this->assertDatabaseHas('organization_user', [
+            'organization_id' => $organizationId,
+            'user_id' => $this->buyer->id,
+            'role' => OrganizationRole::OWNER,
+        ]);
+    }
+
+    public function test_buyer_can_register_as_organization_with_existing_rejected_tax_number()
+    {
+        Organization::factory()->create([
+            'name' => 'Organization Name',
+            'tax_number' => '3212121212121212',
+            'commercial_register_number' => '1212121',
+            'status' => OrganizationStatus::REJECTED,
+        ]);
+
+        $response = $this->actingAs($this->buyer)->postJson(route('buyer.organizations.store'), [
+            'name' => 'Different Organization Name',
+            'tax_number' => '3212121212121212',
+            'commercial_register_number' => '1212122',
+        ]);
+
+        $organizationId = $response->json('data.id');
+
+        $response->assertStatus(201)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'name',
+                    'tax_number',
+                    'commercial_register_number',
+                    'owner',
+                    'members',
+                ],
+            ]);
+
+        $this->assertDatabaseHas('organizations', [
+            'name' => 'Different Organization Name',
+            'tax_number' => '3212121212121212',
+            'commercial_register_number' => '1212122',
+            'created_by' => $this->buyer->id,
+        ]);
+
+        $this->assertDatabaseHas('organization_user', [
+            'organization_id' => $organizationId,
+            'user_id' => $this->buyer->id,
+            'role' => OrganizationRole::OWNER,
+        ]);
+    }
+
+    public function test_buyer_can_register_as_organization_with_existing_rejected_commercial_register_number()
+    {
+        Organization::factory()->create([
+            'name' => 'Organization Name',
+            'tax_number' => '3212121212121212',
+            'commercial_register_number' => '1212121',
+            'status' => OrganizationStatus::REJECTED,
+        ]);
+
+        $response = $this->actingAs($this->buyer)->postJson(route('buyer.organizations.store'), [
+            'name' => 'Different Organization Name',
+            'tax_number' => '3212121212121211',
+            'commercial_register_number' => '1212121',
+        ]);
+
+        $organizationId = $response->json('data.id');
+
+        $response->assertStatus(201)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'name',
+                    'tax_number',
+                    'commercial_register_number',
+                    'owner',
+                    'members',
+                ],
+            ]);
+
+        $this->assertDatabaseHas('organizations', [
+            'name' => 'Different Organization Name',
+            'tax_number' => '3212121212121211',
+            'commercial_register_number' => '1212121',
+            'created_by' => $this->buyer->id,
+        ]);
+
+        $this->assertDatabaseHas('organization_user', [
+            'organization_id' => $organizationId,
+            'user_id' => $this->buyer->id,
+            'role' => OrganizationRole::OWNER,
+        ]);
+    }
+
+    public function test_buyer_cannot_register_as_organization_when_having_approved_organization()
+    {
+        Organization::factory()->create([
+            'name' => 'Organization Name',
+            'tax_number' => '3212121212121212',
+            'commercial_register_number' => '1212121',
+            'status' => OrganizationStatus::APPROVED,
+            'created_by' => $this->buyer->id,
+        ]);
+
+        $response = $this->actingAs($this->buyer)->postJson(route('buyer.organizations.store'), [
+            'name' => 'Different Organization Name',
+            'tax_number' => '3212121212121211',
+            'commercial_register_number' => '1212122',
+        ]);
+
+
+        $response->assertStatus(422);
+    }
+
+    public function test_buyer_can_convert_rejected_organization_to_pending()
+    {
+        $organization = Organization::factory()->create([
+            'name' => 'Organization Name',
+            'tax_number' => '3212121212121212',
+            'commercial_register_number' => '1212121',
+            'status' => OrganizationStatus::REJECTED,
+            'created_by' => $this->buyer->id,
+        ]);
+
+        $response = $this->actingAs($this->buyer)->postJson(route('buyer.organizations.store'), [
+            'name' => 'Organization Name',
+            'tax_number' => '3212121212121212',
+            'commercial_register_number' => '1212121',
+        ]);
+
+        $response->assertStatus(201)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'name',
+                    'tax_number',
+                    'commercial_register_number',
+                    'owner',
+                    'members',
+                ],
+            ]);
+
+        $this->assertDatabaseHas('organizations', [
+            'name' => 'Organization Name',
+            'tax_number' => '3212121212121212',
+            'commercial_register_number' => '1212121',
+            'created_by' => $this->buyer->id,
+            'status' => OrganizationStatus::PENDING,
         ]);
     }
 }

@@ -4,15 +4,16 @@ namespace App\Http\Controllers\api\v1;
 
 use App\Models\Product;
 use App\Traits\ApiResponse;
+use App\Dtos\CartCheckoutDto;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CartResource;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\OrderResource;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Requests\Cart\CheckoutCartRequest;
 use App\Services\Contracts\CartServiceInterface;
 use App\Http\Requests\Cart\AddProductToCartRequest;
-use App\Http\Requests\Cart\CheckoutCartRequest;
 
 class CartController extends Controller
 {
@@ -103,15 +104,10 @@ class CartController extends Controller
      */
     public function checkout(CheckoutCartRequest $request): JsonResponse
     {
-        $data = [
-            'shipping_address_id' => $request->validated('shipping_address_id'),
-            'payment_method' => $request->validated('payment_method'),
-            'notes' => $request->validated('notes'),
-            'shipping_method' => $request->validated('shipping_method'),
-        ];
+        $cartCheckoutDto = CartCheckoutDto::fromRequest($request);
 
         try {
-            $order = $this->cartService->checkout(Auth::user(), $data);
+            $order = $this->cartService->checkout(Auth::user(), $cartCheckoutDto);
             return $this->successResponse(
                 data: ['order' => OrderResource::make($order)],
                 statusCode: Response::HTTP_CREATED
