@@ -44,7 +44,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        $product->load(['ratings', 'category', 'category.field']);
+        $product->load(['ratings', 'category', 'category.field', 'ratings.user']);
 
         return new ProductResource($product);
     }

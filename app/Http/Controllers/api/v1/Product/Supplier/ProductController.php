@@ -48,7 +48,7 @@ class ProductController extends Controller
     {
         $this->authorize('view', $product);
 
-        $product->load(['ratings']);
+        $product->load(['ratings', 'category', 'category.field', 'ratings.user']);
 
         return new ProductResource($product);
     }
