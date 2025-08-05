@@ -192,4 +192,19 @@ return [
     'suppliers' => [
         'image_changed' => 'Supplier image changed successfully',
     ],
+
+    'category' => [
+        'retrieved_successfully' => 'Category retrieved successfully',
+        'created_successfully' => 'Category created successfully',
+        'updated_successfully' => 'Category updated successfully',
+        'deleted_successfully' => 'Category deleted successfully',
+    ],
+
+    'errors' => [
+        'unauthorized_category_access' => 'Unauthorized to access categories',
+        'unauthorized_category_creation' => 'Unauthorized to create category',
+        'unauthorized_category_update' => 'Unauthorized to update category',
+        'unauthorized_category_delete' => 'Unauthorized to delete category',
+        'unauthorized_category_ownership' => 'Unauthorized to manage category',
+    ],
 ];
