@@ -32,7 +32,7 @@ class FavoriteService
 
         $products = Product::whereIn('id', $favoriteProductIds)
             ->isActive()
-            ->with(['category', 'ratings', 'category.field'])
+            ->with(['category', 'ratings', 'category.field', 'ratings.user'])
             ->latest()
             ->paginate(10);
 

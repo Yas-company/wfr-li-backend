@@ -5,12 +5,14 @@ namespace App\Http\Controllers\api\v1\Buyer;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Buyer\HomePageBuyerResource;
+use App\Models\Product;
 use App\Models\User;
 use App\Traits\ApiResponse;
 
 class BuyerHomeController extends Controller
 {
     use ApiResponse;
+
     /**
      * Get the suppliers and products.
      *
@@ -18,25 +20,31 @@ class BuyerHomeController extends Controller
      */
     public function getSuppliersAndProducts()
     {
-        $data = User::role(UserRole::SUPPLIER->value)
-            ->with(['products' => function ($query) {
-                $query
-                    ->latest()
-                    ->take(10)
-                    ->with([
-                        'media',
-                        'currentUserFavorite',
-                        'ratings',
-                        'category',
-                        'category.field',
-                    ]);
-          
-            }])
+        $suppliers = User::role(UserRole::SUPPLIER->value)
             ->select('id', 'name', 'image')
             ->latest()
             ->take(4)
             ->get();
 
-        return $this->successResponse(HomePageBuyerResource::collection($data));
+        $allProducts = Product::whereIn('supplier_id', $suppliers->pluck('id'))
+            ->with([
+                'media',
+                'currentUserFavorite',
+                'ratings',
+                'category',
+                'category.field',
+                'ratings.user'
+            ])
+            ->get()
+            ->groupBy('supplier_id');
+
+        // Attach top 10 products per supplier
+        foreach ($suppliers as $supplier) {
+            $supplier->setRelation('products',
+                $allProducts->get($supplier->id, collect())->take(10)
+            );
+        }
+
+        return $this->successResponse(HomePageBuyerResource::collection($suppliers));
     }
 }

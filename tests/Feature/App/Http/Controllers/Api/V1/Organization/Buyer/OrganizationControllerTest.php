@@ -68,7 +68,7 @@ class OrganizationControllerTest extends TestCase
                     'tax_number',
                     'commercial_register_number',
                     'owner',
-                    'users',
+                    'members',
                 ],
             ]);
 
