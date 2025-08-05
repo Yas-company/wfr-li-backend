@@ -626,7 +626,7 @@ class ProductControllerTest extends TestCase
             'status' => ProductStatus::PUBLISHED,
         ]);
 
-        // Create unpublished product (will be included since service only checks is_active)
+        // Create unpublished product
         $unpublishedProduct = Product::factory()->create([
             'supplier_id' => $this->supplier->id,
             'category_id' => $this->category->id,
@@ -671,8 +671,10 @@ class ProductControllerTest extends TestCase
             'At least one category-based similar product should be returned'
         );
         
-        // Verify inactive products are not included (but unpublished products might be included)
+        // Verify inactive products are not included
         $this->assertNotContains($inactiveProduct->id, $returnedProductIds);
+        // Verify unpublished products are not included
+        $this->assertNotContains($unpublishedProduct->id, $returnedProductIds);
         $this->assertNotContains($mainProduct->id, $returnedProductIds);
     }
 
@@ -796,15 +798,15 @@ class ProductControllerTest extends TestCase
             'status' => ProductStatus::PUBLISHED,
         ]);
 
-        // Create 7 similar products in the same category
-        for ($i = 0; $i < 7; $i++) {
-            Product::factory()->create([
-                'supplier_id' => $this->supplier->id,
-                'category_id' => $this->category->id,
-                'is_active' => true,
-                'status' => ProductStatus::PUBLISHED,
-            ]);
-        }
+
+    
+        Product::factory(7)->create([
+            'supplier_id' => $this->supplier->id,
+            'category_id' => $this->category->id,
+            'is_active' => true,
+            'status' => ProductStatus::PUBLISHED,
+        ]);
+        
 
         $response = $this->actingAs($this->buyer)
             ->getJson(route('buyer.products.similar', $mainProduct));
