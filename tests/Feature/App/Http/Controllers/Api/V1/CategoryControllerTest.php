@@ -499,8 +499,7 @@ class CategoryControllerTest extends TestCase
         // Verify all returned categories contain 'Electronics' in name
         foreach ($categories as $category) {
             $this->assertTrue(
-                str_contains(strtolower($category['name']['en']), 'electronics') ||
-                str_contains(strtolower($category['name']['ar']), 'إلكترونيات')
+                str_contains(strtolower($category['name']), 'electronics')
             );
         }
     }
@@ -587,6 +586,7 @@ class CategoryControllerTest extends TestCase
 
         // Test search with Arabic text
         $response = $this->actingAs($this->supplier)
+            ->withHeader('Accept-Language', 'ar')
             ->getJson(route('categories.index', ['search' => 'إلكترونيات']));
 
         $response->assertStatus(200);
@@ -597,7 +597,7 @@ class CategoryControllerTest extends TestCase
         // Verify Arabic search works
         foreach ($categories as $category) {
             $this->assertTrue(
-                str_contains($category['name']['ar'], 'إلكترونيات')
+                str_contains($category['name'], 'إلكترونيات')
             );
         }
     }
