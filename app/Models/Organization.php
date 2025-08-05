@@ -21,6 +21,10 @@ class Organization extends Model
         'status'
     ];
 
+    protected $casts = [
+        'status' => OrganizationStatus::class,
+    ];
+
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');

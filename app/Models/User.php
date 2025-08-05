@@ -172,12 +172,12 @@ class User extends Authenticatable
 
     public function organization(): HasOne
     {
-        return $this->hasOne(Organization::class, 'created_by');
+        return $this->hasOne(Organization::class, 'created_by')->approved();
     }
 
     public function organizations(): BelongsToMany
     {
-        return $this->belongsToMany(Organization::class, 'organization_user')->withPivot(['role', 'joined_at']);
+        return $this->belongsToMany(Organization::class, 'organization_user')->approved()->withPivot(['role', 'joined_at']);
     }
 
     public function scopeRole(Builder $query, string $role): Builder

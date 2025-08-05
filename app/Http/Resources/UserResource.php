@@ -34,6 +34,7 @@ class UserResource extends JsonResource
             'organizations' => OrganizationResource::collection($this->whenLoaded('organizations')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'is_organization' => $this->isOrganization(),
         ];
     }
 }

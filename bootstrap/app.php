@@ -1,9 +1,11 @@
 <?php
 
+use App\Models\Organization;
 use App\Exceptions\CartException;
 use App\Exceptions\UserException;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
+use App\Exceptions\OrganizationException;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -20,7 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(SetLocale::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function (CartException|UserException $e) {
+        $exceptions->render(function (CartException|UserException|OrganizationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),

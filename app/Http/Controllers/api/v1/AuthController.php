@@ -213,7 +213,7 @@ class AuthController extends Controller
             $newToken = $user->createToken('auth-token')->plainTextToken;
 
             return $this->successResponse([
-                'user' => new UserResource($user),
+                'user' => new UserResource($user->load(['organizations'])),
                 'token' => $newToken,
             ], __('messages.login_successful'));
         } catch (\Exception $e) {

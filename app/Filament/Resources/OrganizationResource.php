@@ -10,6 +10,7 @@ use App\Models\Organization;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use App\Enums\Organization\OrganizationStatus;
@@ -62,10 +63,15 @@ class OrganizationResource extends Resource
                     ->label('الحالة')
                     ->badge()
                     ->colors(OrganizationStatus::colors())
-                    ->formatStateUsing(fn ($state): string => OrganizationStatus::tryFrom($state)?->label()),
+                    ->formatStateUsing(fn ($state): string => $state->label()),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->label('الحالة')
+                    ->options(OrganizationStatus::class)
+                    ->native(false)
+                    ->searchable()
+                    ->preload(),
             ])
             ->actions([
                 Action::make('approve')
@@ -73,7 +79,7 @@ class OrganizationResource extends Resource
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
                     ->requiresConfirmation()
-                    ->visible(fn (Organization $record): bool => OrganizationStatus::tryFrom($record->status) === OrganizationStatus::PENDING)
+                    ->visible(fn (Organization $record): bool => $record->status === OrganizationStatus::PENDING)
                     ->action(function (Organization $record) {
                         $record->update(['status' => OrganizationStatus::APPROVED->value]);
                     }),
@@ -83,30 +89,17 @@ class OrganizationResource extends Resource
                     ->color('danger')
                     ->icon('heroicon-o-x-circle')
                     ->requiresConfirmation()
-                    ->visible(fn (Organization $record): bool => OrganizationStatus::tryFrom($record->status) == OrganizationStatus::PENDING)
+                    ->visible(fn (Organization $record): bool =>
+                        $record->status == OrganizationStatus::PENDING ||
+                        $record->status == OrganizationStatus::APPROVED
+                    )
                     ->action(function (Organization $record) {
                         $record->update(['status' => OrganizationStatus::REJECTED->value]);
                     }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    \Filament\Tables\Actions\BulkAction::make('approve')
-                        ->label('Approve Selected')
-                        ->color('success')
-                        ->icon('heroicon-o-check-circle')
-                        ->requiresConfirmation()
-                        ->action(function (Collection $records) {
-                            $records->each->update(['status' => OrganizationStatus::APPROVED->value]);
-                        }),
-
-                    \Filament\Tables\Actions\BulkAction::make('reject')
-                        ->label('Reject Selected')
-                        ->color('danger')
-                        ->icon('heroicon-o-x-circle')
-                        ->requiresConfirmation()
-                        ->action(function (Collection $records) {
-                            $records->each->update(['status' => OrganizationStatus::REJECTED->value]);
-                        }),
+                   //
                 ]),
             ]);
     }
