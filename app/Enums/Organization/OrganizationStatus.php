@@ -12,15 +12,6 @@ enum OrganizationStatus: int
     case APPROVED = 2;
     case REJECTED = 3;
 
-    // public function label(): string
-    // {
-    //     return match($this) {
-    //         self::PENDING => __('enums.organization_status.pending'),
-    //         self::APPROVED => __('enums.organization_status.approved'),
-    //         self::REJECTED => __('enums.organization_status.rejected'),
-    //     };
-    // }
-
     public static function colors(): array
     {
         return [

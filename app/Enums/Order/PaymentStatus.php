@@ -8,18 +8,9 @@ enum PaymentStatus: int
 {
     use HasLabel;
 
-    case PENDING = 1; // pending
-    case PAID = 2; // paid;
-    case CANCELLED = 3; //failed;
-
-    // public function label(): string
-    // {
-    //     return match($this) {
-    //         self::PENDING => 'Pending',
-    //         self::PAID => 'Paid',
-    //         self::CANCELLED => 'Failed',
-    //     };
-    // }
+    case PENDING = 1;
+    case PAID = 2;
+    case CANCELLED = 3;
 
     public function color(): string
     {

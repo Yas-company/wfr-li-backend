@@ -13,15 +13,6 @@ enum UserRole: string
     case BUYER = 'buyer';
     case SUPPLIER = 'supplier';
 
-    // public function label(): string
-    // {
-    //     return match($this) {
-    //         self::ADMIN => 'Admin',
-    //         self::BUYER => 'Buyer',
-    //         self::VISITOR => 'Visitor',
-    //         self::SUPPLIER => 'Supplier',
-    //     };
-    // }
 
     public static function values(): array
     {
@@ -42,4 +33,4 @@ enum UserRole: string
     {
         return $this === self::SUPPLIER;
     }
-} 
+}
