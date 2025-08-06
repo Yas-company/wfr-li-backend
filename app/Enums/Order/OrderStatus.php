@@ -2,8 +2,12 @@
 
 namespace App\Enums\Order;
 
+use App\Traits\HasLabel;
+
 enum OrderStatus: string
 {
+    use HasLabel;
+
     case PENDING = 'pending';
     case ACCEPTED = 'accepted';
     case REJECTED = 'rejected';
@@ -11,19 +15,6 @@ enum OrderStatus: string
     case SHIPPED = 'shipped';
     case DELIVERED = 'delivered';
     case CANCELLED = 'cancelled';
-
-    public function label(): string
-    {
-        return match($this) {
-            self::PENDING => 'Pending',
-            self::ACCEPTED => 'Accepted',
-            self::REJECTED => 'Rejected',
-            self::PAID => 'Paid',
-            self::SHIPPED => 'Shipped',
-            self::DELIVERED => 'Delivered',
-            self::CANCELLED => 'Cancelled',
-        };
-    }
 
     public function color(): string
     {
