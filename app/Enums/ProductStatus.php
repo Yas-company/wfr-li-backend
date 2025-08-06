@@ -2,8 +2,12 @@
 
 namespace App\Enums;
 
+use App\Traits\HasLabel;
+
 enum ProductStatus: int
 {
+    use HasLabel;
+
     case DRAFT = 0;
     case PUBLISHED = 1;
     case REJECTED = 2;

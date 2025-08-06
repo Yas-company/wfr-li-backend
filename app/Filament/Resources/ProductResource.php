@@ -213,7 +213,7 @@ class ProductResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('unit_type')
                     ->label('نوع الوحدة')
-                    ->getStateUsing(fn ($record) => $record->unit_type?->getArabicLabel())
+                    ->getStateUsing(fn ($record) => $record->unit_type?->label())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('category.name')
                     ->label('التصنيف')

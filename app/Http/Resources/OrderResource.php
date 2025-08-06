@@ -12,7 +12,7 @@ class OrderResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'status' => $this->status,
+            'status' => $this->status->label(),
             'total' => $this->total,
             'total_discount' => $this->total_discount,
             'order_type' => $this->order_type,

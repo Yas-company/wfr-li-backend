@@ -17,7 +17,7 @@ class BuyerOrderListingResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'status' => $this->status,
+            'status' => $this->status->label(),
             'created_at' => $this->created_at,
             'supplier_name' => $this->supplier_name,
             'supplier_image' => $this->supplier_image ? asset('storage/'.$this->supplier_image) : null,
