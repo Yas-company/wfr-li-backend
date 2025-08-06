@@ -14,6 +14,7 @@ use App\Traits\ApiResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class BuyerRegistrationController extends Controller
@@ -23,10 +24,97 @@ class BuyerRegistrationController extends Controller
     /**
      * Buyer Registration
      *
-     * @param BuyerRegistrationRequest $request
-     * @param OtpService $otpService
      *
      * @return JsonResponse $response
+     *
+     * @OA\Post(
+     *     path="/auth/buyer/register",
+     *     summary="Buyer Registration",
+     *     description="Buyer Registration",
+     *     tags={"Authentication"},
+     *
+     *     @OA\RequestBody(
+     *         required=true,
+     *
+     *         @OA\JsonContent(
+     *             required={"name", "phone", "address"},
+     *
+     *             @OA\Property(property="name", type="string", example="John Doe", description="Buyer's personal name"),
+     *             @OA\Property(property="phone", type="string", example="966555555555"),
+     *             @OA\Property(property="image", type="string", format="binary", example="image.jpg"),
+     *             @OA\Property(property="address", type="object",
+     *                 @OA\Property(property="name", type="string", example="Home Address", description="Address name/label"),
+     *                 @OA\Property(property="street", type="string", example="123 Main St"),
+     *                 @OA\Property(property="city", type="string", example="Riyadh"),
+     *                 @OA\Property(property="phone", type="string", example="966555555555"),
+     *                 @OA\Property(property="latitude", type="string", example="24.6932"),
+     *                 @OA\Property(property="longitude", type="string", example="46.7161"),
+     *             ),
+     *         ),
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=201,
+     *         description="Registration successful",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="Registration successful"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="user", type="object",
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="name", type="string", example="John Doe"),
+     *                     @OA\Property(property="phone", type="string", example="966555555555"),
+     *                     @OA\Property(property="image", type="string", example="image.jpg"),
+     *                     @OA\Property(property="address", type="object",
+     *                         @OA\Property(property="name", type="string", example="John Doe"),
+     *                         @OA\Property(property="street", type="string", example="123 Main St"),
+     *                         @OA\Property(property="city", type="string", example="Riyadh"),
+     *                         @OA\Property(property="phone", type="string", example="966555555555"),
+     *                         @OA\Property(property="latitude", type="string", example="24.6932"),
+     *                         @OA\Property(property="longitude", type="string", example="46.7161"),
+     *                     ),
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="Validation error"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="errors", type="object",
+     *                     @OA\Property(property="phone", type="array",
+     *
+     *                         @OA\Items(type="string", example="The phone field is required."),
+     *                     ),
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=409,
+     *         description="Phone number already registered",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="Phone number already registered"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="errors", type="object",
+     *                     @OA\Property(property="phone", type="array",
+     *
+     *                         @OA\Items(type="string", example="The phone number is already registered in our system."),
+     *                     ),
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     * )
      */
     public function __invoke(BuyerRegistrationRequest $request, OtpService $otpService): JsonResponse
     {
