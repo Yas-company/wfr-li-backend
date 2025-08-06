@@ -9,6 +9,7 @@ use Filament\Tables\Table;
 use App\Models\Organization;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
+use App\Events\OrganizationApproved;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
@@ -79,9 +80,13 @@ class OrganizationResource extends Resource
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
                     ->requiresConfirmation()
-                    ->visible(fn (Organization $record): bool => $record->status === OrganizationStatus::PENDING)
+                    ->visible(fn (Organization $record): bool =>
+                        $record->status === OrganizationStatus::PENDING ||
+                        $record->status === OrganizationStatus::REJECTED
+                    )
                     ->action(function (Organization $record) {
                         $record->update(['status' => OrganizationStatus::APPROVED->value]);
+                        event(new OrganizationApproved($record->owner));
                     }),
 
                 Action::make('reject')

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Enums\Organization\OrganizationStatus;
 use App\Enums\UserRole;
 use App\Models\Category;
 use App\Models\Product;
@@ -43,7 +44,20 @@ class StatsOverview extends BaseWidget
                     'class' => 'cursor-pointer hover:bg-info-50',
                 ]),
 
-            Stat::make('إجمالي المشترين', User::where('role', UserRole::BUYER)->count())
+            Stat::make('إجمالي المشترين (أفراد)', User::where('role', UserRole::BUYER)->whereDoesntHave('organizations', function($query) {
+                    $query->where('status', OrganizationStatus::APPROVED->value);
+                })->count())
+                ->description('عدد المشترين')
+                ->descriptionIcon('heroicon-m-user')
+                ->color('danger')
+                ->icon('heroicon-m-user')
+                ->extraAttributes([
+                    'class' => 'cursor-pointer hover:bg-danger-50',
+                ]),
+
+            Stat::make('إجمالي المشترين (منشآت)', User::where('role', UserRole::BUYER)->whereHas('organizations', function($query) {
+                    $query->where('status', OrganizationStatus::APPROVED->value);
+                })->count())
                 ->description('عدد المشترين')
                 ->descriptionIcon('heroicon-m-user')
                 ->color('danger')
@@ -53,4 +67,4 @@ class StatsOverview extends BaseWidget
                 ]),
         ];
     }
-} 
+}

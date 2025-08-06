@@ -19,6 +19,8 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Pages\Auth\Login;
+use App\Filament\Widgets\OrderChart;
+use App\Filament\Widgets\UserChart;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -40,10 +42,11 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 Pages\Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            //->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 StatsOverview::class,
-                Widgets\AccountWidget::class,
+                OrderChart::class,
+                UserChart::class,
             ])
             ->middleware([
                 EncryptCookies::class,

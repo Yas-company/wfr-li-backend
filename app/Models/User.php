@@ -194,4 +194,9 @@ class User extends Authenticatable
     {
         return $this->organizations()->approved()->exists();
     }
+
+    public function scopeApproved(Builder $query): Builder
+    {
+        return $query->where('status', UserStatus::APPROVED);
+    }
 }
