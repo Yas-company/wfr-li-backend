@@ -2,7 +2,7 @@
 
 use App\Enums\UserRole;
 use App\Http\Controllers\api\v1\Order\Buyer\OrderController as BuyerOrderController;
-use App\Http\Controllers\Api\V1\Order\Supplier\ChangeOrderStatusController;
+use App\Http\Controllers\api\v1\Order\Supplier\ChangeOrderStatusController;
 use App\Http\Controllers\api\v1\Order\Supplier\OrderController as SupplierOrderController;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Support\Facades\Route;
