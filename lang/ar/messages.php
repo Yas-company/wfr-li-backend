@@ -30,6 +30,11 @@ return [
         'order_type_not_allowed' => 'نوع الطلب غير مسموح',
     ],
 
+    'orders' => [
+        'order_status_updated' => 'تم تحديث حالة الطلب بنجاح',
+        'invalid_transition' => 'لا يمكن تغيير حالة الطلب إلى الحالة المحددة',
+    ],
+
     'users' => [
         'cannot_delete_last_address' => 'لا يمكن حذف العنوان الأخير',
         'at_least_one_default_address_required' => 'يجب تحديد عنوان افتراضي واحد على الأقل',

@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Order;
 
+use App\Models\User;
+use App\Models\Order;
 use App\Dtos\OrderFilterDto;
 use App\Exceptions\CartException;
-use App\Models\Order;
-use App\Models\User;
-use App\Services\Contracts\CartServiceInterface;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pagination\AbstractPaginator;
+use App\Services\Contracts\CartServiceInterface;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class OrderService
 {

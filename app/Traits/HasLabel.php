@@ -20,7 +20,7 @@ trait HasLabel
 
         // Fallback: auto-generate label if translation not found
         return $label === $key
-            ? Str::of($this->name)->replace('_', ' ')->lower()->title()
-            : $label;
+            ? Str::of($this->name)->replace('_', ' ')->lower()
+            : Str::lower($label);
     }
 }
