@@ -30,6 +30,11 @@ return [
         'order_type_not_allowed' => 'Order type not allowed',
     ],
 
+    'orders' => [
+        'order_status_updated' => 'Order status updated successfully',
+        'invalid_transition' => 'Cannot change order status to the specified status',
+    ],
+
     'users' => [
         'cannot_delete_last_address' => 'Cannot delete last address',
         'at_least_one_default_address_required' => 'At least one default address is required',

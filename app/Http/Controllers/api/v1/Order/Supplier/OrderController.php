@@ -5,7 +5,7 @@ namespace App\Http\Controllers\api\v1\Order\Supplier;
 use App\Models\Order;
 use App\Traits\ApiResponse;
 use App\Dtos\OrderFilterDto;
-use App\Services\OrderService;
+use App\Services\Order\OrderService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\OrderResource;

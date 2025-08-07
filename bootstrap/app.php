@@ -2,6 +2,7 @@
 
 use App\Models\Organization;
 use App\Exceptions\CartException;
+use App\Exceptions\OrderException;
 use App\Exceptions\UserException;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
@@ -22,7 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(SetLocale::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function (CartException|UserException|OrganizationException $e) {
+        $exceptions->render(function (CartException|UserException|OrganizationException|OrderException $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
