@@ -3,14 +3,12 @@
 namespace App\Filament\Widgets;
 
 use App\Models\User;
-use App\Models\Order;
 use App\Enums\UserRole;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
-use App\Enums\Order\OrderStatus;
 use Filament\Widgets\ChartWidget;
 
-class UserChart extends ChartWidget
+class BuyerChart extends ChartWidget
 {
     protected static ?string $heading = 'Buyers';
     protected static ?string $maxHeight = '300px';

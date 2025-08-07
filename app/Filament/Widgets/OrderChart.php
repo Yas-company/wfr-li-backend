@@ -13,8 +13,6 @@ class OrderChart extends ChartWidget
     protected static ?string $heading = 'Orders';
     protected static ?string $maxHeight = '300px';
 
-
-
     protected function getData(): array
     {
         $data = Trend::query(Order::where('status', OrderStatus::ACCEPTED))

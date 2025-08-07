@@ -22,7 +22,7 @@ class OfferNotificationResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-gift';
     protected static ?string $pluralNavigationLabel = 'اشعارات العروض';
     protected static ?string $navigationLabel = 'اشعارات العروض';
-    protected static ?string $navigationGroup = 'الاعلانات';
+    protected static ?string $navigationGroup = 'الإعلانات';
 
     // Get translated value
     protected static function getTranslatedValue(array|string|null $value, string $lang = 'ar'): string
@@ -47,7 +47,7 @@ class OfferNotificationResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-         
+
 
             Forms\Components\Section::make('معلومات العرض الأساسية')
                 ->schema([
