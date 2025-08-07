@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Order\Supplier;
+namespace App\Http\Controllers\api\v1\Order\Supplier;
 
 use App\Models\Order;
 use App\Enums\Order\OrderStatus;
