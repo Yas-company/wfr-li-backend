@@ -4,7 +4,25 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Schema(
+ *     schema="CategoryResource",
+ *     title="Category Resource",
+ *     description="Category data with field information",
+ *     @OA\Property(property="id", type="integer", example=1),
+ *     @OA\Property(property="name", type="object",
+ *         @OA\Property(property="en", type="string", example="Fruits"),
+ *         @OA\Property(property="ar", type="string", example="فواكه")
+ *     ),
+ *     @OA\Property(property="image", type="string", example="https://example.com/category-image.jpg"),
+ *     @OA\Property(property="supplier_id", type="integer", example=1),
+ *     @OA\Property(property="field_id", type="integer", example=1),
+ *     @OA\Property(property="products_count", type="integer", example=25),
+ *     @OA\Property(property="field", ref="#/components/schemas/FieldResource")
+ * )
+ */
 class CategoryResource extends JsonResource
 {
     /**
