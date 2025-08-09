@@ -23,9 +23,16 @@ use OpenApi\Annotations as OA;
  *
  * @OA\Server(
  *     url=L5_SWAGGER_CONST_HOST,
- *     description="API Server"
+ *     description="Local Server1"
  * )
- *
+ * @OA\Server(
+ *     url="http://wfr-li-backend.test/api/v1/",
+ *     description="Local Server2"
+ *)
+ * @OA\Server(
+ *     url="https://wfr.li/api/v1/",
+ *     description="Live Server"
+ * )
  * @OA\SecurityScheme(
  *     securityScheme="bearerAuth",
  *     type="http",

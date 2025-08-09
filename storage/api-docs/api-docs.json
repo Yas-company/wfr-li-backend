@@ -16,7 +16,15 @@
     "servers": [
         {
             "url": "http://127.0.0.1:8000/api/v1",
-            "description": "API Server"
+            "description": "Local Server1"
+        },
+        {
+            "url": "http://wfr-li-backend.test/api/v1/",
+            "description": "Local Server2"
+        },
+        {
+            "url": "https://wfr.li/api/v1/",
+            "description": "Live Server"
         }
     ],
     "paths": {
