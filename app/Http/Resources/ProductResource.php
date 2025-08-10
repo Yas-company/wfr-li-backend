@@ -49,9 +49,9 @@ class ProductResource extends JsonResource
             'quantity' => $this->quantity,
             'stock_qty' => $this->stock_qty,
             'nearly_out_of_stock_limit' => $this->nearly_out_of_stock_limit,
-            'status' => $this->status->label(),
+            'status' => $this->status->toResponse(),
             'is_favorite' => $this->is_favorite,
-            'unit_type' => $this->unit_type->label(),
+            'unit_type' => $this->unit_type->toResponse(),
             'category' => new CategoryResource($this->whenLoaded('category')),
             'ratings' => RatingResource::collection($this->whenLoaded('ratings')),
         ];
