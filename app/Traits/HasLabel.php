@@ -23,4 +23,12 @@ trait HasLabel
             ? Str::of($this->name)->replace('_', ' ')->lower()
             : Str::lower($label);
     }
+
+    public function toResponse(): array
+    {
+        return [
+            'value' => $this->value,
+            'label' => $this->label(),
+        ];
+    }
 }

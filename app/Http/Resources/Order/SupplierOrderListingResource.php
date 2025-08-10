@@ -16,7 +16,7 @@ class SupplierOrderListingResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'status' => $this->status->label(),
+            'status' => $this->status->toResponse(),
             'created_at' => $this->created_at,
             'buyer_name' => $this->buyer_name,
             'products_count' => $this->products_count,
