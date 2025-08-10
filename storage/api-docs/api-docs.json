@@ -4417,7 +4417,7 @@
                     "Suppliers"
                 ],
                 "summary": "Update supplier settings",
-                "description": "Update supplier settings status. Creates a new supplier record if one doesn't exist for the user.",
+                "description": "Update supplier settings",
                 "operationId": "5470f4c4b6975a356ea82cd03a3e3875",
                 "requestBody": {
                     "required": true,
