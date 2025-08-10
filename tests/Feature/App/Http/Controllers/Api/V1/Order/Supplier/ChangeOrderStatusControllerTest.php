@@ -49,7 +49,7 @@ class ChangeOrderStatusControllerTest extends TestCase
 
         $data = $response->json('data.order');
 
-        $this->assertEquals(OrderStatus::SHIPPED->value, $data['status']);
+        $this->assertEquals(OrderStatus::SHIPPED->value, $data['status']['value']);
     }
 
     public function test_supplier_can_change_order_status_from_shipped_to_delivered()
@@ -74,7 +74,7 @@ class ChangeOrderStatusControllerTest extends TestCase
 
         $data = $response->json('data.order');
 
-        $this->assertEquals(OrderStatus::DELIVERED->value, $data['status']);
+        $this->assertEquals(OrderStatus::DELIVERED->value, $data['status']['value']);
     }
 
     public function test_supplier_cannot_change_order_status_from_pending_to_shipped()
