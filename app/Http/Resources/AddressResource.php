@@ -16,8 +16,8 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(property="street", type="string", example="123 Main Street"),
  *     @OA\Property(property="city", type="string", example="Riyadh"),
  *     @OA\Property(property="phone", type="string", example="966555555555"),
- *     @OA\Property(property="latitude", type="number", format="float", example=24.7136),
- *     @OA\Property(property="longitude", type="number", format="float", example=46.6753),
+ *     @OA\Property(property="latitude", type="string", example="42.70227900"),
+ *     @OA\Property(property="longitude", type="string", example="-35.14541500"),
  *     @OA\Property(property="is_default", type="boolean", example=true),
  *     @OA\Property(property="created_at", type="string", example="2021-01-01 00:00:00"),
  *     @OA\Property(property="updated_at", type="string", example="2021-01-01 00:00:00")

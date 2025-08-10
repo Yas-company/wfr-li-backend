@@ -5,7 +5,27 @@ namespace App\Http\Resources\Order;
 use App\Http\Resources\RatingResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use OpenApi\Attributes as OA;
 
+/**
+ * @OA\Schema(
+ *     schema="BuyerOrderListing",
+ *     type="object",
+ *     @OA\Property(property="id", type="integer"),
+ *     @OA\Property(property="status", type="string"),
+ *     @OA\Property(property="created_at", type="string", format="date-time"),
+ *     @OA\Property(property="supplier_name", type="string"),
+ *     @OA\Property(property="supplier_image", type="string"),
+ *     @OA\Property(property="products_count", type="integer"),
+ *     @OA\Property(property="total", type="number", format="float"),
+ *     @OA\Property(property="total_discount", type="number", format="float"),
+ *     @OA\Property(property="tracking_number", type="string"),
+ *     @OA\Property(property="shipping_method", type="string"),
+ *     @OA\Property(property="payment_status", type="string"),
+ *     @OA\Property(property="order_type", type="string"),
+ *     @OA\Property(property="ratings", type="array", @OA\Items(ref="#/components/schemas/RatingResource")),
+ * )
+ */
 class BuyerOrderListingResource extends JsonResource
 {
     /**
