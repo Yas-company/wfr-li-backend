@@ -2,10 +2,8 @@
 
 namespace App\Services;
 
-use App\Enums\ProductStatus;
 use App\Models\User;
 use App\Models\Product;
-use App\Filters\JsonColumnFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 use App\Services\Contracts\ProductServiceInterface;
@@ -26,7 +24,7 @@ class ProductService implements ProductServiceInterface
         return QueryBuilder::for(Product::class)
                 ->allowedFilters([
                     AllowedFilter::exact('category_id'),
-                    AllowedFilter::custom('name', new JsonColumnFilter),
+                    AllowedFilter::partial('name'),
                     AllowedFilter::exact('price'),
                 ])
                 ->allowedSorts([
@@ -35,7 +33,7 @@ class ProductService implements ProductServiceInterface
                 ])
                 ->allowedIncludes([
                     'category',
-                    'supplier',
+                    'media',
                 ])
                 ->defaultSort('id')
                 ->where('supplier_id', $supplierId)
@@ -55,7 +53,7 @@ class ProductService implements ProductServiceInterface
                 ->allowedFilters([
                     AllowedFilter::exact('category_id'),
                     AllowedFilter::exact('supplier_id'),
-                    AllowedFilter::custom('name', new JsonColumnFilter),
+                    AllowedFilter::partial('name'),
                     'price',
                 ])
                 ->allowedSorts([
@@ -66,6 +64,8 @@ class ProductService implements ProductServiceInterface
                 ->allowedIncludes([
                     'category',
                     'supplier',
+                    'media',
+                    'currentUserFavorite'
                 ])
                 ->defaultSort('id')
                 ->paginate(10);
@@ -185,7 +185,7 @@ class ProductService implements ProductServiceInterface
         return Product::where('supplier_id', $supplierId)
         ->isActive()
         ->whereColumn('stock_qty', '>', 'nearly_out_of_stock_limit')
-        ->with(['media', 'favorites','ratings', 'category', 'category.field', 'ratings.user'])
+        ->with(['media', 'favorites', 'category', 'category.field'])
         ->paginate(10);
     }
 
@@ -199,7 +199,7 @@ class ProductService implements ProductServiceInterface
             ->isActive()
             ->whereColumn('stock_qty', '<=', 'nearly_out_of_stock_limit')
             ->where('stock_qty', '>', 0)
-            ->with(['media', 'favorites','ratings', 'category', 'category.field', 'ratings.user'])
+            ->with(['media', 'favorites', 'category', 'category.field'])
             ->paginate(10);
     }
 
@@ -211,7 +211,7 @@ class ProductService implements ProductServiceInterface
         return Product::where('supplier_id', $supplierId)
             ->isActive()
             ->where('stock_qty', '<=', 0)
-            ->with(['media', 'favorites','ratings', 'category', 'category.field', 'ratings.user'])
+            ->with(['media', 'favorites', 'category', 'category.field',])
             ->paginate(10);
     }
 
@@ -220,21 +220,21 @@ class ProductService implements ProductServiceInterface
      */
     public function getSimilarProducts(Product $product)
     {
-        $products = Product::where('category_id', $product->category_id)
-            ->published()
+        $products = Product::query()
+            ->forUsers()
+            ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
-            ->isActive()
-            ->with(['media', 'currentUserFavorite', 'category', 'category.field', 'ratings', 'ratings.user'])
+            ->with(['media', 'currentUserFavorite', 'category', 'category.field'])
             ->take(5)
             ->latest()
             ->get();
 
         if ($products->count() == 0) {
-            $products = Product::where('supplier_id', $product->supplier_id)
-                ->published()
+            $products = Product::query()
+                ->forUsers()
+                ->where('supplier_id', $product->supplier_id)
                 ->where('id', '!=', $product->id)
-                ->isActive()
-                ->with(['media', 'currentUserFavorite', 'ratings', 'category', 'category.field', 'supplier'])
+                ->with(['media', 'currentUserFavorite', 'category', 'category.field', 'supplier'])
                 ->take(5)
                 ->latest()
                 ->get();

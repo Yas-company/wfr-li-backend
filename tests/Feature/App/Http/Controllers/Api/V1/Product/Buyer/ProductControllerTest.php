@@ -364,7 +364,7 @@ class ProductControllerTest extends TestCase
                         'status',
                         'is_favorite',
                         'unit_type',
-                        
+
                     ],
                 ],
                 'links' => [
@@ -398,7 +398,7 @@ class ProductControllerTest extends TestCase
                         'status',
                         'is_favorite',
                         'unit_type',
-                      
+
                     ],
                 ],
                 'links' => [
@@ -449,7 +449,7 @@ class ProductControllerTest extends TestCase
                         'status',
                         'is_favorite',
                         'unit_type',
-                    
+
                     ],
                 ],
                 'links' => [
@@ -644,27 +644,26 @@ class ProductControllerTest extends TestCase
                         'status',
                         'is_favorite',
                         'category',
-                        'ratings',
                     ]
                 ]
             ]);
 
         $responseData = $response->json('data');
-        
+
         // Should return similar products (category-based first, then supplier-based)
         $this->assertGreaterThanOrEqual(1, count($responseData));
         $this->assertLessThanOrEqual(5, count($responseData));
-        
+
         // Verify the returned products are from the same category
         $returnedProductIds = collect($responseData)->pluck('id')->toArray();
         $expectedCategoryProductIds = [$similarProduct1->id, $similarProduct2->id];
-        
+
         // Check that at least one category-based product is returned
         $this->assertTrue(
             count(array_intersect($returnedProductIds, $expectedCategoryProductIds)) > 0,
             'At least one category-based similar product should be returned'
         );
-        
+
         // Verify inactive products are not included
         $this->assertNotContains($inactiveProduct->id, $returnedProductIds);
         // Verify unpublished products are not included
@@ -716,21 +715,21 @@ class ProductControllerTest extends TestCase
         $response->assertStatus(200);
 
         $responseData = $response->json('data');
-        
+
         // Should return supplier-based similar products
         $this->assertGreaterThanOrEqual(1, count($responseData));
         $this->assertLessThanOrEqual(5, count($responseData));
-        
+
         // Verify the returned products are supplier-based matches
         $returnedProductIds = collect($responseData)->pluck('id')->toArray();
         $expectedSupplierProductIds = [$supplierSimilarProduct1->id, $supplierSimilarProduct2->id];
-        
+
         // Check that at least one supplier-based product is returned
         $this->assertTrue(
             count(array_intersect($returnedProductIds, $expectedSupplierProductIds)) > 0,
             'At least one supplier-based similar product should be returned'
         );
-        
+
         $this->assertNotContains($mainProduct->id, $returnedProductIds);
     }
 
@@ -762,7 +761,7 @@ class ProductControllerTest extends TestCase
         $response->assertStatus(200);
 
         $responseData = $response->json('data');
-        
+
         // Should return empty array when no matches
         $this->assertCount(0, $responseData);
     }
@@ -793,14 +792,14 @@ class ProductControllerTest extends TestCase
         ]);
 
 
-    
+
         Product::factory(7)->create([
             'supplier_id' => $this->supplier->id,
             'category_id' => $this->category->id,
             'is_active' => true,
             'status' => ProductStatus::PUBLISHED,
         ]);
-        
+
 
         $response = $this->actingAs($this->buyer)
             ->getJson(route('buyer.products.similar', $mainProduct));
@@ -808,7 +807,7 @@ class ProductControllerTest extends TestCase
         $response->assertStatus(200);
 
         $responseData = $response->json('data');
-        
+
         // Should return maximum 5 products
         $this->assertCount(5, $responseData);
     }
@@ -837,10 +836,10 @@ class ProductControllerTest extends TestCase
         $response->assertStatus(200);
 
         $responseData = $response->json('data');
-        
+
         // Should not include the current product
         $this->assertNotContains($mainProduct->id, collect($responseData)->pluck('id')->toArray());
-        
+
         // Should include the similar product
         $this->assertContains($similarProduct->id, collect($responseData)->pluck('id')->toArray());
     }

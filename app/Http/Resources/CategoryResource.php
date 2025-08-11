@@ -39,7 +39,7 @@ class CategoryResource extends JsonResource
             'supplier_id' => $this->supplier_id,
             'field_id' => $this->field_id,
             'products_count' => $this->products_count,
-            'field' => new FieldResource($this->field),
+            'field' => new FieldResource($this->whenLoaded('field')),
         ];
     }
 }
