@@ -65,6 +65,7 @@ class ProductService implements ProductServiceInterface
                     'category',
                     'supplier',
                     'media',
+                    'currentUserFavorite'
                 ])
                 ->defaultSort('id')
                 ->paginate(10);

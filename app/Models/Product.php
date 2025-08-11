@@ -73,7 +73,7 @@ class Product extends Model implements HasMedia
             ->withResponsiveImages(); ;
     }
 
-public function favoritedByUsers()
+    public function favoritedByUsers()
     {
         return $this->belongsToMany(User::class, 'favorites')->where('is_favorite', true)->withTimestamps();
     }
