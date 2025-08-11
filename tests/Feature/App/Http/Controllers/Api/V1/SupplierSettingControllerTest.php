@@ -45,7 +45,7 @@ class SupplierSettingControllerTest extends TestCase
                     'message',
                 ],
             ])
-            ->assertJsonPath('data.user.role', UserRole::SUPPLIER->label())
+            ->assertJsonPath('data.user.role.label', UserRole::SUPPLIER->label())
             ->assertJsonPath('data.user.is_verified', false);
 
         // Assert user was created with correct data
