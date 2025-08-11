@@ -2,50 +2,53 @@
 
 namespace App\Http\Controllers\api\v1;
 
-use App\Http\Controllers\Controller;
-use App\Http\Services\Contracts\PaymentServiceInterface;
-use App\Http\Services\Payment\PaymentContext;
-use App\Http\Services\Payment\PaymentFactory;
-use App\Http\Services\Payment\PaymentService;
-use App\Http\Services\Payment\Strategies\TapPaymentStrategy;
-use App\Models\Payment;
+use App\Models\Order;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
+use App\Enums\Order\OrderStatus;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Http\Services\Payment\PaymentService;
 
 class PaymentController extends Controller
 {
     use ApiResponse;
 
-    protected $paymentService;
-    public function __construct(PaymentServiceInterface $paymentService)
+    public function pay(Order $order, PaymentService $paymentService)
     {
-        $this->paymentService = $paymentService;
+        return redirect($paymentService->redirect($order));
     }
 
-
-    public function create(Request $request)
+    public function callback(Request $request, PaymentService $paymentService)
     {
-        $method = $request->input('method');
-        $strategy = PaymentFactory::make($method);
+        $result = $paymentService->handleCallback($request);
 
-        $context = new PaymentContext();
-        $context->setStrategy($strategy);
+        $order = Order::findOrFail($result['order_id']);
 
-        //$result = $context->createPayment($request->all());
+        DB::transaction(function () use ($order, $result) {
+            match ($result['status']) {
+                'paid' => $this->handleSuccessfulPayment($order),
+                'failed' => $this->handleFailedPayment($order),
+                default => null
+            };
+        });
 
-        //return $this->successResponse($result, 'تم إنشاء الدفع بنجاح');
+        return redirect()->route('order.status', $order->id);
     }
 
-
-    public function callback(Request $request)
+    protected function handleSuccessfulPayment(Order $order)
     {
-        $context = new PaymentContext();
-        $context->setStrategy(new TapPaymentStrategy());
+        $order->update(['status' => OrderStatus::PAID]);
 
-        $result = $context->verifyPayment($request->tap_id);
+        foreach ($order->products as $product) {
+            $product->product->decrement('stock_qty', $product->quantity);
+        }
 
-        $this->paymentService->storePayment($request,$result);
+        //event(new OrderPaid($order));
+    }
 
-        return $this->successResponse($result, 'تم تحديث حالة الدفع');
+    protected function handleFailedPayment(Order $order)
+    {
+        $order->update(['status' => OrderStatus::FAILED]);
     }
 }

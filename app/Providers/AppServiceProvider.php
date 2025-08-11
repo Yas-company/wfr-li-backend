@@ -2,17 +2,17 @@
 
 namespace App\Providers;
 
-use App\Models\Category;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Rating;
 use App\Models\Address;
 use App\Models\Product;
-use App\Policies\CategoryPolicy;
+use App\Models\Category;
 use App\Policies\OrderPolicy;
 use App\Policies\RatingPolicy;
 use App\Policies\AddressPolicy;
 use App\Policies\ProductPolicy;
+use App\Policies\CategoryPolicy;
 use App\Services\ProductService;
 use App\Services\Cart\CartService;
 use Illuminate\Support\Facades\Gate;
@@ -22,11 +22,13 @@ use Illuminate\Support\ServiceProvider;
 use App\Contracts\CartValidatorInterface;
 use App\Validators\CompositeCartValidator;
 use App\Validators\ProductStatusValidator;
+use App\Services\Payment\TapPaymentService;
 use App\Validators\MinOrderAmountValidator;
 use App\Http\Services\Payment\PaymentService;
 use App\Validators\StockAvailabilityValidator;
 use App\Validators\SingleSupplierCartValidator;
 use App\Services\Contracts\CartServiceInterface;
+use App\Services\Contracts\PaymentGatewayInterface;
 use App\Services\Contracts\ProductServiceInterface;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use App\Http\Services\Contracts\PaymentServiceInterface;
@@ -67,6 +69,15 @@ class AppServiceProvider extends ServiceProvider
                 new EmptyCartValidator(),
             ]
         ));
+
+        $this->app->bind(PaymentGatewayInterface::class, function () {
+            $gateway = config('services.default_payment_gateway');
+
+            return match ($gateway) {
+                'tap' => new TapPaymentService(),
+                default => throw new \Exception('Unsupported payment gateway')
+            };
+        });
 
         Gate::policy(Address::class, AddressPolicy::class);
         Gate::policy(Order::class, OrderPolicy::class);

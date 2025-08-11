@@ -38,4 +38,5 @@ return [
         ],
     ],
 
+    'default_payment_gateway' => 'tap',
 ];
