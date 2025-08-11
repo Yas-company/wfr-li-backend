@@ -30,7 +30,7 @@ class HomePageBuyerResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'image' => $this->image,
+            'image' => $this->image ? asset('storage/'.$this->image) : null,
             'products' => ProductResource::collection($this->products),
         ];
     }
