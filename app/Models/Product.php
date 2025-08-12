@@ -55,11 +55,13 @@ class Product extends Model implements HasMedia
     public function registerMediaConversions(?Media $media = null): void
     {
         $this->addMediaConversion('thumb')
+            ->keepOriginalImageFormat()
             ->width(150)
             ->height(150)
             ->sharpen(10);
 
         $this->addMediaConversion('preview')
+            ->keepOriginalImageFormat()
             ->width(400)
             ->height(400)
             ->sharpen(10);
@@ -69,8 +71,7 @@ class Product extends Model implements HasMedia
     {
         $this->addMediaCollection('images')
         ->useFallbackUrl('/images/logo.jpg')
-            ->useFallbackPath(public_path('/images/logo.jpg'))
-            ->withResponsiveImages(); ;
+            ->useFallbackPath(public_path('/images/logo.jpg'));
     }
 
     public function favoritedByUsers()
