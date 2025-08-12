@@ -159,6 +159,8 @@ class ProductService implements ProductServiceInterface
                     ->toMediaCollection('images');
             });
 
+        $product->searchable();
+
         return $product;
     }
 
@@ -173,6 +175,8 @@ class ProductService implements ProductServiceInterface
     public function removeMedia(Product $product, Media $media)
     {
         $media->delete();
+        $product->searchable();
+
         return $product;
     }
 
