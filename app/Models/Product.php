@@ -5,11 +5,13 @@ namespace App\Models;
 use App\Enums\UnitType;
 use App\Traits\Rateable;
 use App\Enums\ProductStatus;
+use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -19,6 +21,7 @@ class Product extends Model implements HasMedia
     use HasTranslations;
     use Rateable;
     use InteractsWithMedia;
+    use Searchable;
 
     public $translatable = ['name', 'description'];
 
@@ -50,7 +53,29 @@ class Product extends Model implements HasMedia
 
     protected $appends = [];
 
-    // protected $with = ['category', 'supplier'];
+    public function searchableAs()
+    {
+        return 'products_index';
+    }
+
+    public function toSearchableArray()
+    {
+        $this->load(['category', 'supplier', 'media']);
+        $firstMedia = $this->getFirstMediaUrl('images', 'thumb');
+
+        $array = $this->toArray();
+
+        return [
+            'name_ar' => $array['name']['ar'],
+            'name_en' => $array['name']['en'],
+            'description_ar' => $array['description']['ar'],
+            'description_en' => $array['description']['en'],
+            'supplier_name' => $array['supplier']['name'],
+            'category_name_ar' => $array['category']['name']['ar'],
+            'category_name_en' => $array['category']['name']['en'],
+            'image' => $firstMedia,
+        ];
+    }
 
     public function registerMediaConversions(?Media $media = null): void
     {
