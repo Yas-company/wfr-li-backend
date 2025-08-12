@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Rating\StoreRatingRequest;
 use Illuminate\Http\JsonResponse;
-
+use OpenApi\Annotations as OA;
 class RatingController extends Controller
 {
     use ApiResponse;
@@ -25,6 +25,33 @@ class RatingController extends Controller
      * @param StoreRatingRequest $request
      *
      * @return JsonResponse
+     *
+     * @OA\Post(
+     *     path="/ratings",
+     *     summary="Store a rating",
+     *     tags={"Ratings"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             @OA\Property(property="rateable_id", type="integer", example=1),
+     *             @OA\Property(property="rateable_type", type="string", example="product"),
+     *             @OA\Property(property="rating", type="integer", example=5),
+     *             @OA\Property(property="comment", type="string", example="Great product!")
+     *         )    
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Rating created successfully"
+     *     ),
+     *     @OA\Response(
+     *         response=401,    
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )                    
+     * )
      */
     public function store(StoreRatingRequest $request): JsonResponse
     {
