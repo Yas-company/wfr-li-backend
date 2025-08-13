@@ -14,15 +14,40 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use OpenApi\Annotations as OA;
 
 class AuthController extends Controller
 {
     use ApiResponse;
 
+    /**
+     * @OA\Tag(name="Authentication", description="Authentication API")
+     */
     public function __construct(
         private readonly OtpService $otpService
     ) {}
 
+    /**
+     * Logout current user
+     *
+     * @OA\Post(
+     *     path="/auth/logout",
+     *     summary="Logout",
+     *     description="Revoke the current access token",
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Authentication"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Logged out",
+     *         @OA\JsonContent(type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Logged out successfully"),
+     *             @OA\Property(property="data", nullable=true)
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
     public function logout(Request $request): JsonResponse
     {
         try {
@@ -41,6 +66,27 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Get current user profile
+     *
+     * @OA\Get(
+     *     path="/auth/me",
+     *     summary="Me",
+     *     description="Get the authenticated user's profile",
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Authentication"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Profile",
+     *         @OA\JsonContent(type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Success"),
+     *             @OA\Property(property="data", ref="#/components/schemas/UserResource")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
     public function me(Request $request): JsonResponse
     {
         try {
@@ -57,6 +103,45 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Change password
+     *
+     * @OA\Post(
+     *     path="/auth/change-password",
+     *     summary="Change password",
+     *     description="Change the authenticated user's password",
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Authentication"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(type="object",
+     *             required={"current_password","password","password_confirmation"},
+     *             @OA\Property(property="current_password", type="string", example="OldPass123"),
+     *             @OA\Property(property="password", type="string", example="NewPass123"),
+     *             @OA\Property(property="password_confirmation", type="string", example="NewPass123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Password changed",
+     *         @OA\JsonContent(type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Password changed successfully"),
+     *             @OA\Property(property="data", nullable=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Invalid current password or validation errors",
+     *         @OA\JsonContent(type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
     public function changePassword(ChangePasswordRequest $request): JsonResponse
     {
         try {
@@ -88,6 +173,43 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Request forgot password OTP
+     *
+     * @OA\Post(
+     *     path="/auth/forgot-password",
+     *     summary="Forgot password",
+     *     description="Request OTP to reset password",
+     *     tags={"Authentication"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(type="object",
+     *             required={"phone"},
+     *             @OA\Property(property="phone", type="string", example="966555555555")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OTP sent",
+     *         @OA\JsonContent(type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="OTP sent"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="phone", type="string", example="966555555555")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
+     */
     public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
     {
         try {
@@ -116,6 +238,46 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Reset password using verified OTP
+     *
+     * @OA\Post(
+     *     path="/auth/reset-password",
+     *     summary="Reset password",
+     *     description="Reset user password after OTP verification",
+     *     tags={"Authentication"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(type="object",
+     *             required={"phone","password","password_confirmation"},
+     *             @OA\Property(property="phone", type="string", example="966555555555"),
+     *             @OA\Property(property="password", type="string", example="NewPass123"),
+     *             @OA\Property(property="password_confirmation", type="string", example="NewPass123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Password reset",
+     *         @OA\JsonContent(type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Password reset successful"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="user", ref="#/components/schemas/UserResource"),
+     *                 @OA\Property(property="token", type="string", example="1|abcdef...")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Invalid OTP or validation error",
+     *         @OA\JsonContent(type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Invalid OTP"),
+     *             @OA\Property(property="errors", nullable=true)
+     *         )
+     *     )
+     * )
+     */
     public function resetPassword(ResetPasswordRequest $request): JsonResponse
     {
         try {
@@ -151,6 +313,27 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Delete current user account
+     *
+     * @OA\Delete(
+     *     path="/auth/delete-account",
+     *     summary="Delete account",
+     *     description="Delete the authenticated user's account",
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Authentication"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Deleted",
+     *         @OA\JsonContent(type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Account deleted successfully"),
+     *             @OA\Property(property="data", nullable=true)
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
     public function destroy(Request $request): JsonResponse
     {
         try {
@@ -171,6 +354,44 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Login using a biometric token
+     *
+     * @OA\Post(
+     *     path="/auth/biometric-login",
+     *     summary="Biometric login",
+     *     description="Login using a previously issued biometric token",
+     *     tags={"Authentication"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(type="object",
+     *             required={"token"},
+     *             @OA\Property(property="token", type="string", example="1|abcdef...")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Logged in",
+     *         @OA\JsonContent(type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Login successful"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="user", ref="#/components/schemas/UserResource"),
+     *                 @OA\Property(property="token", type="string", example="1|abcdef...")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Invalid or unverified token",
+     *         @OA\JsonContent(type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Invalid token"),
+     *             @OA\Property(property="errors", nullable=true)
+     *         )
+     *     )
+     * )
+     */
     public function biometricLogin(Request $request): JsonResponse
     {
         try {

@@ -214,4 +214,8 @@ return [
         'unauthorized_category_delete' => 'Unauthorized to delete category',
         'unauthorized_category_ownership' => 'Unauthorized to manage category',
     ],
+
+    'payment' => [
+        'status_updated' => 'Payment status updated successfully',
+    ],
 ];
