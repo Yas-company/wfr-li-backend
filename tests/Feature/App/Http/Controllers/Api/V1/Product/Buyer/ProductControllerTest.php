@@ -62,6 +62,7 @@ class ProductControllerTest extends TestCase
                     'status',
                     'is_favorite',
                     'unit_type',
+                    'cart_info'
                 ],
             ]);
     }
@@ -99,6 +100,7 @@ class ProductControllerTest extends TestCase
                         'status',
                         'is_favorite',
                         'unit_type',
+                        'cart_info'
                     ],
                 ],
                 'links' => [
@@ -157,6 +159,7 @@ class ProductControllerTest extends TestCase
                         'status',
                         'is_favorite',
                         'unit_type',
+                        'cart_info'
                     ],
                 ],
                 'links' => [
@@ -215,6 +218,7 @@ class ProductControllerTest extends TestCase
                         'status',
                         'is_favorite',
                         'unit_type',
+                        'cart_info'
                     ],
                 ],
                 'links' => [
@@ -261,6 +265,7 @@ class ProductControllerTest extends TestCase
                         'status',
                         'is_favorite',
                         'unit_type',
+                        'cart_info'
                     ],
                 ],
                 'links' => [
@@ -309,6 +314,7 @@ class ProductControllerTest extends TestCase
                         'status',
                         'is_favorite',
                         'unit_type',
+                        'cart_info'
                     ],
                 ],
                 'links' => [
@@ -364,6 +370,7 @@ class ProductControllerTest extends TestCase
                         'status',
                         'is_favorite',
                         'unit_type',
+                        'cart_info'
 
                     ],
                 ],
@@ -398,6 +405,7 @@ class ProductControllerTest extends TestCase
                         'status',
                         'is_favorite',
                         'unit_type',
+                        'cart_info'
 
                     ],
                 ],
@@ -449,6 +457,7 @@ class ProductControllerTest extends TestCase
                         'status',
                         'is_favorite',
                         'unit_type',
+                        'cart_info'
 
                     ],
                 ],

@@ -27,6 +27,6 @@ Route::middleware(['auth:sanctum', RoleMiddleware::class.':'.UserRole::SUPPLIER-
 
 Route::middleware(['auth:sanctum', RoleMiddleware::class.':'.UserRole::BUYER->value])->prefix('buyer/products')->group(function () {
     Route::get('/', [BuyerProductController::class, 'index'])->name('buyer.products.index');
-    Route::get('/{product}', [BuyerProductController::class, 'show'])->name('buyer.products.show');
+    Route::get('/{id}', [BuyerProductController::class, 'show'])->name('buyer.products.show');
     Route::get('/{product}/similar', [BuyerProductController::class, 'getSimilarProducts'])->name('buyer.products.similar');
 });

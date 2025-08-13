@@ -38,9 +38,9 @@ class ProductController extends Controller
      *
      * @return ProductResource
      */
-    public function show(Product $product)
+    public function show(int $id)
     {
-        $product->load(['ratings', 'category', 'category.field', 'ratings.user']);
+        $product = $this->productService->getProductById($id);
 
         return new ProductResource($product);
     }

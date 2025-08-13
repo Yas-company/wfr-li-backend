@@ -3,8 +3,9 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use OpenApi\Annotations as OA;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @OA\Schema(
@@ -38,6 +39,8 @@ class ProductResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $user = Auth::user();
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -54,6 +57,12 @@ class ProductResource extends JsonResource
             'unit_type' => $this->unit_type->toResponse(),
             'category' => new CategoryResource($this->whenLoaded('category')),
             'supplier' => new SupplierResource($this->whenLoaded('supplier')),
+            $this->mergeWhen($user && $user->isBuyer() && $this->relationLoaded('cartProduct'), [
+                'cart_info' =>  [
+                    'in_cart' => ! is_null($this->cartProduct),
+                    'quantity' => $this->cartProduct ? $this->cartProduct->quantity : 0
+                ],
+            ])
         ];
     }
 }

@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -178,6 +177,25 @@ class Product extends Model implements HasMedia
         return $this->belongsTo(Category::class);
     }
 
+    public function cartProduct()
+    {
+        return $this->hasOne(CartProduct::class, 'product_id');
+    }
+
+    public function scopeWithCartInfo($query)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return $query;
+        }
+
+        return $query->with(['cartProduct' => function ($query) use ($user) {
+            $query->whereHas('cart', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            });
+        }]);
+    }
+
     public function scopeIsActive($query)
     {
         return $query->where('is_active', true);
@@ -192,6 +210,7 @@ class Product extends Model implements HasMedia
     {
         return $this->isActive()->published();
     }
+
     /**
      * Get the attributes that should be appended to the model's array form.
      */

@@ -40,7 +40,7 @@ class ProductService implements ProductServiceInterface
                 ->paginate(10);
     }
 
-        /**
+    /**
      * Display a listing of the resource.
      *
      * @param array $filters
@@ -49,7 +49,7 @@ class ProductService implements ProductServiceInterface
      */
     public function getProductsForBuyer()
     {
-        return QueryBuilder::for(Product::query()->forUsers())
+        return QueryBuilder::for(Product::query()->forUsers()->withCartInfo())
                 ->allowedFilters([
                     AllowedFilter::exact('category_id'),
                     AllowedFilter::exact('supplier_id'),
@@ -59,13 +59,13 @@ class ProductService implements ProductServiceInterface
                 ->allowedSorts([
                     'id',
                     'created_at',
-                    'price'
+                    'price',
                 ])
                 ->allowedIncludes([
                     'category',
                     'supplier',
                     'media',
-                    'currentUserFavorite'
+                    'currentUserFavorite',
                 ])
                 ->defaultSort('id')
                 ->paginate(10);
@@ -84,6 +84,19 @@ class ProductService implements ProductServiceInterface
         $data['supplier_id'] = $user->id;
 
         return Product::create($data);
+    }
+
+    /**
+     * Get a product by id.
+     *
+     * @param int $id
+     *
+     * @return Product
+     *
+     */
+    public function getProductById(int $id): Product
+    {
+        return Product::with(['ratings', 'category', 'category.field', 'ratings.user'])->withCartInfo()->findOrFail($id);
     }
 
     /**

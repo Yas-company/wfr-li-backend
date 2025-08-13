@@ -26,7 +26,7 @@ class BuyerHomeController extends Controller
      * Get the suppliers and products.
      *
      * @return \Illuminate\Http\JsonResponse
-     * 
+     *
      * @OA\Get(
      *     path="/buyer/suppliers-and-products",
      *     summary="Get suppliers and their products for buyer home page",
@@ -73,7 +73,7 @@ class BuyerHomeController extends Controller
             ->take(4)
             ->get();
 
-        $allProducts = Product::whereIn('supplier_id', $suppliers->pluck('id'))
+        $allProducts = Product::withCartInfo()->whereIn('supplier_id', $suppliers->pluck('id'))
             ->published()
             ->with([
                 'media',
@@ -83,7 +83,7 @@ class BuyerHomeController extends Controller
                 'category.field',
                 'ratings.user'
             ])
-            ->latest() 
+            ->latest()
             ->get()
             ->groupBy('supplier_id');
 
