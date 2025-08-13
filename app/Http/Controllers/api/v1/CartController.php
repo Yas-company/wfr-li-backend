@@ -45,6 +45,7 @@ class CartController extends Controller
                 'cart' => CartResource::make($cart),
                 'total' => $totals->total,
                 'total_discount' => $totals->discount,
+                'total_products' => $totals->totalProducts,
                 'supplier_requirements' => $supplierRequirements,
             ],
             statusCode: Response::HTTP_OK

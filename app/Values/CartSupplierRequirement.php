@@ -19,6 +19,7 @@ class CartSupplierRequirement
         public string $supplierName,
         public float $requiredAmount,
         public float $currentTotal,
+        public ?string $supplierImage = null,
     ) {}
 
     /**
@@ -41,6 +42,7 @@ class CartSupplierRequirement
         return [
             'supplier_id' => $this->supplierId,
             'supplier_name' => $this->supplierName,
+            'supplier_image' => $this->supplierImage ? asset('storage/'.$this->supplierImage) : null,
             'required_amount' => $this->requiredAmount,
             'current_total' => $this->currentTotal,
             'residual_amount' => $this->residualAmount(),
