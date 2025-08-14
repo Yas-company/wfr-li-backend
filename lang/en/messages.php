@@ -171,6 +171,7 @@ return [
             'image' => 'The file must be an image',
             'mimes' => 'The file must be an image',
             'max' => 'You must attach at most 5 images',
+            'max_per_file' => 'Each image must be less than 2 MB.',
         ],
         'min_order_quantity' => [
             'required' => 'You must have a minimum order quantity for the product',

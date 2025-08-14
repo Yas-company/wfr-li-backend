@@ -26,6 +26,7 @@ class AttachMediaRequest extends FormRequest
             'images.image' => __('messages.product.image.image'),
             'images.mimes' => __('messages.product.image.mimes'),
             'images.max' => __('messages.product.image.max'),
+            'images.*.max' => __('messages.product.image.max_per_file'),
         ];
     }
 }
