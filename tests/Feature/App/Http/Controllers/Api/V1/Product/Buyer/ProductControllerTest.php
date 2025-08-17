@@ -421,7 +421,7 @@ class ProductControllerTest extends TestCase
         $this->assertEquals($productTwo->id, $response->json('data.0.id'));
     }
 
-    public function test_buyer_can_filter_products_by_price()
+    public function test_buyer_can_filter_products_by_price_between()
     {
         $productOne = Product::factory()->create([
             'supplier_id' => $this->supplier->id,
@@ -438,7 +438,7 @@ class ProductControllerTest extends TestCase
         ]);
 
 
-        $response = $this->actingAs($this->buyer)->getJson(route('buyer.products.index') . '?filter[price]=100');
+        $response = $this->actingAs($this->buyer)->getJson(route('buyer.products.index') . '?filter[price_between]=100,200');
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -471,6 +471,110 @@ class ProductControllerTest extends TestCase
 
         $response->assertJsonCount(1, 'data');
         $this->assertEquals($productOne->id, $response->json('data.0.id'));
+    }
+
+    public function test_buyer_can_filter_products_by_price_less_than()
+    {
+        $productOne = Product::factory()->create([
+            'supplier_id' => $this->supplier->id,
+            'price' => 100,
+            'is_active' => true,
+            'status' => ProductStatus::PUBLISHED,
+        ]);
+
+        $productTwo = Product::factory()->create([
+            'supplier_id' => $this->supplier->id,
+            'price' => 300,
+            'is_active' => true,
+            'status' => ProductStatus::PUBLISHED,
+        ]);
+
+
+        $response = $this->actingAs($this->buyer)->getJson(route('buyer.products.index') . '?filter[price_less_than]=200');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    '*' => [
+                        'id',
+                        'name',
+                        'image',
+                        'price',
+                        'price_before_discount',
+                        'quantity',
+                        'stock_qty',
+                        'nearly_out_of_stock_limit',
+                        'status',
+                        'is_favorite',
+                        'unit_type',
+                        'cart_info'
+
+                    ],
+                ],
+                'links' => [
+                    'first',
+                    'last',
+                    'next',
+                    'prev',
+                ],
+            ]);
+
+        $response->assertJsonCount(1, 'data');
+        $this->assertEquals($productOne->id, $response->json('data.0.id'));
+    }
+
+    public function test_buyer_can_filter_products_by_price_greater_than()
+    {
+        $productOne = Product::factory()->create([
+            'supplier_id' => $this->supplier->id,
+            'price' => 100,
+            'is_active' => true,
+            'status' => ProductStatus::PUBLISHED,
+        ]);
+
+        $productTwo = Product::factory()->create([
+            'supplier_id' => $this->supplier->id,
+            'price' => 300,
+            'is_active' => true,
+            'status' => ProductStatus::PUBLISHED,
+        ]);
+
+
+        $response = $this->actingAs($this->buyer)->getJson(route('buyer.products.index') . '?filter[price_greater_than]=200');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    '*' => [
+                        'id',
+                        'name',
+                        'image',
+                        'price',
+                        'price_before_discount',
+                        'quantity',
+                        'stock_qty',
+                        'nearly_out_of_stock_limit',
+                        'status',
+                        'is_favorite',
+                        'unit_type',
+                        'cart_info'
+
+                    ],
+                ],
+                'links' => [
+                    'first',
+                    'last',
+                    'next',
+                    'prev',
+                ],
+            ]);
+
+        $response->assertJsonCount(1, 'data');
+        $this->assertEquals($productTwo->id, $response->json('data.0.id'));
     }
 
     public function test_buyer_can_sort_products_by_price()
