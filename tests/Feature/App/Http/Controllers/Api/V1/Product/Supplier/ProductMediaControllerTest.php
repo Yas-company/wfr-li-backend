@@ -155,7 +155,7 @@ class ProductMediaControllerTest extends TestCase
             ]);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['images.0' => 'The images.0 field must not be greater than 2048 kilobytes.']);
+            ->assertJsonValidationErrors(['images.0' => 'Each image must be less than 2 MB.']);
 
         $this->assertCount(0, $this->product->fresh()->getMedia('images'));
     }
