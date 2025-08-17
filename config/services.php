@@ -38,5 +38,12 @@ return [
         ],
     ],
 
-    'default_payment_gateway' => 'tap',
+    'payment' => [
+        'default_payment_gateway' => 'tap',
+        'tap' => [
+            'base_url' => env('TAP_BASE_URL'),
+            'api_key' => env('TAP_API_KEY'),
+        ],
+    ],
+
 ];

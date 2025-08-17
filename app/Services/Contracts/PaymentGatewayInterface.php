@@ -10,10 +10,15 @@ interface PaymentGatewayInterface
     /**
      * Redirect user to payment page or return payment URL.
      */
-    public function redirect(Order $order): string;
+    public function initiatePayment(Order $order): array;
 
     /**
      * Handle callback/webhook and return payment result.
      */
-    public function handleCallback(Request $request): array;
+    public function webhook(Request $request): array;
+
+    /**
+     * Redirect user to payment page or return payment URL.
+     */
+    public function redirect(Request $request): string;
 }

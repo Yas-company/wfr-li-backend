@@ -2,12 +2,13 @@
 
 namespace App\Validators;
 
-use App\Contracts\AddToCartValidatorInterface;
+use App\Models\Cart;
 use App\Models\Product;
 use App\Exceptions\CartException;
-use App\Models\Cart;
+use App\Contracts\AddToCartValidatorInterface;
+use App\Contracts\CheckoutCartValidatorInterface;
 
-class SingleSupplierCartValidator implements AddToCartValidatorInterface
+class SingleSupplierCartValidator implements AddToCartValidatorInterface, CheckoutCartValidatorInterface
 {
 
     /**
@@ -27,6 +28,23 @@ class SingleSupplierCartValidator implements AddToCartValidatorInterface
 
         if ($product->supplier_id !== $currentSupplierId) {
             throw CartException::cannotMixProductsFromDifferentSuppliers();
+        }
+    }
+
+    /**
+     * @param Cart $cart
+     *
+     * @throws CartException
+     */
+    public function validateCheckout(Cart $cart): void
+    {
+        $currentSupplierId = $cart->products->first()->product->supplier_id;
+
+        foreach ($cart->products as $item) {
+            $product = $item->product;
+            if ($product->supplier_id !== $currentSupplierId) {
+                throw CartException::cannotMixProductsFromDifferentSuppliers();
+            }
         }
     }
 }

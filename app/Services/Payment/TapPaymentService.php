@@ -2,50 +2,83 @@
 
 namespace App\Services\Payment;
 
+use App\Enums\Payment\Tap\TapPaymentSource;
+use App\Enums\Payment\Tap\TapPaymentStatus;
 use App\Models\Order;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use App\Services\Contracts\PaymentGatewayInterface;
 
-class TapPaymentService implements PaymentGatewayInterface
+class TapPaymentService extends PaymentService implements PaymentGatewayInterface
 {
-    protected string $endpoint = 'https://api.tap.company/v2';
-    protected string $token;
+    protected string $baseUrl;
 
     public function __construct()
     {
-        $this->token = config('services.tap.secret_key');
+        $this->baseUrl = config('services.payment.tap.base_url') . '/v2/charges/';
+        $this->apiKey = config('services.payment.tap.api_key');
+        $this->headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'Authorization' => "Bearer " . $this->apiKey,
+        ];
     }
 
-    public function redirect(Order $order): string
+    /**
+     * initiate payment
+     *
+     * @param Order $order
+     *
+     * @return array
+     */
+    public function initiatePayment(Order $order): array
     {
-        $response = Http::withToken($this->token)
-            ->post("{$this->endpoint}/charges", [
-                'amount' => $order->total,
-                'currency' => 'SAR',
-                'customer' => [
-                    'email' => $order->user->email,
-                    'phone' => $order->user->phone
-                ],
-                'redirect' => [
-                    'url' => route('payment.callback', ['gateway' => 'tap']),
-                ],
-                'reference' => [
-                    'transaction' => "order_{$order->id}",
-                ],
-            ]);
+        $data = [];
 
-        if ($response->successful()) {
-            return $response->json('transaction.url');
+        $data['amount'] = $order->total;
+        $data['currency'] = config('app.currency');
+        $data['threeDSecure'] = true;
+        $data['customer']['first_name'] = $order->user->name;
+        $data['customer']['email'] = $order->user->email;
+        $data['customer']['phone'] = $order->user->phone;
+        $data['source']['id'] = TapPaymentSource::ALL->value;
+        $data['post']['url'] = route('payment.webhook');
+        $data['redirect']['url'] = route('payment.webhook');
+        $data['reference']['order'] = $order->id;
+
+        $response = $this->performRequest('POST', $this->baseUrl, $data);
+
+        $responseData = $response->getData(true);
+
+        if ($responseData['success']) {
+            return  [
+                'success' => true,
+                'url' => $responseData['data']['transaction']['url'],
+            ];
         }
 
         throw new \Exception('Failed to initiate Tap payment');
     }
 
-    public function handleCallback(Request $request): array
+    /**
+     * Handle callback/webhook and return payment result.
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function webhook(Request $request): array
     {
-        $payload = $request->json()->all();
+        $chargeId = $request->input('tap_id');
+        $response = $this->retrievePayment($chargeId);
+        dd($response);
+        if($response['success'] && $response['data']['status'] === TapPaymentStatus::CAPTURED->value)
+        {
+            $order = Order::find($response['data']['reference']['order']);
+            dd($order);
+        }
 
+        return [];
+        /*
         return [
             'order_id' => (int) str_replace('order_', '', $payload['reference']['transaction']),
             'status' => match ($payload['status']) {
@@ -54,5 +87,42 @@ class TapPaymentService implements PaymentGatewayInterface
                 default => 'pending'
             }
         ];
+        */
+    }
+
+    /**
+     * Redirect user to payment page or return payment URL.
+     *
+     * @param Request $request
+     *
+     * @return string
+     */
+    public function redirect(Request $request): string
+    {
+        $chargeId = $request->input('tap_id');
+        $response = $this->retrievePayment($chargeId);
+        $orderId = $response['data']['reference']['order'];
+
+        if($response['success'] && $response['data']['status'] === TapPaymentStatus::CAPTURED->value)
+        {
+            return "https://wfrli.com/payment/success?order_id={$orderId}";
+        } else {
+            return "https://wfrli.com/payment/failed?order_id={$orderId}";
+        }
+
+    }
+
+    /**
+     * Retrieve payment details.
+     *
+     * @param string $chargeId
+     *
+     * @return array
+     */
+    protected function retrievePayment(string $chargeId): array
+    {
+        $response = $this->performRequest('GET', $this->baseUrl . $chargeId);
+
+        return $response->getData(true);
     }
 }

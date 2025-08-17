@@ -2,12 +2,13 @@
 
 namespace App\Validators;
 
-use App\Contracts\AddToCartValidatorInterface;
-use App\Exceptions\CartException;
 use App\Models\Cart;
 use App\Models\Product;
+use App\Exceptions\CartException;
+use App\Contracts\AddToCartValidatorInterface;
+use App\Contracts\CheckoutCartValidatorInterface;
 
-class StockAvailabilityValidator implements AddToCartValidatorInterface
+class StockAvailabilityValidator implements AddToCartValidatorInterface, CheckoutCartValidatorInterface
 {
 
     /**
@@ -19,8 +20,24 @@ class StockAvailabilityValidator implements AddToCartValidatorInterface
      */
     public function validateAdd(Cart $cart, Product $product, ?int $quantity = null): void
     {
+
         if ($product->stock_qty < $quantity) {
             throw CartException::insufficientStock();
+        }
+    }
+
+    /**
+     * @param Cart $cart
+     *
+     * @throws CartException
+     */
+    public function validateCheckout(Cart $cart): void
+    {
+        foreach ($cart->products as $item) {
+            $product = $item->product;
+            if ($product->stock_qty < $item->quantity) {
+                throw CartException::insufficientStock();
+            }
         }
     }
 }

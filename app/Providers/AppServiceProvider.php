@@ -20,19 +20,19 @@ use App\Http\Services\SupplierService;
 use App\Validators\EmptyCartValidator;
 use Illuminate\Support\ServiceProvider;
 use App\Contracts\CartValidatorInterface;
+use App\Enums\Payment\PaymentGateway;
 use App\Validators\CompositeCartValidator;
 use App\Validators\ProductStatusValidator;
 use App\Services\Payment\TapPaymentService;
 use App\Validators\MinOrderAmountValidator;
-use App\Http\Services\Payment\PaymentService;
 use App\Validators\StockAvailabilityValidator;
 use App\Validators\SingleSupplierCartValidator;
 use App\Services\Contracts\CartServiceInterface;
 use App\Services\Contracts\PaymentGatewayInterface;
 use App\Services\Contracts\ProductServiceInterface;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use App\Http\Services\Contracts\PaymentServiceInterface;
 use App\Http\Services\Contracts\SupplierServiceInterface;
+use PhpOffice\PhpSpreadsheet\Calculation\Financial\CashFlow\Single;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -56,7 +56,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ProductServiceInterface::class, ProductService::class);
         $this->app->bind(CartServiceInterface::class, CartService::class);
         $this->app->bind(SupplierServiceInterface::class, SupplierService::class);
-        $this->app->bind(PaymentServiceInterface::class, PaymentService::class);
 
         $this->app->bind(CartValidatorInterface::class, fn () => new CompositeCartValidator(
             addToCartValidators: [
@@ -67,14 +66,17 @@ class AppServiceProvider extends ServiceProvider
             checkoutValidators: [
                 new MinOrderAmountValidator(),
                 new EmptyCartValidator(),
+                new SingleSupplierCartValidator(),
+                new StockAvailabilityValidator(),
+                new ProductStatusValidator(),
             ]
         ));
 
         $this->app->bind(PaymentGatewayInterface::class, function () {
-            $gateway = config('services.default_payment_gateway');
+            $gateway = config('services.payment.default_payment_gateway');
 
             return match ($gateway) {
-                'tap' => new TapPaymentService(),
+                PaymentGateway::TAP->value => new TapPaymentService(),
                 default => throw new \Exception('Unsupported payment gateway')
             };
         });

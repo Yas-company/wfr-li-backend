@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\CartResource;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\OrderResource;
+use App\Services\Payment\PaymentService;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Cart\CheckoutCartRequest;
 use App\Services\Contracts\CartServiceInterface;
@@ -102,14 +103,17 @@ class CartController extends Controller
      *
      * @return JsonResponse
      */
-    public function checkout(CheckoutCartRequest $request): JsonResponse
+    public function checkout(CheckoutCartRequest $request, PaymentService $paymentService): JsonResponse
     {
         $cartCheckoutDto = CartCheckoutDto::fromRequest($request);
 
         try {
-            $order = $this->cartService->checkout(Auth::user(), $cartCheckoutDto);
+            $data = $this->cartService->checkout(Auth::user(), $cartCheckoutDto, $paymentService);
             return $this->successResponse(
-                data: ['order' => OrderResource::make($order)],
+                data: [
+                    'order' => OrderResource::make($data['order']),
+                    'payment_url' => $data['payment_url']
+                ],
                 statusCode: Response::HTTP_CREATED
             );
         } catch (\App\Exceptions\CartException $e) {
