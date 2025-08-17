@@ -220,4 +220,10 @@ return [
         'image_updated' => 'تم تحديث صورة المشتري بنجاح',
     ],
 
+    'page' => [
+        'fetched_successfully' => 'تم جلب الصفحة بنجاح',
+        'slug_required' => 'يجب أن يكون لديك ',
+        'slug_not_found' => 'لم يتم العثور على الصفحة',
+    ],
+
 ];

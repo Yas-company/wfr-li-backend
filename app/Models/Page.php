@@ -21,4 +21,9 @@ class Page extends Model
     ];
 
     public $translatable = ['title', 'content'];
+
+    public function scopeIsActive($query)
+    {
+        return $query->where('is_active', true);
+    }
 }

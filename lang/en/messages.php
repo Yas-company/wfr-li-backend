@@ -215,4 +215,10 @@ return [
         'unauthorized_category_delete' => 'Unauthorized to delete category',
         'unauthorized_category_ownership' => 'Unauthorized to manage category',
     ],
+
+    'page' => [
+        'fetched_successfully' => 'Page fetched successfully',
+        'slug_required' => 'The slug is required',
+        'slug_not_found' => 'The slug is not found',
+    ],
 ];
