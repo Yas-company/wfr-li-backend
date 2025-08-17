@@ -58,7 +58,7 @@ class PageControllerTest extends TestCase
         );
     }
 
-    public function test_show_page_returns_validation_error_for_unknown_slug()
+    public function test_show_page_returns_not_found_for_unknown_slug()
     {
         // Arrange
         $user = User::factory()->create();
@@ -69,12 +69,6 @@ class PageControllerTest extends TestCase
             ->getJson('/api/v1/pages/unknown-slug');
 
         // Assert
-        $response->assertStatus(422)
-            ->assertJsonStructure(['message', 'errors' => ['slug']]);
-
-        $this->assertSame(
-            Lang::get('messages.page.slug_not_found', [], 'en'),
-            $response->json('errors.slug.0')
-        );
+        $response->assertStatus(404);
     }
 }

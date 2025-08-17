@@ -6,13 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Page;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
-use App\Http\Requests\PageSlugRequest;
 use App\Http\Resources\PageResource;
 use OpenApi\Annotations as OA;
+use App\Services\PageService;
+
 class PageController extends Controller
 {
     use ApiResponse;
-
+    public function __construct(protected PageService $pageService) {}
     /**
      * get a page by slug
      *
@@ -73,9 +74,9 @@ class PageController extends Controller
      *     )
      * )
      */
-    public function show(PageSlugRequest $request)
+    public function show(Page $page)
     {
-        $page = Page::where('slug', $request->slug)->isActive()->first();
+        $page = $this->pageService->getPageBySlug($page->slug);
         return $this->successResponse(new PageResource($page), __('messages.page.fetched_successfully'));
     }
 }
