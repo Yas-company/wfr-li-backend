@@ -211,6 +211,21 @@ class Product extends Model implements HasMedia
         return $this->isActive()->published();
     }
 
+    public function scopePriceBetween($query, $from ,$to)
+    {
+        return $query->whereBetween('price', [$from, $to]);
+    }
+
+    public function scopePriceLessThan($query, $value)
+    {
+        return $query->where('price', '<', $value);
+    }
+
+    public function scopePriceGreaterThan($query, $value)
+    {
+        return $query->where('price', '>', $value);
+    }
+
     /**
      * Get the attributes that should be appended to the model's array form.
      */

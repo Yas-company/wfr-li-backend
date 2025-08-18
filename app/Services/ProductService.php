@@ -4,11 +4,12 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\Product;
+use App\Filters\FilterBetween;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
+use Illuminate\Pagination\LengthAwarePaginator;
 use App\Services\Contracts\ProductServiceInterface;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class ProductService implements ProductServiceInterface
 {
@@ -54,7 +55,9 @@ class ProductService implements ProductServiceInterface
                     AllowedFilter::exact('category_id'),
                     AllowedFilter::exact('supplier_id'),
                     AllowedFilter::partial('name'),
-                    'price',
+                    AllowedFilter::scope('price_between'),
+                    AllowedFilter::scope('price_less_than'),
+                    AllowedFilter::scope('price_greater_than'),
                 ])
                 ->allowedSorts([
                     'id',

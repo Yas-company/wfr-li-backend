@@ -4,7 +4,22 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Schema(
+ *     schema="CartProduct",
+ *     type="object",
+ *     @OA\Property(property="id", type="integer", example=317),
+ *     @OA\Property(property="product_name", type="string", example="Fresh Bread"),
+ *     @OA\Property(property="product_image", type="string", example="/images/logo.jpg"),
+ *     @OA\Property(property="product_price", type="number", format="float", example=200.00),
+ *     @OA\Property(property="price_before_discount", type="number", format="float", example=228.00),
+ *     @OA\Property(property="quantity", type="integer", example=2),
+ *     @OA\Property(property="price", type="number", format="float", example=150.00),
+ *     @OA\Property(property="total", type="number", format="float", example=300.00)
+ * )
+ */
 class CartProductResource extends JsonResource
 {
     /**
