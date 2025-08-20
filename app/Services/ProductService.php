@@ -2,15 +2,14 @@
 
 namespace App\Services;
 
-use App\Enums\ProductStatus;
 use App\Models\User;
 use App\Models\Product;
-use App\Filters\JsonColumnFilter;
+use App\Filters\FilterBetween;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
+use Illuminate\Pagination\LengthAwarePaginator;
 use App\Services\Contracts\ProductServiceInterface;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class ProductService implements ProductServiceInterface
 {
@@ -26,7 +25,7 @@ class ProductService implements ProductServiceInterface
         return QueryBuilder::for(Product::class)
                 ->allowedFilters([
                     AllowedFilter::exact('category_id'),
-                    AllowedFilter::custom('name', new JsonColumnFilter),
+                    AllowedFilter::partial('name'),
                     AllowedFilter::exact('price'),
                 ])
                 ->allowedSorts([
@@ -35,14 +34,14 @@ class ProductService implements ProductServiceInterface
                 ])
                 ->allowedIncludes([
                     'category',
-                    'supplier',
+                    'media',
                 ])
                 ->defaultSort('id')
                 ->where('supplier_id', $supplierId)
                 ->paginate(10);
     }
 
-        /**
+    /**
      * Display a listing of the resource.
      *
      * @param array $filters
@@ -51,21 +50,25 @@ class ProductService implements ProductServiceInterface
      */
     public function getProductsForBuyer()
     {
-        return QueryBuilder::for(Product::query()->forUsers())
+        return QueryBuilder::for(Product::query()->forUsers()->withCartInfo())
                 ->allowedFilters([
                     AllowedFilter::exact('category_id'),
                     AllowedFilter::exact('supplier_id'),
-                    AllowedFilter::custom('name', new JsonColumnFilter),
-                    'price',
+                    AllowedFilter::partial('name'),
+                    AllowedFilter::scope('price_between'),
+                    AllowedFilter::scope('price_less_than'),
+                    AllowedFilter::scope('price_greater_than'),
                 ])
                 ->allowedSorts([
                     'id',
                     'created_at',
-                    'price'
+                    'price',
                 ])
                 ->allowedIncludes([
                     'category',
                     'supplier',
+                    'media',
+                    'currentUserFavorite',
                 ])
                 ->defaultSort('id')
                 ->paginate(10);
@@ -84,6 +87,19 @@ class ProductService implements ProductServiceInterface
         $data['supplier_id'] = $user->id;
 
         return Product::create($data);
+    }
+
+    /**
+     * Get a product by id.
+     *
+     * @param int $id
+     *
+     * @return Product
+     *
+     */
+    public function getProductById(int $id): Product
+    {
+        return Product::with(['ratings', 'category', 'category.field', 'ratings.user'])->withCartInfo()->findOrFail($id);
     }
 
     /**
@@ -159,6 +175,8 @@ class ProductService implements ProductServiceInterface
                     ->toMediaCollection('images');
             });
 
+        $product->searchable();
+
         return $product;
     }
 
@@ -173,6 +191,8 @@ class ProductService implements ProductServiceInterface
     public function removeMedia(Product $product, Media $media)
     {
         $media->delete();
+        $product->searchable();
+
         return $product;
     }
 
@@ -185,7 +205,7 @@ class ProductService implements ProductServiceInterface
         return Product::where('supplier_id', $supplierId)
         ->isActive()
         ->whereColumn('stock_qty', '>', 'nearly_out_of_stock_limit')
-        ->with(['media', 'favorites','ratings', 'category', 'category.field', 'ratings.user'])
+        ->with(['media', 'favorites', 'category', 'category.field'])
         ->paginate(10);
     }
 
@@ -199,7 +219,7 @@ class ProductService implements ProductServiceInterface
             ->isActive()
             ->whereColumn('stock_qty', '<=', 'nearly_out_of_stock_limit')
             ->where('stock_qty', '>', 0)
-            ->with(['media', 'favorites','ratings', 'category', 'category.field', 'ratings.user'])
+            ->with(['media', 'favorites', 'category', 'category.field'])
             ->paginate(10);
     }
 
@@ -211,7 +231,7 @@ class ProductService implements ProductServiceInterface
         return Product::where('supplier_id', $supplierId)
             ->isActive()
             ->where('stock_qty', '<=', 0)
-            ->with(['media', 'favorites','ratings', 'category', 'category.field', 'ratings.user'])
+            ->with(['media', 'favorites', 'category', 'category.field',])
             ->paginate(10);
     }
 
@@ -220,21 +240,21 @@ class ProductService implements ProductServiceInterface
      */
     public function getSimilarProducts(Product $product)
     {
-        $products = Product::where('category_id', $product->category_id)
-            ->published()
+        $products = Product::query()
+            ->forUsers()
+            ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
-            ->isActive()
-            ->with(['media', 'currentUserFavorite', 'category', 'category.field', 'ratings', 'ratings.user'])
+            ->with(['media', 'currentUserFavorite', 'category', 'category.field'])
             ->take(5)
             ->latest()
             ->get();
 
         if ($products->count() == 0) {
-            $products = Product::where('supplier_id', $product->supplier_id)
-                ->published()
+            $products = Product::query()
+                ->forUsers()
+                ->where('supplier_id', $product->supplier_id)
                 ->where('id', '!=', $product->id)
-                ->isActive()
-                ->with(['media', 'currentUserFavorite', 'ratings', 'category', 'category.field', 'supplier'])
+                ->with(['media', 'currentUserFavorite', 'category', 'category.field', 'supplier'])
                 ->take(5)
                 ->latest()
                 ->get();

@@ -3,8 +3,9 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use OpenApi\Annotations as OA;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @OA\Schema(
@@ -38,12 +39,14 @@ class ProductResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $user = Auth::user();
+
         return [
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
-            'images' => MediaResource::collection($this->getMedia('images')),
-            'image' => $this->getFirstMediaUrl('images'),
+            'images' => $this->relationLoaded('media') ? MediaResource::collection($this->getMedia('images')) : [],
+            'image' => $this->relationLoaded('media') ? $this->getFirstMediaUrl('images') : null,
             'price' => $this->price,
             'price_before_discount' => $this->price_before_discount,
             'quantity' => $this->quantity,
@@ -53,7 +56,13 @@ class ProductResource extends JsonResource
             'is_favorite' => $this->is_favorite,
             'unit_type' => $this->unit_type->toResponse(),
             'category' => new CategoryResource($this->whenLoaded('category')),
-            'ratings' => RatingResource::collection($this->whenLoaded('ratings')),
+            'supplier' => new SupplierResource($this->whenLoaded('supplier')),
+            $this->mergeWhen($user && $user->isBuyer() && $this->relationLoaded('cartProduct'), [
+                'cart_info' =>  [
+                    'in_cart' => ! is_null($this->cartProduct),
+                    'quantity' => $this->cartProduct ? $this->cartProduct->quantity : 0
+                ],
+            ])
         ];
     }
 }

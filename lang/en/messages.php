@@ -171,6 +171,7 @@ return [
             'image' => 'The file must be an image',
             'mimes' => 'The file must be an image',
             'max' => 'You must attach at most 5 images',
+            'max_per_file' => 'Each image must be less than 2 MB.',
         ],
         'min_order_quantity' => [
             'required' => 'You must have a minimum order quantity for the product',
@@ -213,5 +214,11 @@ return [
         'unauthorized_category_update' => 'Unauthorized to update category',
         'unauthorized_category_delete' => 'Unauthorized to delete category',
         'unauthorized_category_ownership' => 'Unauthorized to manage category',
+    ],
+
+    'page' => [
+        'fetched_successfully' => 'Page fetched successfully',
+        'slug_required' => 'The slug is required',
+        'slug_not_found' => 'The slug is not found',
     ],
 ];

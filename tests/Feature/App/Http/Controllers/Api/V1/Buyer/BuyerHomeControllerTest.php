@@ -32,7 +32,7 @@ class BuyerHomeControllerTest extends TestCase
     {
         // Create multiple suppliers with products
         $suppliers = User::factory()->supplier()->count(6)->create();
-        
+
         foreach ($suppliers as $supplier) {
             $category = Category::factory()->create(['supplier_id' => $supplier->id]);
             Product::factory()->count(5)->create([
@@ -69,6 +69,7 @@ class BuyerHomeControllerTest extends TestCase
                                 'is_favorite',
                                 'unit_type',
                                 'category',
+                                'cart_info'
                             ],
                         ],
                     ],
@@ -99,12 +100,12 @@ class BuyerHomeControllerTest extends TestCase
         $response = $this->actingAs($this->buyer)->getJson(route('home.suppliers-and-products'));
 
         $response->assertStatus(200);
-        
+
         $responseData = $response->json('data');
-        
+
         // Find the supplier in the response
         $supplierData = collect($responseData)->firstWhere('id', $this->supplier->id);
-        
+
         if ($supplierData) {
             // Assert that only 10 products are returned (take(10) in products relationship)
             $this->assertLessThanOrEqual(10, count($supplierData['products']));
@@ -133,18 +134,18 @@ class BuyerHomeControllerTest extends TestCase
             ]);
 
         $responseData = $response->json('data');
-        
+
         // Each supplier should have an empty products array
         foreach ($responseData as $supplierData) {
             $this->assertIsArray($supplierData['products']);
         }
     }
 
-    
+
     public function test_buyer_can_get_suppliers_with_products_ordered_by_latest()
     {
         $category = Category::factory()->create(['supplier_id' => $this->supplier->id]);
-        
+
         // Create products with specific creation times
         $oldProduct = Product::factory()->create([
             'supplier_id' => $this->supplier->id,
@@ -152,7 +153,7 @@ class BuyerHomeControllerTest extends TestCase
             'is_active' => true,
             'created_at' => now()->subDays(5),
         ]);
-        
+
         $newProduct = Product::factory()->create([
             'supplier_id' => $this->supplier->id,
             'category_id' => $category->id,
@@ -163,10 +164,10 @@ class BuyerHomeControllerTest extends TestCase
         $response = $this->actingAs($this->buyer)->getJson(route('home.suppliers-and-products'));
 
         $response->assertStatus(200);
-        
+
         $responseData = $response->json('data');
         $supplierData = collect($responseData)->firstWhere('id', $this->supplier->id);
-        
+
         if ($supplierData && count($supplierData['products']) >= 2) {
             // The newest product should be first (latest() ordering in products relationship)
             $firstProduct = $supplierData['products'][0];
@@ -217,17 +218,17 @@ class BuyerHomeControllerTest extends TestCase
         $response = $this->actingAs($this->buyer)->getJson(route('home.suppliers-and-products'));
 
         $response->assertStatus(200);
-        
+
         $responseData = $response->json('data');
         $supplierData = collect($responseData)->firstWhere('id', $this->supplier->id);
-        
+
         if ($supplierData) {
             // Assert supplier has only the selected fields (id, name, image)
             $this->assertArrayHasKey('id', $supplierData);
             $this->assertArrayHasKey('name', $supplierData);
             $this->assertArrayHasKey('image', $supplierData);
             $this->assertArrayHasKey('products', $supplierData);
-            
+
             // Assert supplier doesn't have other fields like email, created_at, etc.
             $this->assertArrayNotHasKey('email', $supplierData);
             $this->assertArrayNotHasKey('created_at', $supplierData);
@@ -247,21 +248,21 @@ class BuyerHomeControllerTest extends TestCase
         $response = $this->actingAs($this->buyer)->getJson(route('home.suppliers-and-products'));
 
         $response->assertStatus(200);
-        
+
         $responseData = $response->json('data');
         $supplierData = collect($responseData)->firstWhere('id', $this->supplier->id);
-        
+
         if ($supplierData && count($supplierData['products']) > 0) {
             $productData = $supplierData['products'][0];
-            
+
             // Assert product has all required fields
             $requiredFields = [
                 'id', 'name', 'description', 'images', 'image', 'price',
-                'price_before_discount', 'quantity', 'stock_qty', 
+                'price_before_discount', 'quantity', 'stock_qty',
                 'nearly_out_of_stock_limit', 'status', 'is_favorite',
                 'unit_type', 'category'
             ];
-            
+
             foreach ($requiredFields as $field) {
                 $this->assertArrayHasKey($field, $productData, "Product should have '{$field}' field");
             }

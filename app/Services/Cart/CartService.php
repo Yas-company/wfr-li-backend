@@ -139,11 +139,13 @@ class CartService implements CartServiceInterface
         foreach ($cart->products as $item) {
             $supplierId = $item->product->supplier_id;
             $supplierName = $item->product->supplier->name;
+            $supplierImage = $item->product->supplier->image;
 
             if (!isset($requirements[$supplierId])) {
                 $requirements[$supplierId] = [
                     'supplier_id' => $supplierId,
                     'supplier_name' => $supplierName,
+                    'supplier_image' => $supplierImage,
                     'required_amount' => $this->getMinOrderAmountForSupplier($supplierId),
                     'current_total' => 0,
                 ];
@@ -158,7 +160,8 @@ class CartService implements CartServiceInterface
                 $req['supplier_id'],
                 $req['supplier_name'],
                 $req['required_amount'],
-                $req['current_total']
+                $req['current_total'],
+                $req['supplier_image'],
             );
 
             $final[] = $requirement->toArray();

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\UnitType;
 use App\Traits\Rateable;
 use App\Enums\ProductStatus;
+use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
@@ -19,6 +20,7 @@ class Product extends Model implements HasMedia
     use HasTranslations;
     use Rateable;
     use InteractsWithMedia;
+    use Searchable;
 
     public $translatable = ['name', 'description'];
 
@@ -50,16 +52,50 @@ class Product extends Model implements HasMedia
 
     protected $appends = [];
 
-    // protected $with = ['category', 'supplier'];
+    public function searchableAs()
+    {
+        return 'products_index';
+    }
+
+    public function toSearchableArray()
+    {
+        $this->load(['category', 'supplier', 'media']);
+        $firstMedia = $this->getFirstMediaUrl('images', 'thumb');
+
+        $array = $this->toArray();
+
+        return [
+            'name_ar' => $array['name']['ar'],
+            'name_en' => $array['name']['en'],
+            'description_ar' => $array['description']['ar'],
+            'description_en' => $array['description']['en'],
+            'supplier_name' => $array['supplier']['name'],
+            'category_name_ar' => $array['category']['name']['ar'],
+            'category_name_en' => $array['category']['name']['en'],
+            'image' => $firstMedia,
+        ];
+    }
+
+    /**
+     * Only sync to Algolia if the product is published and active.
+     */
+    public function shouldBeSearchable(): bool
+    {
+        return $this->status === ProductStatus::PUBLISHED &&
+                $this->is_active;
+
+    }
 
     public function registerMediaConversions(?Media $media = null): void
     {
         $this->addMediaConversion('thumb')
+            ->keepOriginalImageFormat()
             ->width(150)
             ->height(150)
             ->sharpen(10);
 
         $this->addMediaConversion('preview')
+            ->keepOriginalImageFormat()
             ->width(400)
             ->height(400)
             ->sharpen(10);
@@ -69,11 +105,10 @@ class Product extends Model implements HasMedia
     {
         $this->addMediaCollection('images')
         ->useFallbackUrl('/images/logo.jpg')
-            ->useFallbackPath(public_path('/images/logo.jpg'))
-            ->withResponsiveImages(); ;
+            ->useFallbackPath(public_path('/images/logo.jpg'));
     }
 
-public function favoritedByUsers()
+    public function favoritedByUsers()
     {
         return $this->belongsToMany(User::class, 'favorites')->where('is_favorite', true)->withTimestamps();
     }
@@ -152,6 +187,25 @@ public function favoritedByUsers()
         return $this->belongsTo(Category::class);
     }
 
+    public function cartProduct()
+    {
+        return $this->hasOne(CartProduct::class, 'product_id');
+    }
+
+    public function scopeWithCartInfo($query)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return $query;
+        }
+
+        return $query->with(['cartProduct' => function ($query) use ($user) {
+            $query->whereHas('cart', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            });
+        }]);
+    }
+
     public function scopeIsActive($query)
     {
         return $query->where('is_active', true);
@@ -166,6 +220,22 @@ public function favoritedByUsers()
     {
         return $this->isActive()->published();
     }
+
+    public function scopePriceBetween($query, $from ,$to)
+    {
+        return $query->whereBetween('price', [$from, $to]);
+    }
+
+    public function scopePriceLessThan($query, $value)
+    {
+        return $query->where('price', '<', $value);
+    }
+
+    public function scopePriceGreaterThan($query, $value)
+    {
+        return $query->where('price', '>', $value);
+    }
+
     /**
      * Get the attributes that should be appended to the model's array form.
      */
