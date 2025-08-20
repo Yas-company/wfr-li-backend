@@ -30,6 +30,8 @@ use App\Services\Contracts\ProductServiceInterface;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use App\Http\Services\Contracts\PaymentServiceInterface;
 use App\Http\Services\Contracts\SupplierServiceInterface;
+use App\Models\Page;
+use Illuminate\Support\Facades\Route;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -77,5 +79,13 @@ class AppServiceProvider extends ServiceProvider
             'order' => Order::class,
             'product' => Product::class,
         ]);
+
+
+        Route::bind('page', function(string $value) {
+            return Page::query()
+                ->isActive()
+                ->where('slug', $value)
+                ->firstOrFail();
+        });
     }
 }

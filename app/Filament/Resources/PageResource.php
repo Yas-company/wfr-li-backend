@@ -85,6 +85,7 @@ class PageResource extends Resource
                     ->searchable(query: fn($query, $search) => $query->where('title->ar', 'like', "%{$search}%")),
 
                 Tables\Columns\TextColumn::make('slug')
+                    ->label('الرابط المخصص')
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
