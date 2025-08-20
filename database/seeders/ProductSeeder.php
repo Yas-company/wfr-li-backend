@@ -73,22 +73,24 @@ class ProductSeeder extends Seeder
                 $discount = rand(0, 30); // 0-30% discount
                 $priceBeforeDiscount = $basePrice + ($basePrice * $discount / 100);
 
-                Product::create([
-                    'name' => $productNames[$nameIndex],
-                    'description' => $productDescriptions[$descIndex],
-                    'price' => $basePrice,
-                    'price_before_discount' => $discount > 0 ? $priceBeforeDiscount : null,
-                    'quantity' => rand(10, 100),
-                    'min_order_quantity' => rand(1, 5),
-                    'stock_qty' => rand(50, 1000),
-                    'nearly_out_of_stock_limit' => rand(5, 20),
-                    'unit_type' => $unitType,
-                    'status' => rand(0, 10) > 2 ? ProductStatus::PUBLISHED->value : ProductStatus::DRAFT->value, // 80% published
-                    'is_active' => rand(0, 10) > 1, // 90% active
-                    'is_featured' => rand(0, 10) > 7, // 30% featured
-                    'category_id' => $category->id,
-                    'supplier_id' => $suppliers->random()->id,
-                ]);
+                Product::withoutSyncingToSearch(function() use($productNames, $productDescriptions, $nameIndex, $descIndex, $basePrice, $discount, $priceBeforeDiscount, $unitType, $category, $suppliers) {
+                    Product::create([
+                        'name' => $productNames[$nameIndex],
+                        'description' => $productDescriptions[$descIndex],
+                        'price' => $basePrice,
+                        'price_before_discount' => $discount > 0 ? $priceBeforeDiscount : null,
+                        'quantity' => rand(10, 100),
+                        'min_order_quantity' => rand(1, 5),
+                        'stock_qty' => rand(50, 1000),
+                        'nearly_out_of_stock_limit' => rand(5, 20),
+                        'unit_type' => $unitType,
+                        'status' => rand(0, 10) > 2 ? ProductStatus::PUBLISHED->value : ProductStatus::DRAFT->value, // 80% published
+                        'is_active' => rand(0, 10) > 1, // 90% active
+                        'is_featured' => rand(0, 10) > 7, // 30% featured
+                        'category_id' => $category->id,
+                        'supplier_id' => $suppliers->random()->id,
+                    ]);
+                });
             }
         }
 

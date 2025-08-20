@@ -34,7 +34,7 @@ class BuyerHomeControllerTest extends TestCase
         $suppliers = User::factory()->supplier()->count(6)->create();
 
         foreach ($suppliers as $supplier) {
-            $category = Category::factory()->create(['supplier_id' => $supplier->id]);
+            $category = Category::factory()->create([]);
             Product::factory()->count(5)->create([
                 'supplier_id' => $supplier->id,
                 'category_id' => $category->id,
@@ -90,7 +90,7 @@ class BuyerHomeControllerTest extends TestCase
     public function test_buyer_can_get_suppliers_with_limited_products()
     {
         // Create a supplier with many products
-        $category = Category::factory()->create(['supplier_id' => $this->supplier->id]);
+        $category = Category::factory()->create([]);
         Product::factory()->count(15)->create([
             'supplier_id' => $this->supplier->id,
             'category_id' => $category->id,
@@ -144,7 +144,7 @@ class BuyerHomeControllerTest extends TestCase
 
     public function test_buyer_can_get_suppliers_with_products_ordered_by_latest()
     {
-        $category = Category::factory()->create(['supplier_id' => $this->supplier->id]);
+        $category = Category::factory()->create([]);
 
         // Create products with specific creation times
         $oldProduct = Product::factory()->create([
@@ -208,7 +208,7 @@ class BuyerHomeControllerTest extends TestCase
 
     public function test_response_includes_correct_supplier_fields()
     {
-        $category = Category::factory()->create(['supplier_id' => $this->supplier->id]);
+        $category = Category::factory()->create([]);
         Product::factory()->create([
             'supplier_id' => $this->supplier->id,
             'category_id' => $category->id,
@@ -238,7 +238,7 @@ class BuyerHomeControllerTest extends TestCase
 
     public function test_products_include_complete_structure()
     {
-        $category = Category::factory()->create(['supplier_id' => $this->supplier->id]);
+        $category = Category::factory()->create([]);
         $product = Product::factory()->create([
             'supplier_id' => $this->supplier->id,
             'category_id' => $category->id,
