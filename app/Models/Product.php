@@ -81,7 +81,7 @@ class Product extends Model implements HasMedia
      */
     public function shouldBeSearchable(): bool
     {
-        return $this->status === ProductStatus::PUBLISHED->value &&
+        return $this->status === ProductStatus::PUBLISHED &&
                 $this->is_active;
 
     }
