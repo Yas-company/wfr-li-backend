@@ -216,7 +216,9 @@ return [
         'unauthorized_category_ownership' => 'Unauthorized to manage category',
     ],
 
-    'payment' => [
-        'status_updated' => 'Payment status updated successfully',
+    'page' => [
+        'fetched_successfully' => 'Page fetched successfully',
+        'slug_required' => 'The slug is required',
+        'slug_not_found' => 'The slug is not found',
     ],
 ];
