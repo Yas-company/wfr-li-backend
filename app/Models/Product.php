@@ -76,6 +76,14 @@ class Product extends Model implements HasMedia
         ];
     }
 
+    /**
+     * Only sync to Algolia if the product is published and active.
+     */
+    public function shouldBeSearchable(): bool
+    {
+        return $this->published()->isActive();
+    }
+
     public function registerMediaConversions(?Media $media = null): void
     {
         $this->addMediaConversion('thumb')
