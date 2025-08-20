@@ -32,12 +32,8 @@ use App\Services\Contracts\PaymentGatewayInterface;
 use App\Services\Contracts\ProductServiceInterface;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use App\Http\Services\Contracts\SupplierServiceInterface;
-<<<<<<< HEAD
-use PhpOffice\PhpSpreadsheet\Calculation\Financial\CashFlow\Single;
-=======
 use App\Models\Page;
 use Illuminate\Support\Facades\Route;
->>>>>>> ad14c0312c4f3a7ff69603c6046893493761d181
 
 class AppServiceProvider extends ServiceProvider
 {
