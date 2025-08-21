@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "279109c8b59b18477b1106f5700d678d",
+    "content-hash": "1cebf424fad01adf894307234256daea",
     "packages": [
         {
             "name": "algolia/algoliasearch-client-php",
@@ -3807,6 +3807,60 @@
                 }
             ],
             "time": "2025-07-17T05:12:15+00:00"
+        },
+        {
+            "name": "maantje/react-email",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/maantje/laravel-react-email.git",
+                "reference": "a3a10f3103b451a60c93fbf5fba37db95ae936cb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/maantje/laravel-react-email/zipball/a3a10f3103b451a60c93fbf5fba37db95ae936cb",
+                "reference": "a3a10f3103b451a60c93fbf5fba37db95ae936cb",
+                "shasum": ""
+            },
+            "require-dev": {
+                "orchestra/testbench": "^7.20 || ^8.0 || ^9.0 || ^10",
+                "pestphp/pest": "^1.20 || ^2.0 || ^3"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Maantje\\ReactEmail\\ReactEmailServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Maantje\\ReactEmail\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jamie Schouten",
+                    "email": "j4mie@hey.com"
+                }
+            ],
+            "description": "React email for Laravel",
+            "homepage": "https://github.com/maantje/laravel-react-email",
+            "keywords": [
+                "laravel",
+                "react",
+                "react email"
+            ],
+            "support": {
+                "issues": "https://github.com/maantje/laravel-react-email/issues",
+                "source": "https://github.com/maantje/laravel-react-email/tree/v1.0.0"
+            },
+            "time": "2025-03-01T21:43:25+00:00"
         },
         {
             "name": "maatwebsite/excel",
@@ -11527,12 +11581,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "plugin-api-version": "2.6.0"
 }
