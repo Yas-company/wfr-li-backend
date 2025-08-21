@@ -104,7 +104,7 @@ class UserService
         if (! $user || $user->role !== UserRole::SUPPLIER || $user->status !== UserStatus::APPROVED) {
             return ['error' => 'Supplier not found'];
         }
-        $user->load(['categories', 'fields']);
+        $user->load(['fields']);
 
         return $user;
     }

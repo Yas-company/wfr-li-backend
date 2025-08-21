@@ -16,7 +16,7 @@ class ProductResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
 
-    protected static ?string $navigationGroup = 'التصنيفات والمنتجات';
+    protected static ?string $navigationGroup = ' المنتجات';
 
     protected static ?string $navigationLabel = 'المنتجات';
 

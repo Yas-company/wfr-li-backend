@@ -29,7 +29,7 @@ class UpdateProductRequest extends FormRequest
             'nearly_out_of_stock_limit' => 'nullable|integer|min:0',
             'unit_type' => ['required', Rule::in(UnitType::values())],
             'status' => ['required', Rule::in(ProductStatus::values())],
-            'category_id' => ['required', Rule::exists('categories', 'id')->where('supplier_id', auth()->user()->id)],
+            'category_id' => ['required', Rule::exists('categories', 'id')],
             'image' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'min_order_quantity' => 'required|numeric|min:1',
 

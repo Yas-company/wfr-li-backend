@@ -17,7 +17,6 @@ use OpenApi\Annotations as OA;
  *         @OA\Property(property="ar", type="string", example="فواكه")
  *     ),
  *     @OA\Property(property="image", type="string", example="https://example.com/category-image.jpg"),
- *     @OA\Property(property="supplier_id", type="integer", example=1),
  *     @OA\Property(property="field_id", type="integer", example=1),
  *     @OA\Property(property="products_count", type="integer", example=25),
  *     @OA\Property(property="field", ref="#/components/schemas/FieldResource")
@@ -36,10 +35,10 @@ class CategoryResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'image' => $this->image ? asset('storage/' . $this->image) : null,
-            'supplier_id' => $this->supplier_id,
             'field_id' => $this->field_id,
             'products_count' => $this->products_count,
             'field' => new FieldResource($this->whenLoaded('field')),
+            'products' => ProductResource::collection($this->whenLoaded('products'))
         ];
     }
 }

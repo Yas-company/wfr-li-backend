@@ -45,7 +45,6 @@ class CategorySeeder extends Seeder
             Category::factory()->create([
                 'name' => $category,
                 'field_id' => fake()->randomElement($fieldIds),
-                'supplier_id' => fake()->randomElement(User::where('role', UserRole::SUPPLIER)->pluck('id')->toArray()),
             ]);
         }
 
