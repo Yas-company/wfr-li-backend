@@ -74,28 +74,27 @@ class ProductSeeder extends Seeder
                 Product::withoutSyncingToSearch(function() use(
                     $productNames,
                     $productDescriptions,
-                    $unitType,
-                    $basePrice,
-                    $category,
-                    $suppliers,
                     $nameIndex,
                     $descIndex,
-                ) {
-                    Product::create([
-                        'name' => $productNames[$nameIndex],
-                        'description' => $productDescriptions[$descIndex],
-                        'price' => $basePrice,
-                        'quantity' => rand(10, 100),
-                        'min_order_quantity' => rand(1, 5),
-                        'stock_qty' => rand(50, 1000),
-                        'nearly_out_of_stock_limit' => rand(5, 20),
-                        'unit_type' => $unitType,
-                        'status' => rand(0, 10) > 2 ? ProductStatus::PUBLISHED->value : ProductStatus::DRAFT->value, // 80% published
-                        'is_active' => rand(0, 10) > 1, // 90% active
-                        'is_featured' => rand(0, 10) > 7, // 30% featured
-                        'category_id' => $category->id,
-                        'supplier_id' => $suppliers->random()->id,
-                    ]);
+                    $basePrice,
+                    $unitType,
+                    $category,
+                    $suppliers) {
+                        Product::create([
+                            'name' => $productNames[$nameIndex],
+                            'description' => $productDescriptions[$descIndex],
+                            'base_price' => $basePrice,
+                            'quantity' => rand(10, 100),
+                            'min_order_quantity' => rand(1, 5),
+                            'stock_qty' => rand(50, 1000),
+                            'nearly_out_of_stock_limit' => rand(5, 20),
+                            'unit_type' => $unitType,
+                            'status' => rand(0, 10) > 2 ? ProductStatus::PUBLISHED->value : ProductStatus::DRAFT->value, // 80% published
+                            'is_active' => rand(0, 10) > 1, // 90% active
+                            'is_featured' => rand(0, 10) > 7, // 30% featured
+                            'category_id' => $category->id,
+                            'supplier_id' => $suppliers->random()->id,
+                        ]);
                 });
             }
         }

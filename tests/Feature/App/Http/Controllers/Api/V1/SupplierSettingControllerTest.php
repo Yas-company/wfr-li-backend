@@ -349,7 +349,6 @@ class SupplierSettingControllerTest extends TestCase
                     'image',
                     'rating',
                     'fields',
-                    'categories',
                     'supplier_status',
                 ],
             ]);

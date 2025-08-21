@@ -33,9 +33,7 @@ class ProductMediaControllerTest extends TestCase
             'role' => UserRole::SUPPLIER,
         ]);
 
-        $this->category = Category::factory()->create([
-            'supplier_id' => $this->user->id,
-        ]);
+        $this->category = Category::factory()->create([]);
 
         $this->product = Product::factory()->create([
             'supplier_id' => $this->user->id,

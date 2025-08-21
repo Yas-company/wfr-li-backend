@@ -22,7 +22,7 @@ class CategoryResource extends Resource
 
     protected static ?string $pluralNavigationLabel = 'التصنيفات';
 
-    protected static ?string $navigationGroup = 'التصنيفات والمنتجات';
+    protected static ?string $navigationGroup = 'الأقسام و التصنيفات';
 
     protected static ?int $navigationSort = 1;
     public static function form(Form $form): Form
@@ -35,6 +35,22 @@ class CategoryResource extends Resource
                 Forms\Components\TextInput::make('name.ar')
                     ->label('الاسم بالعربية')
                     ->required(),
+                Forms\Components\Select::make('field_id')
+                            ->label('القسم')
+                            ->relationship('field', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->reactive(),
+                Forms\Components\FileUpload::make('image')
+                            ->label('الصورة')
+                            ->image()
+                            ->disk('public')
+                            ->directory('categories')
+                            ->visibility('public')
+                            ->imageEditor()
+                            ->maxSize(2048)
+                            ->required(),
             ]);
     }
 
@@ -52,7 +68,10 @@ class CategoryResource extends Resource
                 Tables\Columns\TextColumn::make('name_ar')
                     ->label('الاسم بالعربية')
                     ->getStateUsing(fn($record) => $record->getTranslation('name', 'ar'))
-                    ->searchable(query: fn($query, $search) => $query->where('name->ar', 'like', "%{$search}%"))
+                    ->searchable(query: fn($query, $search) => $query->where('name->ar', 'like', "%{$search}%")),
+                Tables\Columns\ImageColumn::make('image_url')
+                    ->label('الصورة')
+                    ->square(),
             ])
             ->filters([
               //

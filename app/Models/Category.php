@@ -10,18 +10,13 @@ class Category extends Model
 {
     use HasTranslations, HasFactory;
 
-    protected $guarded = [];
+    protected $guarded = ['id'];
 
     public $translatable = ['name'];
 
     public $casts = [
         'name' => 'array',
     ];
-
-    public function supplier()
-    {
-        return $this->belongsTo(User::class, 'supplier_id');
-    }
 
     public function products()
     {
@@ -32,6 +27,7 @@ class Category extends Model
     {
         return $this->belongsTo(Field::class);
     }
+
     public function countProducts()
     {
         return $this->products()->count();

@@ -33,12 +33,8 @@ class ProductControllerTest extends TestCase
         $this->buyer = User::factory()->buyer()->create();
         $this->supplier = User::factory()->supplier()->create();
         $this->otherSupplier = User::factory()->supplier()->create();
-        $this->category = Category::factory()->create([
-            'supplier_id' => $this->supplier->id,
-        ]);
-        $this->otherCategory = Category::factory()->create([
-            'supplier_id' => $this->supplier->id,
-        ]);
+        $this->category = Category::factory()->create([]);
+        $this->otherCategory = Category::factory()->create([]);
     }
 
 
@@ -714,9 +710,7 @@ class ProductControllerTest extends TestCase
         ]);
 
         // Create products in different category but same supplier (Flow 2: Supplier-based similarity)
-        $differentCategory = Category::factory()->create([
-            'supplier_id' => $this->supplier->id,
-        ]);
+        $differentCategory = Category::factory()->create([]);
 
         $supplierSimilarProduct = Product::factory()->create([
             'supplier_id' => $this->supplier->id, // Same supplier
@@ -791,9 +785,7 @@ class ProductControllerTest extends TestCase
             'role' => UserRole::SUPPLIER,
         ]);
 
-        $isolatedCategory = Category::factory()->create([
-            'supplier_id' => $isolatedSupplier->id,
-        ]);
+        $isolatedCategory = Category::factory()->create([]);
 
         // Create a main product with isolated category
         $mainProduct = Product::factory()->create([
@@ -804,9 +796,7 @@ class ProductControllerTest extends TestCase
         ]);
 
         // Create products with different category but same supplier (Flow 2: Supplier-based similarity)
-        $differentCategory = Category::factory()->create([
-            'supplier_id' => $isolatedSupplier->id,
-        ]);
+        $differentCategory = Category::factory()->create([]);
 
         $supplierSimilarProduct1 = Product::factory()->create([
             'supplier_id' => $isolatedSupplier->id, // Same supplier
@@ -857,9 +847,7 @@ class ProductControllerTest extends TestCase
         ]);
 
         // Create products with different category and different supplier
-        $differentCategory = Category::factory()->create([
-            'supplier_id' => $this->otherSupplier->id,
-        ]);
+        $differentCategory = Category::factory()->create([]);
 
         $differentProduct = Product::factory()->create([
             'supplier_id' => $this->otherSupplier->id,
@@ -903,8 +891,6 @@ class ProductControllerTest extends TestCase
             'is_active' => true,
             'status' => ProductStatus::PUBLISHED,
         ]);
-
-
 
         Product::factory(7)->create([
             'supplier_id' => $this->supplier->id,

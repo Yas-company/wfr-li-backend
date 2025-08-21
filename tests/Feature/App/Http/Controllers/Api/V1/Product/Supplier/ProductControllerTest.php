@@ -29,9 +29,7 @@ class ProductControllerTest extends TestCase
         $this->supplier = User::factory()->supplier()->create();
         $this->otherSupplier = User::factory()->supplier()->create();
         $this->buyer = User::factory()->buyer()->create();
-        $this->category = Category::factory()->create([
-            'supplier_id' => $this->supplier->id,
-        ]);
+        $this->category = Category::factory()->create([]);
     }
 
     public function test_supplier_can_create_product()
@@ -71,29 +69,6 @@ class ProductControllerTest extends TestCase
             'category_id' => $this->category->id,
             'supplier_id' => $this->supplier->id,
         ]);
-    }
-
-    public function test_supplier_cannot_create_product_with_category_not_belonging_to_them()
-    {
-        // Create a category for another supplier
-        $otherSupplier = User::factory()->supplier()->create();
-        $otherCategory = Category::factory()->create([
-            'supplier_id' => $otherSupplier->id,
-        ]);
-
-        $productData = Product::factory()->make([
-            'category_id' => $otherCategory->id,
-            'supplier_id' => $this->supplier->id,
-        ])->toArray();
-
-        unset($productData['image']);
-        $imageFile = \Illuminate\Http\UploadedFile::fake()->create('product.jpg', 100, 'image/jpeg');
-        $productData['image'] = $imageFile;
-
-        $response = $this->actingAs($this->supplier)->postJson(route('supplier.products.store'), $productData);
-
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['category_id']);
     }
 
     public function test_supplier_cannot_create_product_with_invalid_status_and_unit_type()
@@ -585,7 +560,7 @@ class ProductControllerTest extends TestCase
     {
         // Create a fresh supplier and category for this test to avoid conflicts
         $testSupplier = User::factory()->supplier()->create();
-        $testCategory = Category::factory()->create(['supplier_id' => $testSupplier->id]);
+        $testCategory = Category::factory()->create([]);
 
         // Create nearly out-of-stock products (stock_qty < nearly_out_of_stock_limit and stock_qty > 0)
         $nearlyOutOfStockProducts = collect();

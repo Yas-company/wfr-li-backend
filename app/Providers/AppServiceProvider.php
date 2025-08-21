@@ -8,12 +8,10 @@ use App\Models\Order;
 use App\Models\Rating;
 use App\Models\Address;
 use App\Models\Product;
-use App\Models\Category;
 use App\Policies\OrderPolicy;
 use App\Policies\RatingPolicy;
 use App\Policies\AddressPolicy;
 use App\Policies\ProductPolicy;
-use App\Policies\CategoryPolicy;
 use App\Services\Cart\CartService;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
@@ -74,7 +72,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Order::class, OrderPolicy::class);
         Gate::policy(Rating::class, RatingPolicy::class);
         Gate::policy(Product::class, ProductPolicy::class);
-        Gate::policy(Category::class, CategoryPolicy::class);
 
         Relation::morphMap([
             'user' => User::class,
