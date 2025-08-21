@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Product;
 
 use App\Models\User;
 use App\Models\Product;
-use App\Filters\FilterBetween;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -13,6 +12,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ProductService implements ProductServiceInterface
 {
+    public function __construct(protected ProductPricingCalculatorService $productPricingCalculatorService) {}
+
     /**
      * Display a listing of the resource.
      *
@@ -85,6 +86,13 @@ class ProductService implements ProductServiceInterface
     public function store(array $data, User $user)
     {
         $data['supplier_id'] = $user->id;
+        $productPrices = $this->productPricingCalculatorService->calculate($data['base_price'], $data['discount_rate']);
+
+        $data['base_price'] = $productPrices->basePrice;
+        $data['price_before_discount'] = $productPrices->priceBeforeDiscount;
+        $data['price'] = $productPrices->priceAfterDiscount;
+        $data['price_after_taxes'] = $productPrices->priceAfterTaxes;
+        $data['total_discount'] = $productPrices->totalDiscount;
 
         return Product::create($data);
     }
@@ -112,6 +120,14 @@ class ProductService implements ProductServiceInterface
      */
     public function update(Product $product, array $data)
     {
+        $productPrices = $this->productPricingCalculatorService->calculate($data['base_price'], $data['discount_rate']);
+
+        $data['base_price'] = $productPrices->basePrice;
+        $data['price_before_discount'] = $productPrices->priceBeforeDiscount;
+        $data['price'] = $productPrices->priceAfterDiscount;
+        $data['price_after_taxes'] = $productPrices->priceAfterTaxes;
+        $data['total_discount'] = $productPrices->totalDiscount;
+
         $product->update($data);
 
         return $product;

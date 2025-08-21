@@ -63,7 +63,7 @@ class ProductControllerTest extends TestCase
                     'status',
                     'is_favorite',
                     'unit_type',
-              
+
                 ],
             ]);
 
@@ -124,7 +124,7 @@ class ProductControllerTest extends TestCase
             'supplier_id' => $this->supplier->id,
         ])->toArray();
 
-        $productData['price'] = 0;
+        $productData['base_price'] = 0;
         $productData['quantity'] = 0;
 
         unset($productData['image']);
@@ -134,7 +134,7 @@ class ProductControllerTest extends TestCase
         $response = $this->actingAs($this->supplier)->postJson(route('supplier.products.store'), $productData);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['price', 'quantity']);
+            ->assertJsonValidationErrors(['base_price', 'quantity']);
     }
 
     public function test_supplier_can_update_product()
@@ -211,7 +211,7 @@ class ProductControllerTest extends TestCase
                     'status',
                     'is_favorite',
                     'unit_type',
-          
+
                 ],
             ]);
     }
@@ -243,7 +243,7 @@ class ProductControllerTest extends TestCase
                         'status',
                         'is_favorite',
                         'unit_type',
-                    
+
                     ],
                 ],
                 'links' => [
@@ -305,7 +305,7 @@ class ProductControllerTest extends TestCase
                     'status',
                     'is_favorite',
                     'unit_type',
-                  
+
                 ],
             ]);
     }
@@ -392,7 +392,7 @@ class ProductControllerTest extends TestCase
                         'status',
                         'is_favorite',
                         'unit_type',
-                       
+
                     ],
                 ],
             ]);
@@ -456,7 +456,7 @@ class ProductControllerTest extends TestCase
     {
         // Clear any existing products for this supplier
         Product::where('supplier_id', $this->supplier->id)->delete();
-        
+
         // Create available products (stock_qty > nearly_out_of_stock_limit)
         Product::factory()->count(3)->create([
             'supplier_id' => $this->supplier->id,
@@ -516,7 +516,7 @@ class ProductControllerTest extends TestCase
         // Assert that only available products are returned
         $responseData = $response->json('data');
         $this->assertCount(3, $responseData);
-        
+
         foreach ($responseData as $product) {
             $this->assertGreaterThan($product['nearly_out_of_stock_limit'], $product['stock_qty']);
         }
@@ -526,7 +526,7 @@ class ProductControllerTest extends TestCase
     {
         // Clear any existing products for this supplier
         Product::where('supplier_id', $this->supplier->id)->delete();
-        
+
         // Create available products
         Product::factory()->count(2)->create([
             'supplier_id' => $this->supplier->id,
@@ -575,7 +575,7 @@ class ProductControllerTest extends TestCase
         // Assert that only out-of-stock products are returned
         $responseData = $response->json('data');
         $this->assertCount(3, $responseData);
-        
+
         foreach ($responseData as $product) {
             $this->assertEquals(0, $product['stock_qty']);
         }
@@ -586,7 +586,7 @@ class ProductControllerTest extends TestCase
         // Create a fresh supplier and category for this test to avoid conflicts
         $testSupplier = User::factory()->supplier()->create();
         $testCategory = Category::factory()->create(['supplier_id' => $testSupplier->id]);
-        
+
         // Create nearly out-of-stock products (stock_qty < nearly_out_of_stock_limit and stock_qty > 0)
         $nearlyOutOfStockProducts = collect();
         for ($i = 0; $i < 3; $i++) {
@@ -607,11 +607,11 @@ class ProductControllerTest extends TestCase
                 'min_order_quantity' => 1,
             ]);
             $product->save();
-            
+
             // Now reduce the stock to simulate sales/usage - make it nearly out of stock
             $product->stock_qty = 3;  // LESS than nearly_out_of_stock_limit (5)
             $product->save();
-            
+
             $nearlyOutOfStockProducts->push($product);
         }
 
@@ -633,7 +633,7 @@ class ProductControllerTest extends TestCase
                 'is_featured' => false,
                 'min_order_quantity' => 1,
             ]);
-            
+
             // Keep stock high - still available (no reduction needed for available products)
             // stock_qty (50) > nearly_out_of_stock_limit (5) = Available
         }
@@ -655,9 +655,9 @@ class ProductControllerTest extends TestCase
             'is_featured' => false,
             'min_order_quantity' => 1,
         ]);
-        
+
         // Completely sell out the product - reduce stock to 0
-        $outOfStockProduct->stock_qty = 0;  
+        $outOfStockProduct->stock_qty = 0;
         $outOfStockProduct->save();
 
         $response = $this->actingAs($testSupplier)->getJson(route('supplier.products.nearly-out-of-stock'));
@@ -691,21 +691,21 @@ class ProductControllerTest extends TestCase
 
         // Assert that only nearly out-of-stock products are returned
         $responseData = $response->json('data');
-        
+
         // The response should contain exactly 3 nearly out-of-stock products
         $this->assertCount(3, $responseData);
-        
+
         // Verify each returned product meets the criteria
         foreach ($responseData as $product) {
             // For nearly out of stock: stock_qty < nearly_out_of_stock_limit
             // So we assert: stock_qty is less than nearly_out_of_stock_limit
-            $this->assertTrue($product['stock_qty'] < $product['nearly_out_of_stock_limit'], 
+            $this->assertTrue($product['stock_qty'] < $product['nearly_out_of_stock_limit'],
                 "Product ID {$product['id']}: stock_qty ({$product['stock_qty']}) should be LESS than nearly_out_of_stock_limit ({$product['nearly_out_of_stock_limit']})");
             // stock_qty should be greater than 0 (not out of stock)
-            $this->assertGreaterThan(0, $product['stock_qty'], 
+            $this->assertGreaterThan(0, $product['stock_qty'],
                 "Product ID {$product['id']}: stock_qty ({$product['stock_qty']}) should be greater than 0");
         }
-        
+
         // Verify the returned products are the ones we created
         $returnedIds = collect($responseData)->pluck('id')->sort()->values();
         $expectedIds = $nearlyOutOfStockProducts->pluck('id')->sort()->values();
