@@ -94,6 +94,13 @@ class AddressService
             throw UserException::cannotDeleteLastAddress();
         }
 
+        $isAttachedToOrder = $address->orders()->exists();
+
+        if($isAttachedToOrder)
+        {
+            throw UserException::cannotDeleteAddressAttachedToOrder();
+        }
+
         if ($address->is_default) {
             $newDefaultAddress = $user->addresses()->where('id', '!=', $address->id)->first();
 
