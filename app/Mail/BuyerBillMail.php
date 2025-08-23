@@ -37,7 +37,7 @@ class BuyerBillMail extends Mailable
 
         $bill = [
             'order_number' => $this->order->id,
-'recipient_name' => $this->order->user->name,
+            'recipient_name' => $this->order->user->name,
             'email_subject' => 'Your Order Bill #' . $this->order->id,
             'items' => $items,
             // Extend if you store shipping/tax elsewhere

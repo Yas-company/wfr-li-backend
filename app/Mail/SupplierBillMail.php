@@ -6,7 +6,6 @@ use App\Models\Order;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Maantje\ReactEmail\Renderer;
 
 class SupplierBillMail extends Mailable
 {
@@ -32,7 +31,6 @@ class SupplierBillMail extends Mailable
                 'quantity' => (int)($orderProduct->quantity ?? 1),
                 'unit_price_before' => $unitBefore,
                 'unit_price_after' => $unitAfter,
-                // Add mediator_interest per item if you store it
             ];
         })->toArray();
 
