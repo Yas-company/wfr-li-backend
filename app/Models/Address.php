@@ -29,4 +29,14 @@ class Address extends Model
     {
         return $this->is_default;
     }
+
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderDetail::class, 'shipping_address_id');
+    }
+
+    public function orders()
+    {
+        return $this->hasManyThrough(Order::class, OrderDetail::class, 'shipping_address_id', 'id', 'id', 'order_id');
+    }
 }

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use OpenApi\Annotations as OA;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\Category\CategoryResource;
 
 /**
  * @OA\Schema(

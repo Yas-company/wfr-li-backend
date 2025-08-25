@@ -16,4 +16,9 @@ class UserException extends Exception
     {
         return new static(__('messages.users.at_least_one_default_address_required'), Response::HTTP_UNPROCESSABLE_ENTITY);
     }
+
+    public static function cannotDeleteAddressAttachedToOrder()
+    {
+        return new static(__('messages.users.cannot_delete_address_attached_to_order'), Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
 }
