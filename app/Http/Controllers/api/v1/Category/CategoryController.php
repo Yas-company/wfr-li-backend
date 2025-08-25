@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Http\Controllers\api\v1;
+namespace App\Http\Controllers\api\v1\Category;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Category\IndexCategoryRequest;
-use App\Http\Resources\CategoryResource;
-use App\Http\Services\CategoryService;
 use App\Models\Category;
 use App\Traits\ApiResponse;
 use OpenApi\Annotations as OA;
+use App\Services\CategoryService;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Category\CategoryResource;
+use App\Http\Requests\Category\IndexCategoryRequest;
 
 class CategoryController extends Controller
 {
     use ApiResponse;
+
     public $categoryService;
 
     public function __construct(CategoryService $categoryService)

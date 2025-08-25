@@ -60,7 +60,6 @@ class UserResource extends JsonResource
             'commercial_register_attachment' => $this->commercial_register_attachment,
             'status' => $this->status->toResponse(),
             'fields' => FieldResource::collection($this->whenLoaded('fields')),
-            'categories' => CategoryResource::collection($this->whenLoaded('categories')),
             'addresses' => AddressResource::collection($this->whenLoaded('addresses')),
             'organization' => OrganizationResource::make($this->whenLoaded('organization')),
             'organizations' => OrganizationResource::collection($this->whenLoaded('organizations')),
