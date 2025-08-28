@@ -52,7 +52,11 @@ class ProductPricingCalculatorServiceTest extends TestCase
         $this->assertEquals(105.0, $result->priceBeforeDiscount);
         $this->assertEquals(10.5, $result->totalDiscount);
         $this->assertEquals(94.5, $result->priceAfterDiscount);
+        $this->assertEquals(4.5, $result->totalPlatformTax);
+        $this->assertEquals(14.18, $result->totalCountryTax);
+        $this->assertEquals(0, $result->totalOtherTax);
         $this->assertEquals(108.68, $result->priceAfterTaxes);
+
     }
 
     public function test_it_calculates_correctly_with_no_discount()
@@ -85,6 +89,9 @@ class ProductPricingCalculatorServiceTest extends TestCase
         $this->assertEquals(210.0, $result->priceBeforeDiscount);
         $this->assertEquals(0.0, $result->totalDiscount);
         $this->assertEquals(210.0, $result->priceAfterDiscount);
+        $this->assertEquals(10, $result->totalPlatformTax);
+        $this->assertEquals(31.5, $result->totalCountryTax);
+        $this->assertEquals(0, $result->totalOtherTax);
         $this->assertEquals(241.5, $result->priceAfterTaxes);
     }
 
@@ -136,6 +143,9 @@ class ProductPricingCalculatorServiceTest extends TestCase
         $this->assertEquals(105.0, $result->priceBeforeDiscount);
         $this->assertEquals(0.0, $result->totalDiscount);
         $this->assertEquals(105.0, $result->priceAfterDiscount);
+        $this->assertEquals(5, $result->totalPlatformTax);
+        $this->assertEquals(15.75, $result->totalCountryTax);
+        $this->assertEquals(0, $result->totalOtherTax);
         $this->assertEquals(120.75, $result->priceAfterTaxes);
 
     }
@@ -152,6 +162,9 @@ class ProductPricingCalculatorServiceTest extends TestCase
         $this->assertEquals(100.0, $result->priceBeforeDiscount);
         $this->assertEquals(10.0, $result->totalDiscount);
         $this->assertEquals(90.0, $result->priceAfterDiscount);
+        $this->assertEquals(0, $result->totalPlatformTax);
+        $this->assertEquals(0, $result->totalCountryTax);
+        $this->assertEquals(0, $result->totalOtherTax);
         $this->assertEquals(90.0, $result->priceAfterTaxes);
     }
 
@@ -187,6 +200,88 @@ class ProductPricingCalculatorServiceTest extends TestCase
         $this->assertEquals(100.0, $result->priceBeforeDiscount);
         $this->assertEquals(0.0, $result->totalDiscount);
         $this->assertEquals(100.0, $result->priceAfterDiscount);
+        $this->assertEquals(0, $result->totalPlatformTax);
+        $this->assertEquals(0, $result->totalCountryTax);
+        $this->assertEquals(0, $result->totalOtherTax);
         $this->assertEquals(100.0, $result->priceAfterTaxes);
+    }
+
+    public function test_it_returns_zero_when_base_price_is_zero()
+    {
+        Tax::create([
+            'name' => 'VAT',
+            'code' => 'vat',
+            'group' => TaxGroup::COUNTRY_VAT->value,
+            'applies_to' => TaxApplyTo::PRODUCT->value,
+            'rate' => 0.2,
+            'is_active' => true,
+        ]);
+
+        $calculator = new ProductPricingCalculatorService();
+        $result = $calculator->calculate(0, 0.1);
+
+        $this->assertEquals(0.0, $result->priceBeforeDiscount);
+        $this->assertEquals(0.0, $result->totalDiscount);
+        $this->assertEquals(0.0, $result->priceAfterDiscount);
+        $this->assertEquals(0, $result->totalPlatformTax);
+        $this->assertEquals(0, $result->totalCountryTax);
+        $this->assertEquals(0, $result->totalOtherTax);
+        $this->assertEquals(0.0, $result->priceAfterTaxes);
+    }
+
+    public function test_it_handles_100_percent_discount()
+    {
+        $basePrice = 100.0;
+        $discountRate = 1.0;
+
+        Tax::create([
+            'name' => 'Platform Tax',
+            'code' => 'platform',
+            'group' => TaxGroup::PLATFORM->value,
+            'applies_to' => TaxApplyTo::PRODUCT->value,
+            'rate' => 0.1,
+            'is_active' => true,
+        ]);
+
+        $calculator = new ProductPricingCalculatorService();
+        $result = $calculator->calculate($basePrice, $discountRate);
+
+        $this->assertEquals(110.0, $result->priceBeforeDiscount);
+        $this->assertEquals(110.0, $result->totalDiscount);
+        $this->assertEquals(0.0, $result->priceAfterDiscount);
+        $this->assertEquals(0.0, $result->priceAfterTaxes);
+    }
+
+    public function test_it_does_not_allow_discount_greater_than_100_percent()
+    {
+        $basePrice = 100.0;
+        $discountRate = 1.5; // 150%
+
+        $calculator = new ProductPricingCalculatorService();
+        $result = $calculator->calculate($basePrice, $discountRate);
+
+        $this->assertGreaterThanOrEqual(0, $result->priceAfterDiscount);
+        $this->assertGreaterThanOrEqual(0, $result->priceAfterTaxes);
+    }
+
+    public function test_it_calculates_with_only_other_taxes()
+    {
+        $basePrice = 50.0;
+
+        Tax::create([
+            'name' => 'Environmental Fee',
+            'code' => 'env_fee',
+            'group' => TaxGroup::OTHER->value,
+            'applies_to' => TaxApplyTo::PRODUCT->value,
+            'rate' => 0.2,
+            'is_active' => true,
+        ]);
+
+        $calculator = new ProductPricingCalculatorService();
+        $result = $calculator->calculate($basePrice);
+
+        $this->assertEquals(50.0, $result->priceBeforeDiscount);
+        $this->assertEquals(10.0, $result->totalOtherTax);
+        $this->assertEquals(60.0, $result->priceAfterTaxes);
     }
 }

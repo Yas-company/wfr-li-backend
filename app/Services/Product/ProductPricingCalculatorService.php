@@ -11,35 +11,61 @@ class ProductPricingCalculatorService
 {
     protected Collection $taxes;
 
-    public function __construct()
-    {
-        $this->taxes = Tax::forProducts()->active()->get()->groupBy('group');
-    }
-
     public function calculate(float $basePrice, float $discountRate = 0): ProductPrices
     {
-        $platformTaxes = $this->taxes->get(TaxGroup::PLATFORM->value);
-        $countryTaxes = $this->taxes->get(TaxGroup::COUNTRY_VAT->value);
-        $otherTaxes = $this->taxes->get(TaxGroup::OTHER->value);
+        $discountRate = $this->normalizeDiscountRate($discountRate);
 
-        $platformTaxTotal = $platformTaxes?->sum('rate');
-        $priceBeforeDiscount = $basePrice + ($basePrice * $platformTaxTotal);
+        $platformBefore = $this->calculateTaxes(TaxGroup::PLATFORM->value, $basePrice);
+        $priceBeforeDiscount = $basePrice + $platformBefore;
 
         $totalDiscount = $priceBeforeDiscount * $discountRate;
         $priceAfterDiscount = $priceBeforeDiscount - $totalDiscount;
 
-        $countryTaxRates = $countryTaxes?->sum('rate');
-        $priceAfterCountryTaxes = $priceAfterDiscount + ($priceAfterDiscount * $countryTaxRates);
+        $platformAfter = $platformBefore * (1 - $discountRate);
+        $country = $this->calculateTaxes(TaxGroup::COUNTRY_VAT->value, $priceAfterDiscount);
+        $priceAfterCountry = $priceAfterDiscount + $country;
 
-        $otherTaxRates = $otherTaxes?->sum('rate');
-        $priceAfterTaxes = round($priceAfterCountryTaxes + ($priceAfterCountryTaxes * $otherTaxRates), 2);
+        $other = $this->calculateTaxes(TaxGroup::OTHER->value, $priceAfterCountry);
+        $priceAfterTaxes = $priceAfterCountry + $other;
 
         return new ProductPrices(
-            $basePrice,
-            $priceBeforeDiscount,
-            $priceAfterDiscount,
-            $priceAfterTaxes,
-            $totalDiscount
+            $this->money($basePrice),
+            $this->money($priceBeforeDiscount),
+            $this->money($priceAfterDiscount),
+            $this->money($priceAfterTaxes),
+            $this->money($totalDiscount),
+            $this->money($platformAfter),
+            $this->money($country),
+            $this->money($other)
         );
+    }
+
+    private function normalizeDiscountRate(float $discountRate): float
+    {
+        return min(max($discountRate, 0), 1.0);
+    }
+
+    private function calculateTaxes(string $group, float $price): float
+    {
+        return $price * $this->getGroupTaxesTotal($group);
+    }
+
+    private function getGroupTaxesTotal(string $group): float
+    {
+        $taxes = $this->getTaxes()->get($group);
+        return $taxes?->sum('rate') ?? 0.0;
+    }
+
+    private function getTaxes(): Collection
+    {
+        if (! isset($this->taxes)) {
+            $this->taxes = Tax::forProducts()->active()->get()->groupBy('group');
+        }
+        return $this->taxes;
+    }
+
+    private function money(float $value): float
+    {
+        return round($value, 2);
     }
 }

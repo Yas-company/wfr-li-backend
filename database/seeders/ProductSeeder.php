@@ -83,6 +83,7 @@ class ProductSeeder extends Seeder
                         Product::create([
                             'name' => $productNames[$nameIndex],
                             'description' => $productDescriptions[$descIndex],
+                            'price' => $basePrice,
                             'base_price' => $basePrice,
                             'quantity' => rand(10, 100),
                             'min_order_quantity' => rand(1, 5),

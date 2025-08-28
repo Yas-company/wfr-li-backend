@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\UnitType;
 use App\Traits\Rateable;
 use App\Enums\ProductStatus;
+use App\Values\ProductPrices;
 use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +14,7 @@ use Spatie\Translatable\HasTranslations;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use App\Services\Product\ProductPricingCalculatorService;
 
 class Product extends Model implements HasMedia
 {
@@ -30,9 +32,11 @@ class Product extends Model implements HasMedia
         'price_before_discount',
         'base_price',
         'discount_rate',
-        'price_after_discount',
         'price_after_taxes',
         'total_discount',
+        'platform_tax',
+        'country_tax',
+        'other_tax',
         'description',
         'quantity',
         'min_order_quantity',
@@ -51,6 +55,9 @@ class Product extends Model implements HasMedia
         'stock_qty' => 'integer',
         'price_before_discount' => 'decimal:2',
         'total_discount' => 'decimal:2',
+        'other_tax' => 'decimal:2',
+        'country_tax' => 'decimal:2',
+        'platform_tax' => 'decimal:2',
         'description' => 'array',
         'unit_type' => UnitType::class,
         'status' => ProductStatus::class,
@@ -242,7 +249,7 @@ class Product extends Model implements HasMedia
         return $query->where('price', '>', $value);
     }
 
-    /**
+    /**s
      * Get the attributes that should be appended to the model's array form.
      */
     public function getAppends()

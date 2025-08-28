@@ -88,11 +88,7 @@ class ProductService implements ProductServiceInterface
         $data['supplier_id'] = $user->id;
         $productPrices = $this->productPricingCalculatorService->calculate($data['base_price'], $data['discount_rate']);
 
-        $data['base_price'] = $productPrices->basePrice;
-        $data['price_before_discount'] = $productPrices->priceBeforeDiscount;
-        $data['price'] = $productPrices->priceAfterDiscount;
-        $data['price_after_taxes'] = $productPrices->priceAfterTaxes;
-        $data['total_discount'] = $productPrices->totalDiscount;
+        $data = array_merge($data, $productPrices->toArray());
 
         return Product::create($data);
     }
@@ -122,11 +118,7 @@ class ProductService implements ProductServiceInterface
     {
         $productPrices = $this->productPricingCalculatorService->calculate($data['base_price'], $data['discount_rate']);
 
-        $data['base_price'] = $productPrices->basePrice;
-        $data['price_before_discount'] = $productPrices->priceBeforeDiscount;
-        $data['price'] = $productPrices->priceAfterDiscount;
-        $data['price_after_taxes'] = $productPrices->priceAfterTaxes;
-        $data['total_discount'] = $productPrices->totalDiscount;
+        $data = array_merge($data, $productPrices->toArray());
 
         $product->update($data);
 
