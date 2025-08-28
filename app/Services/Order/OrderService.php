@@ -55,6 +55,7 @@ class OrderService
             ->select([
                 'orders.id',
                 'orders.status',
+                'orders.order_type',
                 'orders.user_id',
                 'orders.supplier_id',
                 'orders.total',
