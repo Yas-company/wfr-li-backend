@@ -1,17 +1,19 @@
 <?php
 
-namespace App\Http\Controllers\api\v1\Buyer;
+namespace App\Http\Controllers\api\v1\Profile\Buyer;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Buyer\UpdateBuyerImageRequest;
-use App\Http\Requests\Buyer\UpdateBuyerProfileRequest;
-use App\Http\Resources\UserResource;
-use App\Http\Services\OtpService;
-use App\Services\Buyer\BuyerProfileService;
 use App\Traits\ApiResponse;
+use OpenApi\Annotations as OA;
+use App\Services\ProfileService;
+use App\Http\Services\OtpService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
-use OpenApi\Annotations as OA;
+use App\Http\Requests\Buyer\UpdateBuyerImageRequest;
+use App\Http\Requests\Buyer\UpdateBuyerProfileRequest;
 
 /**
  * @OA\Tag(
@@ -19,20 +21,20 @@ use OpenApi\Annotations as OA;
  *     description="Buyer endpoints"
  * )
  */
-class BuyerProfileController extends Controller
+class ProfileController extends Controller
 {
     use ApiResponse;
 
     /**
      * Summary of __construct
      */
-    public function __construct(private BuyerProfileService $buyerProfileService) {}
+    public function __construct(private ProfileService $profileService) {}
 
     /**
      * Update buyer profile information
      *
      * @return \Illuminate\Http\JsonResponse
-     * 
+     *
      * @OA\Put(
      *     path="/buyers/profile",
      *     summary="Update buyer profile",
@@ -145,7 +147,7 @@ class BuyerProfileController extends Controller
             }
             $data['is_verified'] = true;
         }
-        $buyer = $this->buyerProfileService->updateBuyerProfile($data, Auth::user());
+        $buyer = $this->profileService->updateBuyerProfile($data, Auth::user());
 
         return $this->successResponse(
             data: new UserResource($buyer),
@@ -158,7 +160,7 @@ class BuyerProfileController extends Controller
      * Update buyer profile image
      *
      * @return \Illuminate\Http\JsonResponse
-     * 
+     *
      * @OA\Post(
      *     path="/buyers/image",
      *     summary="Update buyer profile image",
@@ -251,12 +253,32 @@ class BuyerProfileController extends Controller
     public function changeBuyerImage(UpdateBuyerImageRequest $request)
     {
         $data = $request->validated();
-        $buyer = $this->buyerProfileService->changeBuyerImage($data, Auth::user());
+        $buyer = $this->profileService->changeBuyerImage($data, Auth::user());
 
         return $this->successResponse(
             data: new UserResource($buyer),
             message: __('messages.buyer.image_updated'),
             statusCode: Response::HTTP_OK
         );
+    }
+
+    public function destroy(): JsonResponse
+    {
+        try {
+            $this->profileService->deleteAccount(Auth::user());
+            return $this->successResponse(
+                message: __('messages.profile.deleted'),
+                statusCode: Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            Log::error('Failed to delete account', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return $this->errorResponse(
+                message: __('messages.profile.delete_failed'),
+                statusCode: Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
     }
 }
