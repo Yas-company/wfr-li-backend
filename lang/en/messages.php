@@ -198,6 +198,12 @@ return [
         'retrieved_successfully' => 'Categories retrieved successfully',
     ],
 
+    'profile' => [
+        'deleted' => 'Profile deleted successfully',
+        'delete_failed' => 'Failed to delete profile',
+    ],
+
+
     'suppliers' => [
         'image_changed' => 'Supplier image changed successfully',
     ],

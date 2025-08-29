@@ -132,7 +132,7 @@ class SupplierRegistrationController extends Controller
                     ->store('suppliers/commercial_registers', 'public');
             }
 
-            $existingUser = User::withTrashed()
+            $existingUser = User::query()
                 ->where('phone', $data['phone'])
                 ->first();
 
@@ -148,10 +148,6 @@ class SupplierRegistrationController extends Controller
                     throw ValidationException::withMessages([
                         'phone' => [__('messages.phone_already_registered')],
                     ]);
-                }
-
-                if ($existingUser->trashed()) {
-                    $existingUser->restore();
                 }
 
                 $existingUser->update([

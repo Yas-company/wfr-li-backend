@@ -216,6 +216,11 @@ return [
         'unauthorized_category_ownership' => 'غير مصرح للتعامل مع الفئة',
     ],
 
+    'profile' => [
+        'deleted' => 'تم حذف الملف الشخصي بنجاح',
+        'delete_failed' => 'فشل في حذف الملف الشخصي',
+    ],
+
     'buyer' => [
         'profile_updated' => 'تم تحديث ملف المشتري بنجاح',
         'image_updated' => 'تم تحديث صورة المشتري بنجاح',

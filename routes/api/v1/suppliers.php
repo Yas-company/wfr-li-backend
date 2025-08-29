@@ -1,7 +1,7 @@
 <?php
 
 use App\Enums\UserRole;
-use App\Http\Controllers\api\v1\SupplierProfileController;
+use App\Http\Controllers\api\v1\Profile\Supplier\ProfileController;
 use App\Http\Controllers\api\v1\SupplierSettingController;
 use App\Http\Controllers\api\v1\UserController;
 use App\Http\Middleware\RoleMiddleware;
@@ -20,6 +20,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 });
 
 Route::middleware(['auth:sanctum', RoleMiddleware::class.':'.UserRole::SUPPLIER->value])->group(function () {
-    Route::put('/suppliers/profile', [SupplierProfileController::class, 'updateSupplierProfile'])->name('suppliers.profile.update');
-    Route::post('/suppliers/image', [SupplierProfileController::class, 'changeSupplierImage'])->name('suppliers.image.change');
+    Route::put('/suppliers/profile', [ProfileController::class, 'updateSupplierProfile'])->name('suppliers.profile.update');
+    Route::post('/suppliers/image', [ProfileController::class, 'changeSupplierImage'])->name('suppliers.image.change');
+    Route::delete('/suppliers/profile', [ProfileController::class, 'destroy'])->name('suppliers.profile.delete');
 });
