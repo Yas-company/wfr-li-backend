@@ -1,25 +1,25 @@
 <?php
 
-namespace App\Http\Controllers\api\v1;
+namespace App\Http\Controllers\api\v1\Profile\Supplier;
 
 use App\Traits\ApiResponse;
-use Illuminate\Http\Request;
+use OpenApi\Annotations as OA;
+use App\Services\ProfileService;
 use App\Http\Services\OtpService;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
-use App\Services\SupplierProfileService;
 use App\Http\Requests\UpdateSupplierRequest;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Http\Requests\Supplier\SupplierImageRequest;
-use OpenApi\Annotations as OA;
 
-class SupplierProfileController extends Controller
+class ProfileController extends Controller
 {
     use ApiResponse;
 
-    public function __construct(private SupplierProfileService $supplierProfileService) {}
+    public function __construct(private ProfileService $profileService) {}
 
     /**
      * Update supplier profile information
@@ -27,7 +27,7 @@ class SupplierProfileController extends Controller
      * @param  UpdateSupplierRequest  $request
      * @param  OtpService  $otpService
      * @return JsonResponse
-     * 
+     *
      * @OA\Put(
      *     path="/suppliers/profile",
      *     summary="Update supplier profile",
@@ -141,7 +141,7 @@ class SupplierProfileController extends Controller
             $data['is_verified'] = true;
         }
 
-        $supplier = $this->supplierProfileService->updateSupplierProfile($data, Auth::user());
+        $supplier = $this->profileService->updateSupplierProfile($data, Auth::user());
 
         return $this->successResponse(
             data: new UserResource($supplier),
@@ -155,7 +155,7 @@ class SupplierProfileController extends Controller
      *
      * @param  SupplierImageRequest  $request
      * @return JsonResponse
-     * 
+     *
      * @OA\Post(
      *     path="/suppliers/image",
      *     summary="Update supplier profile image",
@@ -249,12 +249,32 @@ class SupplierProfileController extends Controller
     {
 
         $data = $request->validated();
-        $supplier = $this->supplierProfileService->changeSupplierImage($data, Auth::user());
+        $supplier = $this->profileService->changeSupplierImage($data, Auth::user());
 
         return $this->successResponse(
             data: new UserResource($supplier),
             message: __('messages.suppliers.image_changed'),
             statusCode: Response::HTTP_OK
         );
+    }
+
+    public function destroy(): JsonResponse
+    {
+        try {
+            $this->profileService->deleteAccount(Auth::user());
+            return $this->successResponse(
+                message: __('messages.profile.deleted'),
+                statusCode: Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            Log::error('Failed to delete account', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return $this->errorResponse(
+                message: __('messages.profile.delete_failed'),
+                statusCode: Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
     }
 }
