@@ -2,8 +2,8 @@
 
 namespace App\Services\Contracts;
 
-use App\Models\Product;
 use App\Models\User;
+use App\Models\Product;
 
 interface ProductServiceInterface
 {

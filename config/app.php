@@ -134,4 +134,8 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'taxes' => [
+        'platform' => 0.05,
+        'country_vat' => 0.15,
+    ],
 ];

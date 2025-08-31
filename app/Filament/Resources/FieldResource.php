@@ -21,7 +21,7 @@ class FieldResource extends Resource
 
     protected static ?string $pluralNavigationLabel = 'الأقسام';
 
-    protected static ?string $navigationGroup = 'الأقسام';
+    protected static ?string $navigationGroup = 'الأقسام و التصنيفات';
 
     protected static ?int $navigationSort = -1;
 
@@ -40,7 +40,7 @@ class FieldResource extends Resource
                             ->label('الاسم بالعربية')
                             ->required()
                             ->maxLength(255),
-                            Forms\Components\FileUpload::make('image')
+                        Forms\Components\FileUpload::make('image')
                             ->label('الصورة')
                             ->image()
                             ->disk('public')
@@ -66,7 +66,7 @@ class FieldResource extends Resource
                     ->getStateUsing(fn($record) => $record->getTranslation('name', 'ar'))
                     ->searchable(query: fn($query, $search) => $query->where('name->ar', 'like', "%{$search}%")),
 
-                    Tables\Columns\ImageColumn::make('image_url')
+                Tables\Columns\ImageColumn::make('image_url')
                     ->label('الصورة')
                     ->square(),
             ])

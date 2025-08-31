@@ -5,14 +5,13 @@ namespace App\Http\Controllers\api\v1\Product\Supplier;
 use App\Models\Product;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
+use OpenApi\Annotations as OA;
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
 use App\Http\Requests\Products\StoreProductRequest;
 use App\Services\Contracts\ProductServiceInterface;
 use App\Http\Requests\Products\UpdateProductRequest;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use OpenApi\Annotations as OA;
 
 class ProductController extends Controller
 {

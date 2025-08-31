@@ -38,6 +38,7 @@ return [
     'users' => [
         'cannot_delete_last_address' => 'لا يمكن حذف العنوان الأخير',
         'at_least_one_default_address_required' => 'يجب تحديد عنوان افتراضي واحد على الأقل',
+        'cannot_delete_address_attached_to_order' => 'لا يمكن حذف العنوان المرتبط بالطلب',
     ],
 
     'ratings' => [
@@ -213,6 +214,11 @@ return [
         'unauthorized_category_update' => 'غير مصرح لتحديث الفئة',
         'unauthorized_category_delete' => 'غير مصرح لحذف الفئة',
         'unauthorized_category_ownership' => 'غير مصرح للتعامل مع الفئة',
+    ],
+
+    'profile' => [
+        'deleted' => 'تم حذف الملف الشخصي بنجاح',
+        'delete_failed' => 'فشل في حذف الملف الشخصي',
     ],
 
     'buyer' => [

@@ -38,6 +38,7 @@ return [
     'users' => [
         'cannot_delete_last_address' => 'Cannot delete last address',
         'at_least_one_default_address_required' => 'At least one default address is required',
+        'cannot_delete_address_attached_to_order' => 'Cannot delete address attached to order',
     ],
 
     'ratings' => [
@@ -196,6 +197,12 @@ return [
     'categories' => [
         'retrieved_successfully' => 'Categories retrieved successfully',
     ],
+
+    'profile' => [
+        'deleted' => 'Profile deleted successfully',
+        'delete_failed' => 'Failed to delete profile',
+    ],
+
 
     'suppliers' => [
         'image_changed' => 'Supplier image changed successfully',

@@ -16,7 +16,6 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(property="image", type="string", example="https://example.com/supplier-image.jpg"),
  *     @OA\Property(property="rating", type="number", format="float", example=4.7),
  *     @OA\Property(property="fields", type="array", @OA\Items(ref="#/components/schemas/FieldResource")),
- *     @OA\Property(property="categories", type="array", @OA\Items(ref="#/components/schemas/CategoryResource")),
  *     @OA\Property(property="supplier_status", type="boolean", example=true)
  * )
  */
@@ -35,7 +34,6 @@ class SupplierDetailsResource extends JsonResource
             'image' => $this->image ? asset('storage/'.$this->image) : null,
             'rating' => 4.7,
             'fields' => FieldResource::collection($this->whenLoaded('fields')),
-            'categories' => CategoryResource::collection($this->whenLoaded('categories')),
             'supplier_status' => $this->supplier->status,
         ];
     }

@@ -351,4 +351,44 @@ class AddressControllerTest extends TestCase
         $this->assertEquals($newestNonDefault['id'], $addresses[1]['id']);
         $this->assertEquals($oldest['id'], $addresses[2]['id']);
     }
+
+    public function test_user_cannot_delete_address_with_attached_orders()
+    {
+        // Create an address for the user
+        $address = Address::factory()->create([
+            'user_id' => $this->user->id,
+            'is_default' => false,
+        ]);
+
+        // Create an order first
+        $order = \App\Models\Order::factory()->create([
+            'user_id' => $this->user->id,
+        ]);
+
+        // Create an order detail that references this address
+        \App\Models\OrderDetail::factory()->create([
+            'order_id' => $order->id,
+            'shipping_address_id' => $address->id,
+        ]);
+
+        // Attempt to delete the address
+        $response = $this->actingAs($this->user)
+            ->deleteJson(route('addresses.destroy', $address->id));
+
+        // Should fail with appropriate error message
+        $response->assertStatus(422)
+            ->assertJson([
+                'success' => false,
+                'message' => 'Cannot delete address attached to order',
+            ]);
+
+        // Verify the address still exists in the database
+        $this->assertDatabaseHas('addresses', ['id' => $address->id]);
+        
+        // Verify the order detail still references this address
+        $this->assertDatabaseHas('order_details', [
+            'order_id' => $order->id,
+            'shipping_address_id' => $address->id,
+        ]);
+    }
 }

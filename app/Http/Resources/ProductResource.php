@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use OpenApi\Annotations as OA;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\Category\CategoryResource;
 
 /**
  * @OA\Schema(
@@ -49,6 +50,13 @@ class ProductResource extends JsonResource
             'image' => $this->relationLoaded('media') ? $this->getFirstMediaUrl('images') : null,
             'price' => $this->price,
             'price_before_discount' => $this->price_before_discount,
+            'base_price' => $this->base_price,
+            'discount_rate' => $this->discount_rate,
+            'total_discount' => $this->total_discount,
+            'price_after_taxes' => $this->price_after_taxes,
+            'platform_tax' => $this->platform_tax,
+            'country_tax' => $this->country_tax,
+            'other_tax' => $this->other_tax,
             'quantity' => $this->quantity,
             'stock_qty' => $this->stock_qty,
             'nearly_out_of_stock_limit' => $this->nearly_out_of_stock_limit,

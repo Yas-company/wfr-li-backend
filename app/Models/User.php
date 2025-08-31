@@ -18,7 +18,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable, Rateable, SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, Rateable;
 
     /**
      * The attributes that are

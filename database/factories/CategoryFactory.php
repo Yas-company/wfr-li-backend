@@ -23,7 +23,6 @@ class CategoryFactory extends Factory
                 'ar' => $this->faker->word(),
             ],
             'image' => $this->faker->imageUrl(),
-            'supplier_id' => User::factory(),
         ];
     }
 }

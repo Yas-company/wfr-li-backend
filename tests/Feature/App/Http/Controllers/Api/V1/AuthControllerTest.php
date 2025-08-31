@@ -189,19 +189,6 @@ class AuthControllerTest extends TestCase
         $this->assertCount(0, $user->fresh()->tokens);
     }
 
-    public function test_authenticated_user_can_delete_account()
-    {
-        $user = $this->createBuyer();
-
-        $response = $this->actingAs($user)
-            ->deleteJson(route('auth.delete-account'));
-
-        $response->assertStatus(200)
-            ->assertJsonPath('message', __('messages.account_deleted_successfully'));
-
-        $this->assertSoftDeleted($user);
-    }
-
     // helpers
     protected function createBuyer(array $attributes = []): User
     {

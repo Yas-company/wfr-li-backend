@@ -120,19 +120,15 @@ class BuyerRegistrationController extends Controller
     {
         $data = $request->validated();
 
-        $existingUser = User::withTrashed()
+        $existingUser = User::query()
             ->where('phone', $data['phone'])
             ->first();
 
         if ($existingUser) {
-            if ($existingUser->is_verified && ! $existingUser->trashed()) {
+            if ($existingUser->is_verified) {
                 throw ValidationException::withMessages([
                     'phone' => [__('messages.phone_already_registered')],
                 ]);
-            }
-
-            if ($existingUser->trashed()) {
-                $existingUser->restore();
             }
 
             $existingUser->update([
