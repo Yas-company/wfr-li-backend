@@ -233,7 +233,7 @@ class CartService implements CartServiceInterface
                 $item->product_id => [
                     'product_id' => $item->product_id,
                     'quantity' => $item->quantity,
-                    'price' => $item->price,
+                    'price' => $item->product->price_after_taxes,
                 ]
             ])->toArray();
 

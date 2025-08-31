@@ -55,6 +55,13 @@ class ProductControllerTest extends TestCase
                     'image',
                     'price',
                     'price_before_discount',
+                    'base_price',
+                    'discount_rate',
+                    'total_discount',
+                    'price_after_taxes',
+                    'platform_tax',
+                    'country_tax',
+                    'other_tax',
                     'quantity',
                     'stock_qty',
                     'nearly_out_of_stock_limit',
@@ -99,7 +106,7 @@ class ProductControllerTest extends TestCase
             'supplier_id' => $this->supplier->id,
         ])->toArray();
 
-        $productData['price'] = 0;
+        $productData['base_price'] = 0;
         $productData['quantity'] = 0;
 
         unset($productData['image']);
@@ -109,7 +116,7 @@ class ProductControllerTest extends TestCase
         $response = $this->actingAs($this->supplier)->postJson(route('supplier.products.store'), $productData);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['price', 'quantity']);
+            ->assertJsonValidationErrors(['base_price', 'quantity']);
     }
 
     public function test_supplier_can_update_product()
@@ -118,7 +125,6 @@ class ProductControllerTest extends TestCase
             'supplier_id' => $this->supplier->id,
             'category_id' => $this->category->id,
         ]);
-        // Remove the image URL and replace with a fake image file
 
         $updateData = Product::factory()->make([
             'category_id' => $this->category->id,
@@ -126,7 +132,6 @@ class ProductControllerTest extends TestCase
 
         unset($updateData['image']);
 
-        // Create a fake image file for testing using a simple approach
         $imageFile = \Illuminate\Http\UploadedFile::fake()->create('product.jpg', 100, 'image/jpeg');
         $updateData['image'] = $imageFile;
         $response = $this->actingAs($this->supplier)->postJson(route('supplier.products.update', $product->id), $updateData);
@@ -186,7 +191,6 @@ class ProductControllerTest extends TestCase
                     'status',
                     'is_favorite',
                     'unit_type',
-
                 ],
             ]);
     }
