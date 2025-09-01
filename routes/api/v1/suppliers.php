@@ -23,4 +23,5 @@ Route::middleware(['auth:sanctum', RoleMiddleware::class.':'.UserRole::SUPPLIER-
     Route::put('/suppliers/profile', [ProfileController::class, 'updateSupplierProfile'])->name('suppliers.profile.update');
     Route::post('/suppliers/image', [ProfileController::class, 'changeSupplierImage'])->name('suppliers.image.change');
     Route::delete('/suppliers/profile', [ProfileController::class, 'destroy'])->name('suppliers.profile.delete');
+    Route::put('/suppliers/change-phone', [ProfileController::class, 'updateSupplierPhone'])->name('suppliers.phone.update');
 });

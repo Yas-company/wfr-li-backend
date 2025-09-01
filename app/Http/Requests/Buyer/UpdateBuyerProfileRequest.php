@@ -24,7 +24,6 @@ class UpdateBuyerProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone' => ['nullable', 'string', Rule::unique('users', 'phone')->ignore(Auth::user()->id)],
             'name' => ['nullable', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255', Rule::unique('users', 'email')->ignore(Auth::user()->id)],
         ];
@@ -33,7 +32,6 @@ class UpdateBuyerProfileRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'phone.unique' => __('messages.phone_already_exists'),
             'email.unique' => __('messages.email_already_exists'),
         ];
     }

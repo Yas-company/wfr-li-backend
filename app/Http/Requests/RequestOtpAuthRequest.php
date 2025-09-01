@@ -22,7 +22,20 @@ class RequestOtpAuthRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone' => ['required', 'string', 'unique:users,phone'],
+            'phone' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) {
+                    $exists = \App\Models\User::where('phone', $value)
+                        ->where('is_verified', true)
+                        ->whereNull('deleted_at')
+                        ->exists();
+
+                    if ($exists) {
+                        $fail(__('messages.validation.unique.phone'));
+                    }
+                },
+            ],
         ];
     }
 }

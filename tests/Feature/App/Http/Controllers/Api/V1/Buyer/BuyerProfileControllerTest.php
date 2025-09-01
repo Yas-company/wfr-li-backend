@@ -28,37 +28,27 @@ class BuyerProfileControllerTest extends TestCase
     }
 
     /**
-     * Test buyer can update phone with OTP verification flow (all steps in one function).
+     * Test buyer can update phone with OTP verification flow.
      */
     public function test_buyer_can_update_phone_with_otp_verification_flow()
     {
-        $buyer = User::factory()->create([
-            'role' => UserRole::BUYER,
-            'status' => UserStatus::APPROVED,
-            'is_verified' => true,
-            'phone' => '+966500000001',
-        ]);
+        $buyer = $this->createBuyer();
         $token = $buyer->createToken('test')->plainTextToken;
         $newPhone = '+966500000002';
 
-        // Step 1: Request OTP
+        // Step 1: Request OTP for the new phone
         $response = $this->withToken($token)->postJson(route('auth.request-otp-auth'), [
             'phone' => $newPhone,
         ]);
         $response->assertStatus(200);
 
-        // Step 2: Verify OTP (fixed OTP is '123456')
-        $response = $this->withToken($token)->postJson(route('auth.verify-otp-auth'), [
+        // Step 2: Update phone with OTP verification
+        $response = $this->withToken($token)->putJson(route('buyers.phone.update'), [
             'phone' => $newPhone,
-            'otp' => '123456',
+            'otp' => '123456', // Fixed OTP for testing
         ]);
         $response->assertStatus(200);
-
-        // Step 3: Update profile with new phone (authenticated)
-        $response = $this->withToken($token)->putJson(route('buyers.profile.update'), [
-            'phone' => $newPhone,
-        ]);
-        $response->assertStatus(200);
+        
         $this->assertDatabaseHas('users', [
             'id' => $buyer->id,
             'phone' => $newPhone,
@@ -66,16 +56,67 @@ class BuyerProfileControllerTest extends TestCase
     }
 
     /**
+     * Test buyer cannot update phone without OTP.
+     */
+    public function test_buyer_cannot_update_phone_without_otp()
+    {
+        $buyer = $this->createBuyer();
+        $token = $buyer->createToken('test')->plainTextToken;
+        $newPhone = '+966500000002';
+
+        $response = $this->withToken($token)->putJson(route('buyers.phone.update'), [
+            'phone' => $newPhone,
+            // Missing OTP
+        ]);
+        
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['otp']);
+    }
+
+    /**
+     * Test buyer cannot update phone with invalid OTP.
+     */
+    public function test_buyer_cannot_update_phone_with_invalid_otp()
+    {
+        $buyer = $this->createBuyer();
+        $token = $buyer->createToken('test')->plainTextToken;
+        $newPhone = '+966500000002';
+
+        $response = $this->withToken($token)->putJson(route('buyers.phone.update'), [
+            'phone' => $newPhone,
+            'otp' => '000000', // Invalid OTP
+        ]);
+        
+        $response->assertStatus(422);
+        $response->assertJson([
+            'message' => __('messages.invalid_otp')
+        ]);
+    }
+
+    /**
+     * Test buyer cannot update phone to an already verified phone number.
+     */
+    public function test_buyer_cannot_update_phone_to_existing_verified_phone()
+    {
+        $buyer = $this->createBuyer();
+        $existingUser = $this->createBuyer(['phone' => '+966500000002']);
+        $token = $buyer->createToken('test')->plainTextToken;
+
+        $response = $this->withToken($token)->putJson(route('buyers.phone.update'), [
+            'phone' => '+966500000002', // Already exists
+            'otp' => '123456',
+        ]);
+        
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['phone']);
+    }
+
+    /**
      * Test buyer can request and verify OTP for a phone number.
      */
     public function test_buyer_can_request_and_verify_otp()
     {
-        $buyer = User::factory()->create([
-            'role' => UserRole::BUYER,
-            'status' => UserStatus::APPROVED,
-            'is_verified' => true,
-            'phone' => '+966500000001',
-        ]);
+        $buyer = $this->createBuyer();
         $token = $buyer->createToken('test')->plainTextToken;
         $newPhone = '+966500000003';
 
@@ -85,7 +126,7 @@ class BuyerProfileControllerTest extends TestCase
         ]);
         $response->assertStatus(200);
 
-        // Verify OTP (fixed OTP is '123456')
+        // Verify OTP
         $response = $this->withToken($token)->postJson(route('auth.verify-otp-auth'), [
             'phone' => $newPhone,
             'otp' => '123456',
@@ -112,9 +153,9 @@ class BuyerProfileControllerTest extends TestCase
     }
 
     /**
-     * Test buyer can update profile with the same old phone and email (should succeed).
+     * Test buyer can update profile with name and email (should succeed).
      */
-    public function test_buyer_can_update_profile_with_same_phone_and_email()
+    public function test_buyer_can_update_profile_with_name_and_email()
     {
         $buyer = $this->createBuyer([
             'name' => 'Old Name',
@@ -125,17 +166,17 @@ class BuyerProfileControllerTest extends TestCase
 
         $response = $this->updateBuyerProfile([
             'name' => 'New Name',
-            'phone' => $buyer->phone,
-            'email' => $buyer->email,
+            'email' => 'new@example.com',
         ], $token);
         $response->assertStatus(200);
         $this->assertDatabaseHas('users', [
             'id' => $buyer->id,
             'name' => 'New Name',
-            'phone' => '+966500000001',
-            'email' => 'old@example.com',
+            'email' => 'new@example.com',
+            'phone' => '+966500000001', // Should remain unchanged
         ]);
     }
+
 
     /**
      * Test buyer can update image when they don't have an old photo.
@@ -181,51 +222,19 @@ class BuyerProfileControllerTest extends TestCase
     }
 
     /**
-     * Test buyer cannot update profile with invalid OTP.
+     * Test buyer can delete their account.
      */
-    public function test_buyer_cannot_update_profile_with_invalid_otp()
+    public function test_buyer_can_delete_account()
     {
-        $buyer = $this->createBuyer(['phone' => '+966500000011']);
+        $buyer = $this->createBuyer();
         $token = $buyer->createToken('test')->plainTextToken;
-        $newPhone = '+966500000033';
 
-        // Request OTP
-        $response = $this->withToken($token)->postJson(route('auth.request-otp-auth'), [
-            'phone' => $newPhone,
-        ]);
+        $response = $this->withToken($token)->deleteJson(route('buyers.profile.delete'));
         $response->assertStatus(200);
 
-        // Try to update profile without verifying OTP (should fail)
-        $response = $this->withToken($token)->putJson(route('buyers.profile.update'), [
-            'phone' => $newPhone,
+        $this->assertDatabaseMissing('users', [
+            'id' => $buyer->id,
         ]);
-
-        // The controller should reject this because OTP wasn't verified
-        if ($response->status() === 422) {
-            $response->assertStatus(422);
-            $response->assertJson([
-                'message' => __('messages.invalid_otp'),
-            ]);
-        } else {
-            // If the controller allows it, check if the phone was actually updated
-            $buyer->refresh();
-            $this->assertNotEquals($newPhone, $buyer->phone, 'Phone should not be updated without OTP verification');
-        }
-    }
-
-    /**
-     * Test buyer cannot update profile with duplicate phone number.
-     */
-    public function test_buyer_cannot_update_profile_with_duplicate_phone()
-    {
-        $existingBuyer = $this->createBuyer(['phone' => '+966500000099']);
-        $buyer = $this->createBuyer(['phone' => '+966500000088']);
-        $token = $buyer->createToken('test')->plainTextToken;
-
-        $response = $this->updateBuyerProfile([
-            'phone' => $existingBuyer->phone,
-        ], $token);
-        $response->assertStatus(422);
     }
 
     /**
@@ -341,7 +350,6 @@ class BuyerProfileControllerTest extends TestCase
         $buyer = $this->createBuyer([
             'name' => 'Old Name',
             'email' => 'old@example.com',
-            'phone' => '+966500000001',
         ]);
         $token = $buyer->createToken('test')->plainTextToken;
 
@@ -355,7 +363,6 @@ class BuyerProfileControllerTest extends TestCase
             'id' => $buyer->id,
             'name' => 'New Name',
             'email' => 'new@example.com',
-            'phone' => '+966500000001', // Should remain unchanged
         ]);
     }
 

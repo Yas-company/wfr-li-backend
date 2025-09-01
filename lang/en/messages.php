@@ -201,6 +201,8 @@ return [
     'profile' => [
         'deleted' => 'Profile deleted successfully',
         'delete_failed' => 'Failed to delete profile',
+        'phone_updated' => 'Phone updated successfully',
+        'phone_update_failed' => 'Failed to update phone',
     ],
 
 

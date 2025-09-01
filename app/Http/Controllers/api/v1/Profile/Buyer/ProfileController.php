@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\VerifyOtpAuthRequest;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Buyer\UpdateBuyerImageRequest;
 use App\Http\Requests\Buyer\UpdateBuyerProfileRequest;
@@ -131,22 +132,11 @@ class ProfileController extends Controller
      *     ),
      * )
      */
-    public function updateBuyerProfile(UpdateBuyerProfileRequest $request, OtpService $otpService)
+    public function updateBuyerProfile(UpdateBuyerProfileRequest $request)
     {
 
         $data = $request->validated();
-        if (isset($data['phone']) && $data['phone'] !== Auth::user()->phone) {
 
-            $isValid = $otpService->isVerified($data['phone']);
-
-            if (! $isValid) {
-                return $this->errorResponse(
-                    message: __('messages.invalid_otp'),
-                    statusCode: Response::HTTP_UNPROCESSABLE_ENTITY
-                );
-            }
-            $data['is_verified'] = true;
-        }
         $buyer = $this->profileService->updateBuyerProfile($data, Auth::user());
 
         return $this->successResponse(
@@ -280,5 +270,39 @@ class ProfileController extends Controller
                 statusCode: Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
+    }
+
+    public function updateBuyerPhone(VerifyOtpAuthRequest $request, OtpService $otpService)
+    {
+        try {
+            $isValid = $otpService->verifyOtp(
+                $request->validated('phone'),
+                $request->validated('otp')
+            );
+
+            if (! $isValid) {
+                return $this->errorResponse(
+                    message: __('messages.invalid_otp'),
+                    statusCode: Response::HTTP_UNPROCESSABLE_ENTITY
+                );
+            }
+
+            $this->profileService->updatePhone($request->validated('phone'), Auth::user());
+
+            return $this->successResponse(
+                message: __('messages.profile.phone_updated'),
+                statusCode: Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            Log::error('OTP verification failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return $this->errorResponse(
+                message: __('messages.profile.phone_update_failed')
+            );
+        }
+
     }
 }
