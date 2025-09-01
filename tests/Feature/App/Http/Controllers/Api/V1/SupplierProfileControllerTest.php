@@ -27,43 +27,87 @@ class SupplierProfileControllerTest extends TestCase
     }
 
     /**
-     * Test supplier can update phone with OTP verification flow (all steps in one function).
+     * Test supplier can update phone with OTP verification flow.
      */
     public function test_supplier_can_update_phone_with_otp_verification_flow()
     {
-        $supplier = User::factory()->create([
-            'role' => UserRole::SUPPLIER,
-            'status' => UserStatus::APPROVED,
-            'is_verified' => true,
-            'phone' => '+966500000001',
-        ]);
-        $supplier->fields()->attach(Field::factory()->create());
+        $supplier = $this->createSupplier();
         $token = $supplier->createToken('test')->plainTextToken;
         $newPhone = '+966500000002';
 
-        // Step 1: Request OTP
+        // Step 1: Request OTP for the new phone
         $response = $this->withToken($token)->postJson(route('auth.request-otp-auth'), [
             'phone' => $newPhone,
         ]);
         $response->assertStatus(200);
 
-        // Step 2: Verify OTP (fixed OTP is '123456')
-        $response = $this->withToken($token)->postJson(route('auth.verify-otp-auth'), [
+        // Step 2: Update phone with OTP verification
+        $response = $this->withToken($token)->putJson(route('suppliers.phone.update'), [
             'phone' => $newPhone,
-            'otp' => '123456',
+            'otp' => '123456', // Fixed OTP for testing
         ]);
         $response->assertStatus(200);
-
-        // Step 3: Update profile with new phone (authenticated)
-        $response = $this->withToken($token)->putJson(route('suppliers.profile.update'), [
-            'phone' => $newPhone,
-        ]);
-        $response->assertStatus(200);
+        
         $this->assertDatabaseHas('users', [
             'id' => $supplier->id,
             'phone' => $newPhone,
         ]);
+    }
 
+    /**
+     * Test supplier cannot update phone without OTP.
+     */
+    public function test_supplier_cannot_update_phone_without_otp()
+    {
+        $supplier = $this->createSupplier();
+        $token = $supplier->createToken('test')->plainTextToken;
+        $newPhone = '+966500000002';
+
+        $response = $this->withToken($token)->putJson(route('suppliers.phone.update'), [
+            'phone' => $newPhone,
+            // Missing OTP
+        ]);
+        
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['otp']);
+    }
+
+    /**
+     * Test supplier cannot update phone with invalid OTP.
+     */
+    public function test_supplier_cannot_update_phone_with_invalid_otp()
+    {
+        $supplier = $this->createSupplier();
+        $token = $supplier->createToken('test')->plainTextToken;
+        $newPhone = '+966500000002';
+
+        $response = $this->withToken($token)->putJson(route('suppliers.phone.update'), [
+            'phone' => $newPhone,
+            'otp' => '000000', // Invalid OTP
+        ]);
+        
+        $response->assertStatus(422);
+        $response->assertJson([
+            'message' => __('messages.invalid_otp')
+        ]);
+    }
+
+    /**
+     * Test supplier cannot update phone to an already verified phone number.
+     */
+    public function test_supplier_cannot_update_phone_to_existing_verified_phone()
+    {
+        $supplier = $this->createSupplier();
+        $existingUser = $this->createSupplier(['phone' => '+966500000002']);
+        $token = $supplier->createToken('test')->plainTextToken;
+
+        $response = $this->withToken($token)->putJson(route('suppliers.phone.update'), [
+            'phone' => '+966500000002', // Already exists
+            'otp' => '123456',
+        ]);
+        
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['phone']);
     }
 
     /**
@@ -71,13 +115,7 @@ class SupplierProfileControllerTest extends TestCase
      */
     public function test_supplier_can_request_and_verify_otp()
     {
-        $supplier = User::factory()->create([
-            'role' => UserRole::SUPPLIER,
-            'status' => UserStatus::APPROVED,
-            'is_verified' => true,
-            'phone' => '+966500000001',
-        ]);
-        $supplier->fields()->attach(Field::factory()->create());
+        $supplier = $this->createSupplier();
         $token = $supplier->createToken('test')->plainTextToken;
         $newPhone = '+966500000003';
 
@@ -87,7 +125,7 @@ class SupplierProfileControllerTest extends TestCase
         ]);
         $response->assertStatus(200);
 
-        // Verify OTP (fixed OTP is '123456')
+        // Verify OTP
         $response = $this->withToken($token)->postJson(route('auth.verify-otp-auth'), [
             'phone' => $newPhone,
             'otp' => '123456',
@@ -114,9 +152,9 @@ class SupplierProfileControllerTest extends TestCase
     }
 
     /**
-     * Test supplier can update profile with the same old phone and email (should succeed).
+     * Test supplier can update profile with business name and email (should succeed).
      */
-    public function test_supplier_can_update_profile_with_same_phone_and_email()
+    public function test_supplier_can_update_profile_with_business_name_and_email()
     {
         $supplier = $this->createSupplier([
             'name' => 'Old Name',
@@ -127,18 +165,19 @@ class SupplierProfileControllerTest extends TestCase
 
         $response = $this->updateSupplierProfile([
             'name' => 'New Name',
-            'phone' => $supplier->phone,
+            'business_name' => 'New Business Name',
             'email' => $supplier->email,
         ], $token);
         $response->assertStatus(200);
         $this->assertDatabaseHas('users', [
             'id' => $supplier->id,
             'name' => 'New Name',
-            'phone' => '+966500000001',
+            'business_name' => 'New Business Name',
             'email' => 'old@example.com',
         ]);
     }
-        /**
+
+    /**
      * Test supplier can update image when they don't have an old photo.
      */
     public function test_supplier_can_update_image_without_old_photo()
@@ -179,6 +218,22 @@ class SupplierProfileControllerTest extends TestCase
         $this->assertNotNull($supplier->image);
         $this->assertStringContainsString('users/', $supplier->image);
         $this->assertNotEquals('users/old-image.jpg', $supplier->image);
+    }
+
+    /**
+     * Test supplier can delete their account.
+     */
+    public function test_supplier_can_delete_account()
+    {
+        $supplier = $this->createSupplier();
+        $token = $supplier->createToken('test')->plainTextToken;
+
+        $response = $this->withToken($token)->deleteJson(route('suppliers.profile.delete'));
+        $response->assertStatus(200);
+
+        $this->assertDatabaseMissing('users', [
+            'id' => $supplier->id,
+        ]);
     }
 
     protected function requestOtpAuth(string $phone, string $token)

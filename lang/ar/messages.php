@@ -219,6 +219,8 @@ return [
     'profile' => [
         'deleted' => 'تم حذف الملف الشخصي بنجاح',
         'delete_failed' => 'فشل في حذف الملف الشخصي',
+        'phone_updated' => 'تم تحديث رقم الهاتف بنجاح',
+        'phone_update_failed' => 'فشل في تحديث رقم الهاتف',
     ],
 
     'buyer' => [
