@@ -57,6 +57,7 @@ class ProductResource extends JsonResource
             'platform_tax' => $this->platform_tax,
             'country_tax' => $this->country_tax,
             'other_tax' => $this->other_tax,
+            'total_taxes' => $this->total_taxes,
             'quantity' => $this->quantity,
             'stock_qty' => $this->stock_qty,
             'nearly_out_of_stock_limit' => $this->nearly_out_of_stock_limit,

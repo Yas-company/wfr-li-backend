@@ -56,6 +56,7 @@ class ProductPricingCalculatorServiceTest extends TestCase
         $this->assertEquals(14.18, $result->totalCountryTax);
         $this->assertEquals(0, $result->totalOtherTax);
         $this->assertEquals(108.68, $result->priceAfterTaxes);
+        $this->assertEquals(18.68, $result->totalTaxes);
 
     }
 
@@ -93,6 +94,7 @@ class ProductPricingCalculatorServiceTest extends TestCase
         $this->assertEquals(31.5, $result->totalCountryTax);
         $this->assertEquals(0, $result->totalOtherTax);
         $this->assertEquals(241.5, $result->priceAfterTaxes);
+        $this->assertEquals(41.5, $result->totalTaxes);
     }
 
     public function test_it_calculates_correctly_with_multiple_taxes_in_same_group()
@@ -147,6 +149,7 @@ class ProductPricingCalculatorServiceTest extends TestCase
         $this->assertEquals(15.75, $result->totalCountryTax);
         $this->assertEquals(0, $result->totalOtherTax);
         $this->assertEquals(120.75, $result->priceAfterTaxes);
+        $this->assertEquals(20.75, $result->totalTaxes);
 
     }
 
@@ -166,6 +169,7 @@ class ProductPricingCalculatorServiceTest extends TestCase
         $this->assertEquals(0, $result->totalCountryTax);
         $this->assertEquals(0, $result->totalOtherTax);
         $this->assertEquals(90.0, $result->priceAfterTaxes);
+        $this->assertEquals(0, $result->totalTaxes);
     }
 
     public function test_it_ignores_inactive_taxes()
@@ -204,6 +208,7 @@ class ProductPricingCalculatorServiceTest extends TestCase
         $this->assertEquals(0, $result->totalCountryTax);
         $this->assertEquals(0, $result->totalOtherTax);
         $this->assertEquals(100.0, $result->priceAfterTaxes);
+        $this->assertEquals(0, $result->totalTaxes);
     }
 
     public function test_it_returns_zero_when_base_price_is_zero()
@@ -227,6 +232,7 @@ class ProductPricingCalculatorServiceTest extends TestCase
         $this->assertEquals(0, $result->totalCountryTax);
         $this->assertEquals(0, $result->totalOtherTax);
         $this->assertEquals(0.0, $result->priceAfterTaxes);
+        $this->assertEquals(0, $result->totalTaxes);
     }
 
     public function test_it_handles_100_percent_discount()
@@ -250,6 +256,7 @@ class ProductPricingCalculatorServiceTest extends TestCase
         $this->assertEquals(110.0, $result->totalDiscount);
         $this->assertEquals(0.0, $result->priceAfterDiscount);
         $this->assertEquals(0.0, $result->priceAfterTaxes);
+        $this->assertEquals(0, $result->totalTaxes);
     }
 
     public function test_it_does_not_allow_discount_greater_than_100_percent()
@@ -283,5 +290,6 @@ class ProductPricingCalculatorServiceTest extends TestCase
         $this->assertEquals(50.0, $result->priceBeforeDiscount);
         $this->assertEquals(10.0, $result->totalOtherTax);
         $this->assertEquals(60.0, $result->priceAfterTaxes);
+        $this->assertEquals(10, $result->totalTaxes);
     }
 }

@@ -13,6 +13,7 @@ class ProductPrices
     public float $totalPlatformTax;
     public float $totalCountryTax;
     public float $totalOtherTax;
+    public float $totalTaxes;
 
     public function __construct(
         float $basePrice,
@@ -22,7 +23,8 @@ class ProductPrices
         float $totalDiscount,
         float $totalPlatformTax,
         float $totalCountryTax,
-        float $totalOtherTax
+        float $totalOtherTax,
+        float $totalTaxes
     )
     {
         $this->basePrice = $basePrice;
@@ -33,6 +35,7 @@ class ProductPrices
         $this->totalPlatformTax = $totalPlatformTax;
         $this->totalCountryTax = $totalCountryTax;
         $this->totalOtherTax = $totalOtherTax;
+        $this->totalTaxes = $totalTaxes;
     }
 
     public function toArray(): array {
@@ -45,6 +48,7 @@ class ProductPrices
             'platform_tax' => $this->totalPlatformTax,
             'country_tax' => $this->totalCountryTax,
             'other_tax' => $this->totalOtherTax,
+            'total_taxes' => $this->totalTaxes,
         ];
     }
 }
