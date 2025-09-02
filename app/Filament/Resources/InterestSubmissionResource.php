@@ -39,28 +39,11 @@ class InterestSubmissionResource extends Resource
                     ->email()
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('business_type')
-                    ->label('نوع العمل')
-                    ->options([
-                        'restaurant' => 'مطعم',
-                        'cafe' => 'كافيه',
-                        'grocery' => 'بقالة',
-                        'supermarket' => 'سوبر ماركت',
-                        'catering' => 'خدمات الطعام',
-                        'other' => 'أخرى',
-                    ])
-                    ->required(),
-                Forms\Components\Select::make('city')
-                    ->label('المدينة')
-                    ->options([
-                        'makkah' => 'مكة المكرمة',
-                        'jeddah' => 'جدة',
-                        'riyadh' => 'الرياض',
-                        'dammam' => 'الدمام',
-                        'medina' => 'المدينة المنورة',
-                        'other' => 'مدينة أخرى',
-                    ])
-                    ->required(),
+                Forms\Components\Textarea::make('message')
+                    ->label('الرسالة')
+                    ->required()
+                    ->maxLength(1000)
+                    ->rows(4),
             ]);
     }
 
@@ -76,38 +59,17 @@ class InterestSubmissionResource extends Resource
                     ->label('البريد الإلكتروني')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('business_type_display')
-                    ->label('نوع العمل')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('city_display')
-                    ->label('المدينة')
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('message')
+                    ->label('الرسالة')
+                    ->limit(50)
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('تاريخ التسجيل')
                     ->dateTime('d/m/Y H:i')
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('business_type')
-                    ->label('نوع العمل')
-                    ->options([
-                        'restaurant' => 'مطعم',
-                        'cafe' => 'كافيه',
-                        'grocery' => 'بقالة',
-                        'supermarket' => 'سوبر ماركت',
-                        'catering' => 'خدمات الطعام',
-                        'other' => 'أخرى',
-                    ]),
-                Tables\Filters\SelectFilter::make('city')
-                    ->label('المدينة')
-                    ->options([
-                        'makkah' => 'مكة المكرمة',
-                        'jeddah' => 'جدة',
-                        'riyadh' => 'الرياض',
-                        'dammam' => 'الدمام',
-                        'medina' => 'المدينة المنورة',
-                        'other' => 'مدينة أخرى',
-                    ]),
+                //
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

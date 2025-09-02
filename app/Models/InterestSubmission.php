@@ -12,8 +12,7 @@ class InterestSubmission extends Model
     protected $fillable = [
         'name',
         'email',
-        'business_type',
-        'city',
+        'message',
     ];
 
     protected $casts = [
@@ -21,31 +20,5 @@ class InterestSubmission extends Model
         'updated_at' => 'datetime',
     ];
 
-    // Accessor for business type display
-    public function getBusinessTypeDisplayAttribute()
-    {
-        return match($this->business_type) {
-            'restaurant' => 'مطعم',
-            'cafe' => 'كافيه',
-            'grocery' => 'بقالة',
-            'supermarket' => 'سوبر ماركت',
-            'catering' => 'خدمات الطعام',
-            'other' => 'أخرى',
-            default => $this->business_type
-        };
-    }
-
-    // Accessor for city display
-    public function getCityDisplayAttribute()
-    {
-        return match($this->city) {
-            'makkah' => 'مكة المكرمة',
-            'jeddah' => 'جدة',
-            'riyadh' => 'الرياض',
-            'dammam' => 'الدمام',
-            'medina' => 'المدينة المنورة',
-            'other' => 'مدينة أخرى',
-            default => $this->city
-        };
-    }
+    
 } 
