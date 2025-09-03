@@ -27,8 +27,7 @@ class InterestController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'business_type' => 'required|string|in:restaurant,cafe,grocery,supermarket,catering,other',
-            'city' => 'required|string|in:makkah,jeddah,riyadh,dammam,medina,other',
+            'message' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -48,8 +47,7 @@ class InterestController extends Controller
             $interest = InterestSubmission::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'business_type' => $request->business_type,
-                'city' => $request->city,
+                'message' => $request->message,
             ]);
 
             return response()->json([
@@ -59,6 +57,7 @@ class InterestController extends Controller
                     'id' => $interest->id,
                     'name' => $interest->name,
                     'email' => $interest->email,
+                    'message' => $interest->message,
                 ]
             ], 201, [
                 'Access-Control-Allow-Origin' => '*',
