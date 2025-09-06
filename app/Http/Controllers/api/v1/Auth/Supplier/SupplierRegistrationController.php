@@ -215,7 +215,7 @@ class SupplierRegistrationController extends Controller
             ]);
 
             return $this->createdResponse([
-                'user' => new UserResource($user->load('fields')),
+                'user' => new UserResource($user->load(['fields', 'supplier'])),
                 'message' => __('messages.supplier_registration_pending'),
             ], __('messages.supplier_registration_pending'));
         } catch (\Exception $e) {

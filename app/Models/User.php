@@ -199,4 +199,16 @@ class User extends Authenticatable
     {
         return $query->where('status', UserStatus::APPROVED);
     }
+
+    public function isOpen(): bool
+    {
+        return $this->supplier?->status ?? true;
+    }
+
+    public function scopeOpen(Builder $query): Builder
+    {
+        return $query->whereHas('supplier', function ($q) {
+            $q->where('status', true);
+        });
+    }
 }

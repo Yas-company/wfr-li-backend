@@ -126,7 +126,7 @@ class SupplierLoginController extends Controller
         }
 
         return $this->successResponse([
-            'user' => new UserResource($user),
+            'user' => new UserResource($user->load('supplier')),
             'token' => $user->createToken('auth-token')->plainTextToken,
         ], __('messages.login_successful'));
     }

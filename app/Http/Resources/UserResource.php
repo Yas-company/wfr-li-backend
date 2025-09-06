@@ -66,6 +66,7 @@ class UserResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'is_organization' => $this->isOrganization(),
+            'is_open' => $this->whenLoaded('supplier', fn() => $this->isOpen()),
         ];
     }
 }
