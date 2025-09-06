@@ -211,7 +211,7 @@ class SupplierRegistrationController extends Controller
 
             Supplier::createOrFirst([
                 'user_id' => $user->id,
-                'status' => true,
+                'is_open' => true,
             ]);
 
             return $this->createdResponse([

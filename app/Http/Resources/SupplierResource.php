@@ -33,7 +33,7 @@ class SupplierResource extends JsonResource
             'name' => $this->name,
             'image' => $this->image ? asset('storage/'.$this->image) : null,
             'fields' => FieldResource::collection($this->whenLoaded('fields')),
-            'supplier_status' => $this->supplier?->status ?? true,
+            'supplier_status' => $this->supplier?->is_open ?? true,
         ];
     }
 }

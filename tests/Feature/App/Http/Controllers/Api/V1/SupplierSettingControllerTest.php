@@ -66,7 +66,7 @@ class SupplierSettingControllerTest extends TestCase
         $supplier = Supplier::where('user_id', $user->id)->first();
         $this->assertNotNull($supplier);
         $this->assertEquals($user->id, $supplier->user_id);
-        $this->assertTrue((bool) $supplier->status); // Cast to boolean for assertion
+        $this->assertTrue((bool) $supplier->is_open); // Cast to boolean for assertion
     }
 
     /**
@@ -83,7 +83,7 @@ class SupplierSettingControllerTest extends TestCase
         // Create supplier record
         $supplier = Supplier::create([
             'user_id' => $user->id,
-            'status' => true,
+            'is_open' => true,
         ]);
 
         // Acting as the supplier user
@@ -91,7 +91,7 @@ class SupplierSettingControllerTest extends TestCase
 
         // Test updating status to false
         $response = $this->putJson('/api/v1/suppliers/setting', [
-            'status' => false,
+            'is_open' => false,
         ]);
 
         // Assert successful update - using the correct SupplierResource structure
@@ -110,7 +110,7 @@ class SupplierSettingControllerTest extends TestCase
 
         // Assert supplier status was updated (cast to boolean for comparison)
         $supplier->refresh();
-        $this->assertFalse((bool) $supplier->status);
+        $this->assertFalse((bool) $supplier->is_open);
 
         // Verify the response data (cast supplier_status to boolean)
         $responseData = $response->json('data');
@@ -120,12 +120,12 @@ class SupplierSettingControllerTest extends TestCase
 
         // Test updating status back to true
         $response = $this->putJson('/api/v1/suppliers/setting', [
-            'status' => true,
+            'is_open' => true,
         ]);
 
         $response->assertStatus(200);
         $supplier->refresh();
-        $this->assertTrue((bool) $supplier->status);
+        $this->assertTrue((bool) $supplier->is_open);
 
         // Verify the response shows updated status
         $responseData = $response->json('data');
@@ -138,7 +138,7 @@ class SupplierSettingControllerTest extends TestCase
     public function test_supplier_settings_update_requires_authentication(): void
     {
         $response = $this->putJson('/api/v1/suppliers/setting', [
-            'status' => false,
+            'is_open' => false,
         ]);
 
         $response->assertStatus(401);
@@ -158,7 +158,7 @@ class SupplierSettingControllerTest extends TestCase
         // Create supplier record
         Supplier::create([
             'user_id' => $user->id,
-            'status' => true,
+            'is_open' => true,
         ]);
 
         $this->actingAs($user, 'sanctum');
@@ -166,18 +166,18 @@ class SupplierSettingControllerTest extends TestCase
         // Test without status field
         $response = $this->putJson('/api/v1/suppliers/setting', []);
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['status']);
+            ->assertJsonValidationErrors(['is_open']);
 
         // Test with invalid status value
         $response = $this->putJson('/api/v1/suppliers/setting', [
-            'status' => 'invalid',
+            'is_open' => 'invalid',
         ]);
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['status']);
+            ->assertJsonValidationErrors(['is_open']);
 
         // Test with valid boolean string
         $response = $this->putJson('/api/v1/suppliers/setting', [
-            'status' => '1',
+            'is_open' => '1',
         ]);
         $response->assertStatus(200);
     }
@@ -208,7 +208,7 @@ class SupplierSettingControllerTest extends TestCase
         $supplier = Supplier::where('user_id', $user->id)->first();
         $this->assertNotNull($supplier);
         $this->assertEquals($user->id, $supplier->user_id);
-        $this->assertTrue((bool) $supplier->status);
+        $this->assertTrue((bool) $supplier->is_open);
 
         // Step 3: Simulate admin approval
         $user->update(['status' => UserStatus::APPROVED]);
@@ -217,12 +217,12 @@ class SupplierSettingControllerTest extends TestCase
         $this->actingAs($user, 'sanctum');
 
         $response = $this->putJson('/api/v1/suppliers/setting', [
-            'status' => false,
+            'is_open' => false,
         ]);
 
         $response->assertStatus(200);
         $supplier->refresh();
-        $this->assertFalse((bool) $supplier->status);
+        $this->assertFalse((bool) $supplier->is_open);
 
         // Step 5: Verify the response contains the correct data
         $response->assertJsonFragment([
@@ -249,7 +249,7 @@ class SupplierSettingControllerTest extends TestCase
         $this->actingAs($user, 'sanctum');
 
         $response = $this->putJson('/api/v1/suppliers/setting', [
-            'status' => false,
+            'is_open' => false,
         ]);
 
         // This should fail because there's no supplier record for this user
@@ -282,21 +282,21 @@ class SupplierSettingControllerTest extends TestCase
         // Create supplier record
         $supplier = Supplier::create([
             'user_id' => $user->id,
-            'status' => true,
+            'is_open' => true,
         ]);
 
         $this->actingAs($user, 'sanctum');
 
         // Test updating status
         $response = $this->putJson('/api/v1/suppliers/setting', [
-            'status' => false,
+            'is_open' => false,
         ]);
 
         $response->assertStatus(200);
 
         // Verify supplier status was updated
         $supplier->refresh();
-        $this->assertFalse((bool) $supplier->status);
+        $this->assertFalse((bool) $supplier->is_open);
 
         // Verify response structure (cast supplier_status to boolean)
         $responseData = $response->json('data');
@@ -325,7 +325,7 @@ class SupplierSettingControllerTest extends TestCase
         // Create supplier record with initial status true
         $supplierRecord = Supplier::create([
             'user_id' => $supplier->id,
-            'status' => true,
+            'is_open' => true,
         ]);
 
         // Create buyer user using factory
@@ -363,14 +363,14 @@ class SupplierSettingControllerTest extends TestCase
         $this->actingAs($supplier, 'sanctum');
 
         $updateResponse = $this->putJson('/api/v1/suppliers/setting', [
-            'status' => false,
+            'is_open' => false,
         ]);
 
         $updateResponse->assertStatus(200);
 
         // Verify the supplier record was updated
         $supplierRecord->refresh();
-        $this->assertFalse((bool) $supplierRecord->status);
+        $this->assertFalse((bool) $supplierRecord->is_open);
 
         // Step 3: Buyer checks supplier details again (status should now be false)
         $this->actingAs($buyer, 'sanctum');
@@ -388,7 +388,7 @@ class SupplierSettingControllerTest extends TestCase
         $this->actingAs($supplier, 'sanctum');
 
         $updateResponse = $this->putJson('/api/v1/suppliers/setting', [
-            'status' => true,
+            'is_open' => true,
         ]);
 
         $updateResponse->assertStatus(200);

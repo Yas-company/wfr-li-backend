@@ -202,13 +202,13 @@ class User extends Authenticatable
 
     public function isOpen(): bool
     {
-        return $this->supplier?->status ?? true;
+        return $this->supplier?->is_open ?? true;
     }
 
     public function scopeOpen(Builder $query): Builder
     {
         return $query->whereHas('supplier', function ($q) {
-            $q->where('status', true);
+            $q->where('is_open', true);
         });
     }
 }
