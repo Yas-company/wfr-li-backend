@@ -119,8 +119,8 @@ class Product extends Model implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('images')
-        ->useFallbackUrl('/images/logo.jpg')
-            ->useFallbackPath(public_path('/images/logo.jpg'));
+        ->useFallbackUrl(asset('images/logo.jpeg'))
+        ->useFallbackPath(public_path('images/logo.jpeg'));
     }
 
     public function favoritedByUsers()
