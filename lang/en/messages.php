@@ -230,4 +230,8 @@ return [
         'slug_required' => 'The slug is required',
         'slug_not_found' => 'The slug is not found',
     ],
+
+    'related_buyers' => [
+        'retrieved_successfully' => 'Related buyers retrieved successfully',
+    ],
 ];
