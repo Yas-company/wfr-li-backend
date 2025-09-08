@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Supplier;
 use App\Models\User;
+use App\Exceptions\UserException;
 
 class SupplierSettingService
 {
@@ -12,6 +13,9 @@ class SupplierSettingService
     public function updateSupplier(array $data, User $user)
     {
 
+        if (!$user->supplier) {
+            throw UserException::supplierNotExists();
+        }
         $supplier = $user->supplier;
         $supplier->update($data);
 

@@ -39,6 +39,7 @@ return [
         'cannot_delete_last_address' => 'لا يمكن حذف العنوان الأخير',
         'at_least_one_default_address_required' => 'يجب تحديد عنوان افتراضي واحد على الأقل',
         'cannot_delete_address_attached_to_order' => 'لا يمكن حذف العنوان المرتبط بالطلب',
+        'supplier_setting_not_exists' => 'لم يتم العثور على إعدادات المورد',
     ],
 
     'ratings' => [
@@ -234,4 +235,5 @@ return [
         'slug_not_found' => 'لم يتم العثور على الصفحة',
     ],
 
+    
 ];

@@ -21,4 +21,9 @@ class UserException extends Exception
     {
         return new static(__('messages.users.cannot_delete_address_attached_to_order'), Response::HTTP_UNPROCESSABLE_ENTITY);
     }
+
+    public static function supplierNotExists()
+    {
+        return new static(__('messages.users.supplier_setting_not_exists'), Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
 }
