@@ -66,8 +66,7 @@ class BuyerRepository
 
         match ($sortBy) {
             'quantity' => $query->orderByRaw("COALESCE(SUM(o.total_quantity), 0) $sortOrder"),
-            'total_price' => $query->orderByRaw("COALESCE(SUM(o.total_price), 0) $sortOrder"),
-            default => $query->orderBy('u.name', $sortOrder),
+            default => $query->orderByRaw("COALESCE(SUM(o.total_price), 0) $sortOrder"),
         };
     }
 }
