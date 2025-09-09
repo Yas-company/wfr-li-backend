@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class GetRelatedBuyersRequest extends FormRequest
+class GetBuyersRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,7 +27,7 @@ class GetRelatedBuyersRequest extends FormRequest
             'sort_by' => [
                 'nullable',
                 'string',
-                Rule::in(['name', 'quantity', 'total_price'])
+                Rule::in(['quantity', 'total_price'])
             ],
             'sort_order' => [
                 'nullable',

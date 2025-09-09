@@ -13,6 +13,7 @@ class CartTotals
      */
     public function __construct(
         public int $totalProducts,
+        public int $productsSum,
         public float $total,
         public float $discount
     ) {}
@@ -27,10 +28,12 @@ class CartTotals
     public static function fromProducts(iterable $products): self
     {
         $totalProducts = 0;
+        $productsSum = 0;
         $total = 0;
         $totalBeforeDiscount = 0;
 
         foreach ($products as $item) {
+            $productsSum += $item->quantity;
             $totalProducts++;
             $total += $item->quantity * $item->price;
             $totalBeforeDiscount += $item->quantity * ($item->product->price_before_discount ?? $item->price);
@@ -38,6 +41,7 @@ class CartTotals
 
         return new static(
             totalProducts: $totalProducts,
+            productsSum: $productsSum,
             total: $total,
             discount: $totalBeforeDiscount - $total
         );

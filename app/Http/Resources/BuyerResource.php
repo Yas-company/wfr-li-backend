@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class RelatedBuyersResource extends JsonResource
+class BuyerResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -21,5 +21,5 @@ class RelatedBuyersResource extends JsonResource
             'total_price' => $this->total_price,
             'is_organization' => $this->is_organization,
         ];
-   }
+    }
 }

@@ -39,7 +39,7 @@ class UserSeeder extends Seeder
         foreach ($suppliers as $supplier) {
             Supplier::create([
                 'user_id' => $supplier->id,
-                'status' => true, // Default active status
+                'is_open' => true, // Default active status
             ]);
             $supplier->fields()->sync($fields);
         }

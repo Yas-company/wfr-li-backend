@@ -3,15 +3,11 @@
 namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\GetRelatedBuyersRequest;
 use App\Http\Requests\SearchSupplierRequest;
 use App\Http\Resources\FieldResource;
-use App\Http\Resources\RelatedBuyersResource;
 use App\Http\Resources\SupplierDetailsResource;
 use App\Http\Resources\SupplierResource;
-use App\Http\Resources\UserResource;
 use App\Http\Services\UserService;
-use App\Models\User;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -374,13 +370,5 @@ class UserController extends Controller
             return $this->errorResponse($result['error'], 400);
         }
         return $this->paginatedResponse($result, SupplierResource::collection($result),'Suppliers retrieved successfully',statusCode: 200);
-    }
-
-    public function getRelatedBuyers(GetRelatedBuyersRequest $request)
-    {
-        $data = $request->validated();
-        $result = $this->userService->getRelatedBuyers($data, auth()->user());
-        
-        return $this->successResponse(RelatedBuyersResource::collection($result), __('messages.related_buyers.retrieved_successfully'), 200);
     }
 }

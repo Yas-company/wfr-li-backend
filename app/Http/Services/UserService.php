@@ -2,17 +2,20 @@
 
 namespace App\Http\Services;
 
+use App\Models\User;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
-use App\Enums\Order\OrderStatus;
-use App\Enums\Organization\OrganizationStatus;
-use App\Models\Order;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Repositories\Suppliers\BuyerRepository;
 
 class UserService
 {
+    public function __construct(private BuyerRepository $buyerRepository)
+    {
+        //
+    }
+
     public function getSupplierFields(User $user)
     {
         return $user->fields;
@@ -181,56 +184,5 @@ class UserService
         }
 
         return $users;
-    }
-
-    public function getRelatedBuyers($data, $supplier)
-    {
-        $query = User::select([
-                'users.id',
-                'users.name',
-            ])
-            ->selectRaw('COALESCE(SUM(order_product.quantity), 0) as total_quantity')
-            ->selectRaw('COALESCE(SUM(orders.total), 0) as total_price')
-            ->selectRaw('CASE WHEN organizations.id IS NOT NULL THEN 1 ELSE 0 END as is_organization')
-            ->join('orders', function($join) {
-                $join->on('users.id', '=', 'orders.user_id')
-                     ->where('orders.status', '=', OrderStatus::DELIVERED->value);
-            })
-            ->leftJoin('order_product', 'orders.id', '=', 'order_product.order_id')
-            ->leftJoin('organizations', function($join) {
-                $join->on('users.id', '=', 'organizations.created_by')
-                     ->where('organizations.status', '=', OrganizationStatus::APPROVED->value);
-            })
-            ->where('orders.supplier_id', $supplier->id);
-
-        if (isset($data['search']) && !empty($data['search'])) {
-            $searchTerm = $data['search'];
-            $query->where('users.name', 'like', $searchTerm . '%');
-        }
-
-        $sortBy = $data['sort_by'] ?? 'name'; // Default sort by name
-        $sortOrder = $data['sort_order'] ?? 'asc'; // Default ascending
-
-        switch ($sortBy) {
-            case 'quantity':
-                $query->orderByRaw('COALESCE(SUM(order_product.quantity), 0) ' . $sortOrder);
-                break;
-            case 'total_price':
-                $query->orderByRaw('COALESCE(SUM(orders.total), 0) ' . $sortOrder);
-                break;
-            case 'name':
-            default:
-                $query->orderBy('users.name', $sortOrder);
-                break;
-        }
-
-        $buyers = $query->groupBy([
-                'users.id',
-                'users.name',
-                'is_organization',
-            ])
-            ->get();
-        
-        return $buyers;
     }
 }

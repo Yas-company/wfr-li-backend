@@ -253,7 +253,7 @@ class SupplierSettingControllerTest extends TestCase
         ]);
 
         // This should fail because there's no supplier record for this user
-        $response->assertStatus(500); // Or whatever error the service throws
+        $response->assertStatus(422); // Or whatever error the service throws
     }
 
     /**

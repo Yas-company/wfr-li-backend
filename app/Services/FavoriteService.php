@@ -11,7 +11,6 @@ class FavoriteService
 {
     public function toggleFavorite(array $data, User $user): Favorite
     {
-
         $productId = $data['product_id'];
         $product = Product::find($productId);
 
@@ -32,7 +31,7 @@ class FavoriteService
 
         $products = Product::whereIn('id', $favoriteProductIds)
             ->isActive()
-            ->with(['category', 'ratings', 'category.field', 'ratings.user'])
+            ->with(['category', 'ratings', 'category.field', 'ratings.user', 'media'])
             ->latest()
             ->paginate(10);
 
