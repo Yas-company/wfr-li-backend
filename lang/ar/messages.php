@@ -235,5 +235,7 @@ return [
         'slug_not_found' => 'لم يتم العثور على الصفحة',
     ],
 
-    
+    'buyers' => [
+        'retrieved_successfully' => 'تم جلب المشترين المرتبطين بنجاح',
+    ],
 ];

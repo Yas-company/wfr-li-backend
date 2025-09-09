@@ -214,6 +214,7 @@ class CartService implements CartServiceInterface
             $order = Order::create([
                 'user_id' => $user->id,
                 'total' => $totals->total,
+                'total_products' => $totals->productsSum,
                 'total_discount' => $totals->discount,
                 'status' => OrderStatus::PENDING,
                 'supplier_id' => $supplierId,
