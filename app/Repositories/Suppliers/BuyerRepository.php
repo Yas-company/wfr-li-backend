@@ -17,7 +17,7 @@ class BuyerRepository
         $this->applySearch($query, $filters);
         $this->applySorting($query, $filters);
 
-        return $query->groupBy('u.id', 'u.name')
+        return $query->groupBy('u.id', 'u.name', 'total_quantity', 'total_price')
             ->paginate(10);
     }
 
