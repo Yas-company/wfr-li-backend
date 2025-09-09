@@ -253,7 +253,7 @@ class SupplierSettingControllerTest extends TestCase
         ]);
 
         // This should fail because there's no supplier record for this user
-        $response->assertStatus(422); // Or whatever error the service throws
+        $response->assertStatus(422); // UserException returns 422
     }
 
     /**
@@ -404,6 +404,35 @@ class SupplierSettingControllerTest extends TestCase
         $this->assertEquals($supplier->id, $responseData['id']);
         $this->assertEquals($supplier->name, $responseData['name']);
         $this->assertTrue((bool) $responseData['supplier_status']); // Status should be true again
+    }
+
+    /**
+     * Test that supplier setting not exists
+     */
+    public function test_supplier_setting_not_exists(): void
+    {
+        // Create a user without a supplier record
+        $user = User::factory()->create([
+            'role' => UserRole::BUYER,
+            'status' => UserStatus::APPROVED,
+        ]);
+
+        $this->actingAs($user, 'sanctum');
+
+        // Try to update supplier settings when no supplier record exists
+        $response = $this->putJson('/api/v1/suppliers/setting', [
+            'is_open' => false,
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonStructure([
+                'success',
+                'message',
+            ])
+            ->assertJson([
+                'success' => false,
+                'message' => __('messages.users.supplier_setting_not_exists'),
+            ]);
     }
 
     /**

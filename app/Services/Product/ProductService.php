@@ -103,7 +103,7 @@ class ProductService implements ProductServiceInterface
      */
     public function getProductById(int $id): Product
     {
-        return Product::with(['ratings', 'category', 'category.field', 'ratings.user'])->withCartInfo()->findOrFail($id);
+        return Product::with(['ratings', 'category', 'category.field', 'ratings.user', 'media'])->withCartInfo()->findOrFail($id);
     }
 
     /**
