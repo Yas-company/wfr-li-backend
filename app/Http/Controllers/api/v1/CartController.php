@@ -82,6 +82,8 @@ class CartController extends Controller
                 'total' => $totals->total,
                 'total_discount' => $totals->discount,
                 'total_products' => $totals->totalProducts,
+                'total_after_taxes' => $totals->totalAfterTaxes,
+                'total_country_tax' => $totals->totalCountryTax,
                 'supplier_requirements' => $supplierRequirements,
             ],
             statusCode: Response::HTTP_OK

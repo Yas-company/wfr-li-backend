@@ -2,13 +2,14 @@
 
 namespace Database\Seeders;
 
-use App\Enums\ProductStatus;
+use App\Models\User;
 use App\Enums\UnitType;
 use App\Enums\UserRole;
-use App\Models\Category;
 use App\Models\Product;
-use App\Models\User;
+use App\Models\Category;
+use App\Enums\ProductStatus;
 use Illuminate\Database\Seeder;
+use App\Services\Product\ProductPricingCalculatorService;
 
 class ProductSeeder extends Seeder
 {
@@ -70,21 +71,34 @@ class ProductSeeder extends Seeder
                 $unitType = $unitTypes[array_rand($unitTypes)];
 
                 $basePrice = rand(10, 500);
+                $discountRate = rand(1, 50) / 100;
+
+                $prices = app(ProductPricingCalculatorService::class)->calculate($basePrice, $discountRate);
 
                 Product::withoutSyncingToSearch(function() use(
                     $productNames,
                     $productDescriptions,
                     $nameIndex,
                     $descIndex,
-                    $basePrice,
+                    $prices,
+                    $discountRate,
                     $unitType,
                     $category,
-                    $suppliers) {
+                    $suppliers
+                    ) {
                         Product::create([
                             'name' => $productNames[$nameIndex],
                             'description' => $productDescriptions[$descIndex],
-                            'price' => $basePrice,
-                            'base_price' => $basePrice,
+                            'discount_rate' => $discountRate,
+                            'base_price' => $prices->basePrice,
+                            'price_before_discount' => $prices->priceBeforeDiscount,
+                            'price' => $prices->priceAfterDiscount,
+                            'price_after_taxes' => $prices->priceAfterTaxes,
+                            'total_discount' => $prices->totalDiscount,
+                            'platform_tax' => $prices->totalPlatformTax,
+                            'country_tax' => $prices->totalCountryTax,
+                            'other_tax' => $prices->totalOtherTax,
+                            'total_taxes' => $prices->totalTaxes,
                             'quantity' => rand(10, 100),
                             'min_order_quantity' => rand(1, 5),
                             'stock_qty' => rand(50, 1000),

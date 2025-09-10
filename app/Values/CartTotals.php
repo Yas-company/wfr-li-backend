@@ -15,7 +15,9 @@ class CartTotals
         public int $totalProducts,
         public int $productsSum,
         public float $total,
-        public float $discount
+        public float $discount,
+        public float $totalAfterTaxes,
+        public float $totalCountryTax,
     ) {}
 
     /**
@@ -31,19 +33,25 @@ class CartTotals
         $productsSum = 0;
         $total = 0;
         $totalBeforeDiscount = 0;
+        $totalAfterTaxes = 0;
+        $totalCountryTax = 0;
 
         foreach ($products as $item) {
             $productsSum += $item->quantity;
             $totalProducts++;
             $total += $item->quantity * $item->price;
             $totalBeforeDiscount += $item->quantity * ($item->product->price_before_discount ?? $item->price);
+            $totalAfterTaxes += $item->quantity * $item->product->price_after_taxes;
+            $totalCountryTax += $item->quantity * $item->product->country_tax;
         }
 
         return new static(
             totalProducts: $totalProducts,
             productsSum: $productsSum,
-            total: $total,
-            discount: $totalBeforeDiscount - $total
+            total: money($total, 2),
+            discount: money($totalBeforeDiscount - $total, 2),
+            totalAfterTaxes: money($totalAfterTaxes, 2),
+            totalCountryTax: money($totalCountryTax, 2)
         );
     }
 }
