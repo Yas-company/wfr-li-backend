@@ -35,9 +35,14 @@ class CartProductResource extends JsonResource
             'product_image' => $this->product->getFirstMediaUrl('images'),
             'product_price' => $this->product->price,
             'price_before_discount' => $this->product->price_before_discount,
+            'price_after_taxes' => $this->product->price_after_taxes,
+            'country_tax' => $this->product->country_tax,
+            'discount_rate' => to_base($this->product->discount_rate),
             'quantity' => $this->quantity,
             'price' => $this->price,
-            'total' => $this->quantity * $this->price,
+            'total' => money($this->quantity * $this->price, 2),
+            'total_after_taxes' => money($this->quantity * $this->product->price_after_taxes, 2),
+            'total_country_tax' => money($this->quantity * $this->product->country_tax, 2),
         ];
     }
 }

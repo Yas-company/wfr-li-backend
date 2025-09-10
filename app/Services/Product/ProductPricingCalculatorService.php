@@ -35,15 +35,15 @@ class ProductPricingCalculatorService
         $priceAfterTaxes = $priceAfterCountry + $other;
 
         return new ProductPrices(
-            $this->money($basePrice),
-            $this->money($priceBeforeDiscount),
-            $this->money($priceAfterDiscount),
-            $this->money($priceAfterTaxes),
-            $this->money($totalDiscount),
-            $this->money($platformAfter),
-            $this->money($country),
-            $this->money($other),
-            $this->money($totalTaxes)
+            money($basePrice,2 ),
+            money($priceBeforeDiscount, 2),
+            money($priceAfterDiscount, 2),
+            money($priceAfterTaxes, 2),
+            money($totalDiscount, 2),
+            money($platformAfter, 2),
+            money($country, 2),
+            money($other, 2),
+            money($totalTaxes, 2)
         );
     }
 
@@ -69,10 +69,5 @@ class ProductPricingCalculatorService
             $this->taxes = Tax::forProducts()->active()->get()->groupBy('group');
         }
         return $this->taxes;
-    }
-
-    private function money(float $value): float
-    {
-        return round($value, 2);
     }
 }

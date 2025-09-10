@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Enums\UnitType;
 use App\Traits\Rateable;
 use App\Enums\ProductStatus;
-use App\Values\ProductPrices;
 use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Support\Facades\Auth;
