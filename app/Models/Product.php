@@ -13,7 +13,6 @@ use Spatie\Translatable\HasTranslations;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use App\Services\Product\ProductPricingCalculatorService;
 
 class Product extends Model implements HasMedia
 {
@@ -79,10 +78,13 @@ class Product extends Model implements HasMedia
         $array = $this->toArray();
 
         return [
+            'id' => $array['id'],
             'name_ar' => $array['name']['ar'],
             'name_en' => $array['name']['en'],
             'description_ar' => $array['description']['ar'],
             'description_en' => $array['description']['en'],
+            'price_before_discount' => $array['price_before_discount'],
+            'price' => $array['price'],
             'supplier_name' => $array['supplier']['name'],
             'category_name_ar' => $array['category']['name']['ar'],
             'category_name_en' => $array['category']['name']['en'],
