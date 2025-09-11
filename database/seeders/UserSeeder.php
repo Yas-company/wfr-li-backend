@@ -37,11 +37,17 @@ class UserSeeder extends Seeder
         $fields = Field::all();
 
         foreach ($suppliers as $supplier) {
-            Supplier::create([
-                'user_id' => $supplier->id,
-                'is_open' => true, // Default active status
-            ]);
-            $supplier->fields()->sync($fields);
+            Supplier::withoutSyncingToSearch(function() use ($supplier, $fields) {
+                Supplier::create([
+                    'user_id' => $supplier->id,
+                    'is_open' => true, // Default active status
+                ]);
+                $supplier->fields()->sync($fields);
+
+                Address::factory()
+                    ->count(rand(1, 3))
+                    ->create(['user_id' => $supplier->id]);
+            });
         }
 
         foreach ($customers as $customer) {
