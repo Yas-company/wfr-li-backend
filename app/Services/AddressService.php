@@ -36,6 +36,8 @@ class AddressService
 
         $address = Address::create($data);
 
+        $this->SyncSupplierToSearch($user);
+
         if ((bool) $data['is_default']) {
             $user->addresses()->where('id', '!=', $address->id)->update(['is_default' => false]);
         }
@@ -77,6 +79,8 @@ class AddressService
 
         $address->update($data);
 
+        $this->SyncSupplierToSearch($user);
+
         return $address;
     }
 
@@ -109,6 +113,18 @@ class AddressService
                 $newDefaultAddress->save();
             }
         }
+
+        $this->SyncSupplierToSearch($user);
+
         $address->delete();
+    }
+
+    protected function SyncSupplierToSearch(User $user): void
+    {
+        $supplier = $user->supplier;
+
+        if ($user->isSupplier() && $supplier) {
+            $supplier->searchable();
+        }
     }
 }
