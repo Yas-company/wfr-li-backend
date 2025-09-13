@@ -206,9 +206,10 @@ return [
         'phone_update_failed' => 'Failed to update phone',
     ],
 
-
     'suppliers' => [
         'image_changed' => 'Supplier image changed successfully',
+        'settings_fetched' => 'Supplier settings fetched successfully',
+        'min_order_amount_updated' => 'Supplier min order amount updated successfully',
     ],
 
     'category' => [

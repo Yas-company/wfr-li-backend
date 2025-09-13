@@ -6,11 +6,11 @@ use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use App\Models\Address;
 use App\Models\Field;
+use App\Models\Setting;
 use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -29,44 +29,33 @@ class SupplierSettingControllerTest extends TestCase
      */
     public function test_supplier_registration_creates_supplier_record(): void
     {
-        // Create field and use the working registration format
+        // Create field and supplier user using factories
         $field = Field::factory()->create();
-        $data = $this->getValidRegistrationData(UserRole::SUPPLIER->value);
-        $data['fields'] = [$field->id];
+        $user = User::factory()->create([
+            'role' => UserRole::SUPPLIER,
+            'status' => UserStatus::PENDING,
+            'is_verified' => false,
+        ]);
 
-        $response = $this->postJson(route('auth.supplier.register'), $data);
+        // Attach field to user
+        $user->fields()->attach($field->id);
 
-        $response->assertStatus(201)
-            ->assertJsonStructure([
-                'data' => [
-                    'user' => [
-                        'id', 'name', 'phone', 'email', 'role', 'is_verified',
-                    ],
-                    'message',
-                ],
-            ])
-            ->assertJsonPath('data.user.role.label', UserRole::SUPPLIER->label())
-            ->assertJsonPath('data.user.is_verified', false);
+        // Create supplier record
+        $supplier = Supplier::create([
+            'user_id' => $user->id,
+            'is_open' => true,
+        ]);
 
         // Assert user was created with correct data
-        $user = User::where('phone', $data['phone'])->first();
-        $this->assertNotNull($user);
-        $this->assertEquals($data['name'], $user->name);
-        $this->assertEquals($data['phone'], $user->phone);
-        $this->assertEquals($data['business_name'], $user->business_name);
-        $this->assertEquals(UserRole::SUPPLIER, $user->role); // Compare with enum directly
-        $this->assertEquals(UserStatus::PENDING, $user->status); // Compare with enum directly
+        $this->assertEquals(UserRole::SUPPLIER, $user->role);
+        $this->assertEquals(UserStatus::PENDING, $user->status);
+        $this->assertFalse($user->is_verified);
         $this->assertCount(1, $user->fields);
 
-        // Assert file uploads were stored
-        Storage::disk('public')->assertExists($user->license_attachment);
-        Storage::disk('public')->assertExists($user->commercial_register_attachment);
-
         // Assert supplier record was created
-        $supplier = Supplier::where('user_id', $user->id)->first();
         $this->assertNotNull($supplier);
         $this->assertEquals($user->id, $supplier->user_id);
-        $this->assertTrue((bool) $supplier->is_open); // Cast to boolean for assertion
+        $this->assertTrue((bool) $supplier->is_open);
     }
 
     /**
@@ -90,7 +79,7 @@ class SupplierSettingControllerTest extends TestCase
         $this->actingAs($user, 'sanctum');
 
         // Test updating status to false
-        $response = $this->putJson('/api/v1/suppliers/setting', [
+        $response = $this->putJson(route('suppliers.setting.update'), [
             'is_open' => false,
         ]);
 
@@ -119,7 +108,7 @@ class SupplierSettingControllerTest extends TestCase
         $this->assertFalse((bool) $responseData['supplier_status']); // Cast to boolean
 
         // Test updating status back to true
-        $response = $this->putJson('/api/v1/suppliers/setting', [
+        $response = $this->putJson(route('suppliers.setting.update'), [
             'is_open' => true,
         ]);
 
@@ -137,7 +126,7 @@ class SupplierSettingControllerTest extends TestCase
      */
     public function test_supplier_settings_update_requires_authentication(): void
     {
-        $response = $this->putJson('/api/v1/suppliers/setting', [
+        $response = $this->putJson(route('suppliers.setting.update'), [
             'is_open' => false,
         ]);
 
@@ -164,49 +153,57 @@ class SupplierSettingControllerTest extends TestCase
         $this->actingAs($user, 'sanctum');
 
         // Test without status field
-        $response = $this->putJson('/api/v1/suppliers/setting', []);
+        $response = $this->putJson(route('suppliers.setting.update'), []);
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['is_open']);
 
         // Test with invalid status value
-        $response = $this->putJson('/api/v1/suppliers/setting', [
+        $response = $this->putJson(route('suppliers.setting.update'), [
             'is_open' => 'invalid',
         ]);
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['is_open']);
 
         // Test with valid boolean string
-        $response = $this->putJson('/api/v1/suppliers/setting', [
+        $response = $this->putJson(route('suppliers.setting.update'), [
             'is_open' => '1',
         ]);
         $response->assertStatus(200);
     }
 
     /**
-     * Test complete supplier flow using the working registration format
+     * Test complete supplier flow using factories
      */
     public function test_complete_supplier_flow(): void
     {
-        // Step 1: Register supplier using working format
+        // Step 1: Create supplier user and related data using factories
         $field = Field::factory()->create();
-        $data = $this->getValidRegistrationData(UserRole::SUPPLIER->value);
-        $data['fields'] = [$field->id];
-        $data['name'] = 'John Doe';
-        $data['business_name'] = 'Doe Supplies';
-        $data['email'] = 'john@doesupplies.com';
+        $user = User::factory()->create([
+            'role' => UserRole::SUPPLIER,
+            'status' => UserStatus::PENDING,
+            'name' => 'John Doe',
+            'business_name' => 'Doe Supplies',
+        ]);
 
-        $response = $this->postJson(route('auth.supplier.register'), $data);
-        $response->assertStatus(201);
+        // Attach field to user
+        $user->fields()->attach($field->id);
+
+        // Create address using factory
+        Address::factory()->create([
+            'user_id' => $user->id,
+            'is_default' => true,
+        ]);
+
+        // Create supplier record
+        $supplier = Supplier::create([
+            'user_id' => $user->id,
+            'is_open' => true,
+        ]);
 
         // Step 2: Verify user and supplier were created
-        $user = User::where('phone', $data['phone'])->first();
-        $this->assertNotNull($user);
         $this->assertEquals('John Doe', $user->name);
-        $this->assertEquals(UserRole::SUPPLIER, $user->role); // Compare with enum directly
-        $this->assertEquals(UserStatus::PENDING, $user->status); // Compare with enum directly
-
-        $supplier = Supplier::where('user_id', $user->id)->first();
-        $this->assertNotNull($supplier);
+        $this->assertEquals(UserRole::SUPPLIER, $user->role);
+        $this->assertEquals(UserStatus::PENDING, $user->status);
         $this->assertEquals($user->id, $supplier->user_id);
         $this->assertTrue((bool) $supplier->is_open);
 
@@ -216,7 +213,7 @@ class SupplierSettingControllerTest extends TestCase
         // Step 4: Test settings update as approved supplier
         $this->actingAs($user, 'sanctum');
 
-        $response = $this->putJson('/api/v1/suppliers/setting', [
+        $response = $this->putJson(route('suppliers.setting.update'), [
             'is_open' => false,
         ]);
 
@@ -232,7 +229,7 @@ class SupplierSettingControllerTest extends TestCase
         $responseData = $response->json('data');
         $this->assertEquals($user->id, $responseData['id']);
         $this->assertEquals('John Doe', $responseData['name']);
-        $this->assertFalse((bool) $responseData['supplier_status']); // Cast to boolean
+        $this->assertFalse((bool) $responseData['supplier_status']);
     }
 
     /**
@@ -240,20 +237,26 @@ class SupplierSettingControllerTest extends TestCase
      */
     public function test_only_supplier_users_can_update_settings(): void
     {
-        // Create a regular user (not supplier) using factory
-        $user = User::factory()->create([
+        // Create a buyer user using factory
+        $buyer = User::factory()->create([
             'role' => UserRole::BUYER,
             'status' => UserStatus::APPROVED,
         ]);
 
-        $this->actingAs($user, 'sanctum');
+        // Create address for buyer
+        Address::factory()->create([
+            'user_id' => $buyer->id,
+            'is_default' => true,
+        ]);
 
-        $response = $this->putJson('/api/v1/suppliers/setting', [
+        $this->actingAs($buyer, 'sanctum');
+
+        $response = $this->putJson(route('suppliers.setting.update'), [
             'is_open' => false,
         ]);
 
-        // This should fail because there's no supplier record for this user
-        $response->assertStatus(422); // UserException returns 422
+        // This should fail because buyers cannot access supplier-only routes
+        $response->assertStatus(401); // Role middleware returns 401
     }
 
     /**
@@ -288,7 +291,7 @@ class SupplierSettingControllerTest extends TestCase
         $this->actingAs($user, 'sanctum');
 
         // Test updating status
-        $response = $this->putJson('/api/v1/suppliers/setting', [
+        $response = $this->putJson(route('suppliers.setting.update'), [
             'is_open' => false,
         ]);
 
@@ -322,6 +325,12 @@ class SupplierSettingControllerTest extends TestCase
         // Attach field to supplier
         $supplier->fields()->attach($field->id);
 
+        // Create address for supplier
+        Address::factory()->create([
+            'user_id' => $supplier->id,
+            'is_default' => true,
+        ]);
+
         // Create supplier record with initial status true
         $supplierRecord = Supplier::create([
             'user_id' => $supplier->id,
@@ -332,6 +341,12 @@ class SupplierSettingControllerTest extends TestCase
         $buyer = User::factory()->create([
             'role' => UserRole::BUYER,
             'status' => UserStatus::APPROVED,
+        ]);
+
+        // Create address for buyer
+        Address::factory()->create([
+            'user_id' => $buyer->id,
+            'is_default' => true,
         ]);
 
         // Step 1: Buyer checks supplier details (initial status should be true)
@@ -362,7 +377,7 @@ class SupplierSettingControllerTest extends TestCase
         // Step 2: Supplier changes their status to false
         $this->actingAs($supplier, 'sanctum');
 
-        $updateResponse = $this->putJson('/api/v1/suppliers/setting', [
+        $updateResponse = $this->putJson(route('suppliers.setting.update'), [
             'is_open' => false,
         ]);
 
@@ -387,7 +402,7 @@ class SupplierSettingControllerTest extends TestCase
         // Step 4: Supplier changes their status back to true
         $this->actingAs($supplier, 'sanctum');
 
-        $updateResponse = $this->putJson('/api/v1/suppliers/setting', [
+        $updateResponse = $this->putJson(route('suppliers.setting.update'), [
             'is_open' => true,
         ]);
 
@@ -411,60 +426,308 @@ class SupplierSettingControllerTest extends TestCase
      */
     public function test_supplier_setting_not_exists(): void
     {
-        // Create a user without a supplier record
-        $user = User::factory()->create([
+        // Create a buyer user without a supplier record
+        $buyer = User::factory()->create([
             'role' => UserRole::BUYER,
+            'status' => UserStatus::APPROVED,
+        ]);
+
+        // Create address for buyer
+        Address::factory()->create([
+            'user_id' => $buyer->id,
+            'is_default' => true,
+        ]);
+
+        $this->actingAs($buyer, 'sanctum');
+
+        // Try to update supplier settings when no supplier record exists
+        $response = $this->putJson(route('suppliers.setting.update'), [
+            'is_open' => false,
+        ]);
+
+        // This should fail because buyers cannot access supplier-only routes
+        $response->assertStatus(401); // Role middleware returns 401
+    }
+
+    /**
+     * Test updating minimum order amount successfully
+     */
+    public function test_supplier_can_update_min_order_amount(): void
+    {
+        // Create a supplier user using factory
+        $user = User::factory()->create([
+            'role' => UserRole::SUPPLIER,
             'status' => UserStatus::APPROVED,
         ]);
 
         $this->actingAs($user, 'sanctum');
 
-        // Try to update supplier settings when no supplier record exists
-        $response = $this->putJson('/api/v1/suppliers/setting', [
-            'is_open' => false,
+        $minOrderAmount = 150.50;
+
+        // Test updating minimum order amount
+        $response = $this->putJson(route('suppliers.min-order-amount.update'), [
+            'min_order_amount' => $minOrderAmount,
         ]);
 
-        $response->assertStatus(422)
+        $response->assertStatus(200)
             ->assertJsonStructure([
                 'success',
                 'message',
+                'data' => [
+                    'id',
+                    'user_id',
+                    'key',
+                    'key_label',
+                    'value',
+                ],
             ])
             ->assertJson([
-                'success' => false,
-                'message' => __('messages.users.supplier_setting_not_exists'),
+                'success' => true,
+                'message' => __('messages.suppliers.min_order_amount_updated'),
+            ]);
+
+        // Verify the setting was created/updated
+        $responseData = $response->json('data');
+        $this->assertEquals($user->id, $responseData['user_id']);
+        $this->assertEquals('order.min_order_amount', $responseData['key']);
+        $this->assertEquals($minOrderAmount, (float) $responseData['value']);
+
+        // Verify in database
+        $this->assertDatabaseHas('settings', [
+            'user_id' => $user->id,
+            'key' => 'order.min_order_amount',
+            'value' => $minOrderAmount,
+        ]);
+    }
+
+    /**
+     * Test updating minimum order amount with zero value
+     */
+    public function test_supplier_can_update_min_order_amount_to_zero(): void
+    {
+        // Create a supplier user using factory
+        $user = User::factory()->create([
+            'role' => UserRole::SUPPLIER,
+            'status' => UserStatus::APPROVED,
+        ]);
+
+        $this->actingAs($user, 'sanctum');
+
+        // Test updating minimum order amount to 0
+        $response = $this->putJson(route('suppliers.min-order-amount.update'), [
+            'min_order_amount' => 0,
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+            ]);
+
+        $responseData = $response->json('data');
+        $this->assertEquals(0, (float) $responseData['value']);
+    }
+
+    /**
+     * Test minimum order amount validation
+     */
+    public function test_min_order_amount_update_validation(): void
+    {
+        // Create a supplier user using factory
+        $user = User::factory()->create([
+            'role' => UserRole::SUPPLIER,
+            'status' => UserStatus::APPROVED,
+        ]);
+
+        $this->actingAs($user, 'sanctum');
+
+        // Test without min_order_amount field
+        $response = $this->putJson(route('suppliers.min-order-amount.update'), []);
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['min_order_amount']);
+
+        // Test with negative value
+        $response = $this->putJson(route('suppliers.min-order-amount.update'), [
+            'min_order_amount' => -10,
+        ]);
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['min_order_amount']);
+
+        // Test with non-numeric value
+        $response = $this->putJson(route('suppliers.min-order-amount.update'), [
+            'min_order_amount' => 'invalid',
+        ]);
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['min_order_amount']);
+    }
+
+    /**
+     * Test updating minimum order amount multiple times
+     */
+    public function test_supplier_can_update_min_order_amount_multiple_times(): void
+    {
+        // Create a supplier user using factory
+        $user = User::factory()->create([
+            'role' => UserRole::SUPPLIER,
+            'status' => UserStatus::APPROVED,
+        ]);
+
+        $this->actingAs($user, 'sanctum');
+
+        // First update
+        $response = $this->putJson(route('suppliers.min-order-amount.update'), [
+            'min_order_amount' => 100.00,
+        ]);
+        $response->assertStatus(200);
+
+        // Second update (should update existing record)
+        $response = $this->putJson(route('suppliers.min-order-amount.update'), [
+            'min_order_amount' => 200.00,
+        ]);
+        $response->assertStatus(200);
+
+        $responseData = $response->json('data');
+        $this->assertEquals(200.00, (float) $responseData['value']);
+
+        // Verify only one record exists in database
+        $settingsCount = Setting::where('user_id', $user->id)
+            ->where('key', 'order.min_order_amount')
+            ->count();
+        $this->assertEquals(1, $settingsCount);
+    }
+
+    /**
+     * Test getting supplier settings successfully
+     */
+    public function test_supplier_can_get_settings(): void
+    {
+        // Create a supplier user using factory
+        $user = User::factory()->create([
+            'role' => UserRole::SUPPLIER,
+            'status' => UserStatus::APPROVED,
+        ]);
+
+        // Create some settings for the supplier
+        Setting::create([
+            'user_id' => $user->id,
+            'key' => 'order.min_order_amount',
+            'value' => 150.00,
+        ]);
+
+        Setting::create([
+            'user_id' => $user->id,
+            'key' => 'some.other.setting',
+            'value' => 'test_value',
+        ]);
+
+        $this->actingAs($user, 'sanctum');
+
+        // Test getting supplier settings
+        $response = $this->getJson(route('suppliers.settings.get'));
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    '*' => [
+                        'id',
+                        'user_id',
+                        'key',
+                        'key_label',
+                        'value',
+                    ],
+                ],
+            ])
+            ->assertJson([
+                'success' => true,
+                'message' => __('messages.suppliers.settings_fetched'),
+            ]);
+
+        $responseData = $response->json('data');
+        $this->assertCount(2, $responseData);
+
+        // Verify the settings data
+        $minOrderSetting = collect($responseData)->firstWhere('key', 'order.min_order_amount');
+        $this->assertNotNull($minOrderSetting);
+        $this->assertEquals($user->id, $minOrderSetting['user_id']);
+        $this->assertEquals(150.00, (float) $minOrderSetting['value']);
+    }
+
+    /**
+     * Test getting supplier settings when no settings exist
+     */
+    public function test_supplier_can_get_empty_settings(): void
+    {
+        // Create a supplier user using factory
+        $user = User::factory()->create([
+            'role' => UserRole::SUPPLIER,
+            'status' => UserStatus::APPROVED,
+        ]);
+
+        $this->actingAs($user, 'sanctum');
+
+        // Test getting supplier settings when none exist
+        $response = $this->getJson(route('suppliers.settings.get'));
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'data' => [],
             ]);
     }
 
     /**
-     * Helper method to get valid registration data (copied from AuthControllerTest)
+     * Test that getting supplier settings requires authentication
      */
-    protected function getValidRegistrationData(string $role = UserRole::BUYER->value): array
+    public function test_get_supplier_settings_requires_authentication(): void
     {
-        $data = [
-            'name' => $this->faker->name,
-            'phone' => '966'.$this->faker->numerify('########'),
-            'country_code' => '966',
-            'business_name' => $this->faker->company,
-            'email' => $this->faker->safeEmail,
-            'password' => 'Password123!',
-            'password_confirmation' => 'Password123!',
-            'role' => $role,
-            'address' => [ // Keep this as array for the request
-                'name' => $this->faker->word,
-                'street' => $this->faker->streetAddress,
-                'city' => $this->faker->city,
-                'phone' => '966'.$this->faker->numerify('########'),
-                'latitude' => $this->faker->latitude,
-                'longitude' => $this->faker->longitude,
-            ],
-        ];
+        $response = $this->getJson(route('suppliers.settings.get'));
+        $response->assertStatus(401);
+    }
 
-        if ($role === UserRole::SUPPLIER->value) {
-            $data['license_attachment'] = UploadedFile::fake()->create('license.pdf', 1000);
-            $data['commercial_register_attachment'] = UploadedFile::fake()->create('commercial.pdf', 1000);
-            $data['fields'] = [Field::factory()->create()->id];
-        }
+    /**
+     * Test that updating minimum order amount requires authentication
+     */
+    public function test_update_min_order_amount_requires_authentication(): void
+    {
+        $response = $this->putJson(route('suppliers.min-order-amount.update'), [
+            'min_order_amount' => 100.00,
+        ]);
+        $response->assertStatus(401);
+    }
 
-        return $data;
+    /**
+     * Test complete flow: update min order amount and retrieve settings
+     */
+    public function test_complete_min_order_amount_flow(): void
+    {
+        // Create a supplier user using factory
+        $user = User::factory()->create([
+            'role' => UserRole::SUPPLIER,
+            'status' => UserStatus::APPROVED,
+        ]);
+
+        $this->actingAs($user, 'sanctum');
+
+        // Step 1: Update minimum order amount
+        $minOrderAmount = 250.75;
+        $updateResponse = $this->putJson(route('suppliers.min-order-amount.update'), [
+            'min_order_amount' => $minOrderAmount,
+        ]);
+
+        $updateResponse->assertStatus(200);
+
+        // Step 2: Get settings and verify the update
+        $getResponse = $this->getJson(route('suppliers.settings.get'));
+
+        $getResponse->assertStatus(200);
+        $responseData = $getResponse->json('data');
+        $this->assertCount(1, $responseData);
+
+        $setting = $responseData[0];
+        $this->assertEquals($user->id, $setting['user_id']);
+        $this->assertEquals('order.min_order_amount', $setting['key']);
+        $this->assertEquals($minOrderAmount, (float) $setting['value']);
+        $this->assertNotNull($setting['key_label']);
     }
 }

@@ -200,6 +200,8 @@ return [
 
     'suppliers' => [
         'image_changed' => 'تم تحديث صورة المورد بنجاح',
+        'settings_fetched' => 'تم جلب إعدادات المورد بنجاح',
+        'min_order_amount_updated' => 'تم تحديث حد الطلب بنجاح',
     ],
 
     'category' => [
