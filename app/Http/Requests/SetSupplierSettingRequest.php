@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\Settings\OrderSettings;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
-class UpdateMinOrderAmountRequest extends FormRequest
+class SetSupplierSettingRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +24,17 @@ class UpdateMinOrderAmountRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'min_order_amount' => 'required|numeric|min:0',
+            'key' => ['required', new Enum(OrderSettings::class)],
+            'value' => $this->getValueRules(),
         ];
+    }
+
+    protected function getValueRules(): array
+    {
+        $rules = [
+            OrderSettings::ORDER_MIN_ORDER_AMOUNT->value => ['required', 'numeric', 'min:0'],
+        ];
+        
+        return $rules[$this->input('key')] ?? ['required'];
     }
 }

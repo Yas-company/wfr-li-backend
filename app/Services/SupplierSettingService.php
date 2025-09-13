@@ -23,10 +23,10 @@ class SupplierSettingService
         return $user->load(['supplier', 'fields']);
     }
 
-    public function updateMinOrderAmount(array $data, User $user)
+    public function setSetting(array $data, User $user)
     {
-        $setting = Setting::updateOrCreate(['user_id' => $user->id, 'key' => OrderSettings::ORDER_MIN_ORDER_AMOUNT->value],
-            ['value' => $data['min_order_amount']]
+        $setting = Setting::updateOrCreate(['user_id' => $user->id, 'key' => $data['key']],
+            ['value' => $data['value']]
         );
 
         return $setting;

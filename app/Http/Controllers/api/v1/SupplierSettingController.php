@@ -4,7 +4,7 @@ namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SupplierSettingRequest;
-use App\Http\Requests\UpdateMinOrderAmountRequest;
+use App\Http\Requests\SetSupplierSettingRequest;
 use App\Http\Resources\SupplierResource;
 use App\Http\Resources\SupplierSettingResource;
 use App\Services\SupplierSettingService;
@@ -116,15 +116,15 @@ class SupplierSettingController extends Controller
     }
 
     /**
-     * Summary of updateMinOrderAmount
+         * Summary of setSetting
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateMinOrderAmount(UpdateMinOrderAmountRequest $request)
+    public function setSetting(SetSupplierSettingRequest $request)
     {
-        $result = $this->supplierSettingService->updateMinOrderAmount($request->validated(), Auth::user());
+        $result = $this->supplierSettingService->setSetting($request->validated(), Auth::user());
 
-        return $this->successResponse(new SupplierSettingResource($result), __('messages.suppliers.min_order_amount_updated'));
+        return $this->successResponse(new SupplierSettingResource($result), __('messages.suppliers.setting_updated'));
     }
 
     /**

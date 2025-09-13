@@ -50,7 +50,7 @@ class SupplierSettingControllerTest extends TestCase
         $this->assertEquals(UserRole::SUPPLIER, $user->role);
         $this->assertEquals(UserStatus::PENDING, $user->status);
         $this->assertFalse($user->is_verified);
-        $this->assertCount(1, $user->fields);
+        $this->assertEquals(1, $user->fields->count());
 
         // Assert supplier record was created
         $this->assertNotNull($supplier);
@@ -450,152 +450,6 @@ class SupplierSettingControllerTest extends TestCase
     }
 
     /**
-     * Test updating minimum order amount successfully
-     */
-    public function test_supplier_can_update_min_order_amount(): void
-    {
-        // Create a supplier user using factory
-        $user = User::factory()->create([
-            'role' => UserRole::SUPPLIER,
-            'status' => UserStatus::APPROVED,
-        ]);
-
-        $this->actingAs($user, 'sanctum');
-
-        $minOrderAmount = 150.50;
-
-        // Test updating minimum order amount
-        $response = $this->putJson(route('suppliers.min-order-amount.update'), [
-            'min_order_amount' => $minOrderAmount,
-        ]);
-
-        $response->assertStatus(200)
-            ->assertJsonStructure([
-                'success',
-                'message',
-                'data' => [
-                    'id',
-                    'user_id',
-                    'key',
-                    'key_label',
-                    'value',
-                ],
-            ])
-            ->assertJson([
-                'success' => true,
-                'message' => __('messages.suppliers.min_order_amount_updated'),
-            ]);
-
-        // Verify the setting was created/updated
-        $responseData = $response->json('data');
-        $this->assertEquals($user->id, $responseData['user_id']);
-        $this->assertEquals('order.min_order_amount', $responseData['key']);
-        $this->assertEquals($minOrderAmount, (float) $responseData['value']);
-
-        // Verify in database
-        $this->assertDatabaseHas('settings', [
-            'user_id' => $user->id,
-            'key' => 'order.min_order_amount',
-            'value' => $minOrderAmount,
-        ]);
-    }
-
-    /**
-     * Test updating minimum order amount with zero value
-     */
-    public function test_supplier_can_update_min_order_amount_to_zero(): void
-    {
-        // Create a supplier user using factory
-        $user = User::factory()->create([
-            'role' => UserRole::SUPPLIER,
-            'status' => UserStatus::APPROVED,
-        ]);
-
-        $this->actingAs($user, 'sanctum');
-
-        // Test updating minimum order amount to 0
-        $response = $this->putJson(route('suppliers.min-order-amount.update'), [
-            'min_order_amount' => 0,
-        ]);
-
-        $response->assertStatus(200)
-            ->assertJson([
-                'success' => true,
-            ]);
-
-        $responseData = $response->json('data');
-        $this->assertEquals(0, (float) $responseData['value']);
-    }
-
-    /**
-     * Test minimum order amount validation
-     */
-    public function test_min_order_amount_update_validation(): void
-    {
-        // Create a supplier user using factory
-        $user = User::factory()->create([
-            'role' => UserRole::SUPPLIER,
-            'status' => UserStatus::APPROVED,
-        ]);
-
-        $this->actingAs($user, 'sanctum');
-
-        // Test without min_order_amount field
-        $response = $this->putJson(route('suppliers.min-order-amount.update'), []);
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['min_order_amount']);
-
-        // Test with negative value
-        $response = $this->putJson(route('suppliers.min-order-amount.update'), [
-            'min_order_amount' => -10,
-        ]);
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['min_order_amount']);
-
-        // Test with non-numeric value
-        $response = $this->putJson(route('suppliers.min-order-amount.update'), [
-            'min_order_amount' => 'invalid',
-        ]);
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['min_order_amount']);
-    }
-
-    /**
-     * Test updating minimum order amount multiple times
-     */
-    public function test_supplier_can_update_min_order_amount_multiple_times(): void
-    {
-        // Create a supplier user using factory
-        $user = User::factory()->create([
-            'role' => UserRole::SUPPLIER,
-            'status' => UserStatus::APPROVED,
-        ]);
-
-        $this->actingAs($user, 'sanctum');
-
-        // First update
-        $response = $this->putJson(route('suppliers.min-order-amount.update'), [
-            'min_order_amount' => 100.00,
-        ]);
-        $response->assertStatus(200);
-
-        // Second update (should update existing record)
-        $response = $this->putJson(route('suppliers.min-order-amount.update'), [
-            'min_order_amount' => 200.00,
-        ]);
-        $response->assertStatus(200);
-
-        $responseData = $response->json('data');
-        $this->assertEquals(200.00, (float) $responseData['value']);
-
-        // Verify only one record exists in database
-        $settingsCount = Setting::where('user_id', $user->id)
-            ->where('key', 'order.min_order_amount')
-            ->count();
-        $this->assertEquals(1, $settingsCount);
-    }
-
-    /**
      * Test getting supplier settings successfully
      */
     public function test_supplier_can_get_settings(): void
@@ -686,22 +540,11 @@ class SupplierSettingControllerTest extends TestCase
     }
 
     /**
-     * Test that updating minimum order amount requires authentication
+     * Test setting a new supplier setting successfully
      */
-    public function test_update_min_order_amount_requires_authentication(): void
+    public function test_can_set_new_supplier_setting(): void
     {
-        $response = $this->putJson(route('suppliers.min-order-amount.update'), [
-            'min_order_amount' => 100.00,
-        ]);
-        $response->assertStatus(401);
-    }
-
-    /**
-     * Test complete flow: update min order amount and retrieve settings
-     */
-    public function test_complete_min_order_amount_flow(): void
-    {
-        // Create a supplier user using factory
+        // Create a supplier user
         $user = User::factory()->create([
             'role' => UserRole::SUPPLIER,
             'status' => UserStatus::APPROVED,
@@ -709,25 +552,376 @@ class SupplierSettingControllerTest extends TestCase
 
         $this->actingAs($user, 'sanctum');
 
-        // Step 1: Update minimum order amount
-        $minOrderAmount = 250.75;
-        $updateResponse = $this->putJson(route('suppliers.min-order-amount.update'), [
-            'min_order_amount' => $minOrderAmount,
+        // Set a new setting
+        $response = $this->putJson(route('suppliers.setting.set'), [
+            'key' => 'order.min_order_amount',
+            'value' => 100.50,
         ]);
 
-        $updateResponse->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    'id',
+                    'user_id',
+                    'key',
+                    'key_label',
+                    'value',
+                ],
+            ])
+            ->assertJson([
+                'success' => true,
+                'message' => __('messages.suppliers.setting_updated'),
+                'data' => [
+                    'user_id' => $user->id,
+                    'key' => 'order.min_order_amount',
+                    'value' => '100.5',
+                ],
+            ]);
 
-        // Step 2: Get settings and verify the update
-        $getResponse = $this->getJson(route('suppliers.settings.get'));
-
-        $getResponse->assertStatus(200);
-        $responseData = $getResponse->json('data');
-        $this->assertCount(1, $responseData);
-
-        $setting = $responseData[0];
-        $this->assertEquals($user->id, $setting['user_id']);
-        $this->assertEquals('order.min_order_amount', $setting['key']);
-        $this->assertEquals($minOrderAmount, (float) $setting['value']);
-        $this->assertNotNull($setting['key_label']);
+        // Verify the setting was created in database
+        $this->assertDatabaseHas('settings', [
+            'user_id' => $user->id,
+            'key' => 'order.min_order_amount',
+            'value' => '100.5',
+        ]);
     }
+
+    /**
+     * Test updating an existing supplier setting
+     */
+    public function test_can_update_existing_supplier_setting(): void
+    {
+        // Create a supplier user
+        $user = User::factory()->create([
+            'role' => UserRole::SUPPLIER,
+            'status' => UserStatus::APPROVED,
+        ]);
+
+        // Create an existing setting
+        Setting::create([
+            'user_id' => $user->id,
+            'key' => 'order.min_order_amount',
+            'value' => 50.00,
+        ]);
+
+        $this->actingAs($user, 'sanctum');
+
+        // Update the existing setting
+        $response = $this->putJson(route('suppliers.setting.set'), [
+            'key' => 'order.min_order_amount',
+            'value' => 200.75,
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'message' => __('messages.suppliers.setting_updated'),
+                'data' => [
+                    'user_id' => $user->id,
+                    'key' => 'order.min_order_amount',
+                    'value' => '200.75',
+                ],
+            ]);
+
+        // Verify the setting was updated in database
+        $this->assertDatabaseHas('settings', [
+            'user_id' => $user->id,
+            'key' => 'order.min_order_amount',
+            'value' => '200.75',
+        ]);
+
+        // Verify only one record exists for this key
+        $this->assertEquals(1, Setting::where('user_id', $user->id)
+            ->where('key', 'order.min_order_amount')
+            ->count());
+    }
+
+    /**
+     * Test setting validation - required fields
+     */
+    public function test_set_setting_validation_required_fields(): void
+    {
+        // Create a supplier user
+        $user = User::factory()->create([
+            'role' => UserRole::SUPPLIER,
+            'status' => UserStatus::APPROVED,
+        ]);
+
+        $this->actingAs($user, 'sanctum');
+
+        // Test without key
+        $response = $this->putJson(route('suppliers.setting.set'), [
+            'value' => 100.00,
+        ]);
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['key']);
+
+        // Test without value
+        $response = $this->putJson(route('suppliers.setting.set'), [
+            'key' => 'order.min_order_amount',
+        ]);
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['value']);
+
+        // Test with empty data
+        $response = $this->putJson(route('suppliers.setting.set'), []);
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['key', 'value']);
+    }
+
+    /**
+     * Test setting validation - invalid key enum
+     */
+    public function test_set_setting_validation_invalid_key(): void
+    {
+        // Create a supplier user
+        $user = User::factory()->create([
+            'role' => UserRole::SUPPLIER,
+            'status' => UserStatus::APPROVED,
+        ]);
+
+        $this->actingAs($user, 'sanctum');
+
+        // Test with invalid key
+        $response = $this->putJson(route('suppliers.setting.set'), [
+            'key' => 'invalid.setting.key',
+            'value' => 100.00,
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['key']);
+    }
+
+    /**
+     * Test setting validation - numeric value rules for min_order_amount
+     */
+    public function test_set_setting_validation_numeric_value(): void
+    {
+        // Create a supplier user
+        $user = User::factory()->create([
+            'role' => UserRole::SUPPLIER,
+            'status' => UserStatus::APPROVED,
+        ]);
+
+        $this->actingAs($user, 'sanctum');
+
+        // Test with non-numeric value for min_order_amount
+        $response = $this->putJson(route('suppliers.setting.set'), [
+            'key' => 'order.min_order_amount',
+            'value' => 'not_a_number',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['value']);
+
+        // Test with negative value for min_order_amount
+        $response = $this->putJson(route('suppliers.setting.set'), [
+            'key' => 'order.min_order_amount',
+            'value' => -50.00,
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['value']);
+    }
+
+    /**
+     * Test setting validation - valid edge cases for min_order_amount
+     */
+    public function test_set_setting_validation_valid_edge_cases(): void
+    {
+        // Create a supplier user
+        $user = User::factory()->create([
+            'role' => UserRole::SUPPLIER,
+            'status' => UserStatus::APPROVED,
+        ]);
+
+        $this->actingAs($user, 'sanctum');
+
+        // Test with zero value (should be valid as min:0)
+        $response = $this->putJson(route('suppliers.setting.set'), [
+            'key' => 'order.min_order_amount',
+            'value' => 0,
+        ]);
+
+        $response->assertStatus(200);
+
+        // Test with decimal value
+        $response = $this->putJson(route('suppliers.setting.set'), [
+            'key' => 'order.min_order_amount',
+            'value' => 99.99,
+        ]);
+
+        $response->assertStatus(200);
+
+        // Test with string numeric value
+        $response = $this->putJson(route('suppliers.setting.set'), [
+            'key' => 'order.min_order_amount',
+            'value' => '150.25',
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    /**
+     * Test that set setting requires authentication
+     */
+    public function test_set_setting_requires_authentication(): void
+    {
+        $response = $this->putJson(route('suppliers.setting.set'), [
+            'key' => 'order.min_order_amount',
+            'value' => 100.00,
+        ]);
+
+        $response->assertStatus(401);
+    }
+
+    /**
+     * Test that only supplier users can set settings
+     */
+    public function test_only_supplier_users_can_set_settings(): void
+    {
+        // Create a buyer user
+        $buyer = User::factory()->create([
+            'role' => UserRole::BUYER,
+            'status' => UserStatus::APPROVED,
+        ]);
+
+        $this->actingAs($buyer, 'sanctum');
+
+        $response = $this->putJson(route('suppliers.setting.set'), [
+            'key' => 'order.min_order_amount',
+            'value' => 100.00,
+        ]);
+
+        // Should fail because buyers cannot access supplier-only routes
+        $response->assertStatus(401);
+    }
+
+    /**
+     * Test setting multiple different settings for the same user
+     */
+    public function test_can_set_multiple_settings_for_same_user(): void
+    {
+        // Create a supplier user
+        $user = User::factory()->create([
+            'role' => UserRole::SUPPLIER,
+            'status' => UserStatus::APPROVED,
+        ]);
+
+        $this->actingAs($user, 'sanctum');
+
+        // Set first setting
+        $response = $this->putJson(route('suppliers.setting.set'), [
+            'key' => 'order.min_order_amount',
+            'value' => 100.00,
+        ]);
+
+        $response->assertStatus(200);
+
+        // Verify the setting was created
+        $this->assertDatabaseHas('settings', [
+            'user_id' => $user->id,
+            'key' => 'order.min_order_amount',
+            'value' => '100',
+        ]);
+
+        // Verify we have exactly one setting
+        $this->assertEquals(1, Setting::where('user_id', $user->id)->count());
+
+        // Update the same setting
+        $response = $this->putJson(route('suppliers.setting.set'), [
+            'key' => 'order.min_order_amount',
+            'value' => 200.00,
+        ]);
+
+        $response->assertStatus(200);
+
+        // Verify the setting was updated, not duplicated
+        $this->assertEquals(1, Setting::where('user_id', $user->id)->count());
+        $this->assertDatabaseHas('settings', [
+            'user_id' => $user->id,
+            'key' => 'order.min_order_amount',
+            'value' => '200',
+        ]);
+    }
+
+    /**
+     * Test the response structure includes key_label
+     */
+    public function test_set_setting_response_includes_key_label(): void
+    {
+        // Create a supplier user
+        $user = User::factory()->create([
+            'role' => UserRole::SUPPLIER,
+            'status' => UserStatus::APPROVED,
+        ]);
+
+        $this->actingAs($user, 'sanctum');
+
+        // Set a setting
+        $response = $this->putJson(route('suppliers.setting.set'), [
+            'key' => 'order.min_order_amount',
+            'value' => 100.00,
+        ]);
+
+        $response->assertStatus(200);
+
+        $responseData = $response->json('data');
+        $this->assertArrayHasKey('key_label', $responseData);
+        $this->assertNotNull($responseData['key_label']);
+        $this->assertEquals('order.min_order_amount', $responseData['key']);
+    }
+
+    /**
+     * Test integration between setSetting and getSupplierSettings
+     */
+    public function test_set_setting_integration_with_get_settings(): void
+    {
+        // Create a supplier user
+        $user = User::factory()->create([
+            'role' => UserRole::SUPPLIER,
+            'status' => UserStatus::APPROVED,
+        ]);
+
+        $this->actingAs($user, 'sanctum');
+
+        // Initially no settings
+        $response = $this->getJson(route('suppliers.settings.get'));
+        $response->assertStatus(200)
+            ->assertJson(['data' => []]);
+
+        // Set a setting
+        $this->putJson(route('suppliers.setting.set'), [
+            'key' => 'order.min_order_amount',
+            'value' => 150.00,
+        ])->assertStatus(200);
+
+        // Verify the setting appears in get settings
+        $response = $this->getJson(route('suppliers.settings.get'));
+        $response->assertStatus(200);
+
+        $responseData = $response->json('data');
+        $this->assertCount(1, $responseData);
+        $this->assertEquals('order.min_order_amount', $responseData[0]['key']);
+        $this->assertEquals('150', $responseData[0]['value']);
+        $this->assertEquals($user->id, $responseData[0]['user_id']);
+
+        // Update the setting
+        $this->putJson(route('suppliers.setting.set'), [
+            'key' => 'order.min_order_amount',
+            'value' => 250.00,
+        ])->assertStatus(200);
+
+        // Verify the setting was updated
+        $response = $this->getJson(route('suppliers.settings.get'));
+        $response->assertStatus(200);
+
+        $responseData = $response->json('data');
+        $this->assertCount(1, $responseData); // Still only one setting
+        $this->assertEquals('250', $responseData[0]['value']); // Updated value
+    }
+
+
 }

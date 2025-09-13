@@ -209,7 +209,7 @@ return [
     'suppliers' => [
         'image_changed' => 'Supplier image changed successfully',
         'settings_fetched' => 'Supplier settings fetched successfully',
-        'min_order_amount_updated' => 'Supplier min order amount updated successfully',
+        'setting_updated' => 'Supplier setting updated successfully',
     ],
 
     'category' => [
