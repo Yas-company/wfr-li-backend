@@ -51,7 +51,11 @@ class CartService implements CartServiceInterface
             return $this->cart;
         }
 
-        $this->cart = Cart::with('products.product')->firstOrCreate(['user_id' => $user->id]);
+        $this->cart = Cart::with([
+            'products.product',
+            'products.product.media',
+            'products.product.supplier'
+        ])->firstOrCreate(['user_id' => $user->id]);
 
         return $this->cart;
     }
@@ -150,7 +154,7 @@ class CartService implements CartServiceInterface
                 ];
             }
 
-            $requirements[$supplierId]['current_total'] += $item->quantity * $item->price;
+            $requirements[$supplierId]['current_total'] += $item->quantity * $item->product->price;
         }
 
         $final = [];

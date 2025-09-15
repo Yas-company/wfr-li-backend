@@ -20,5 +20,15 @@ class EmptyCartValidator implements CheckoutCartValidatorInterface
         if ($cart->products->isEmpty()) {
             throw CartException::emptyCart();
         }
+
+        foreach($cart->products as $item)
+        {
+            if($item->quantity > 0)
+            {
+                return;
+            }
+        }
+
+        throw CartException::emptyCart();
     }
 }

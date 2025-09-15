@@ -3,9 +3,10 @@
 namespace App\Validators;
 
 use App\Models\Cart;
+use App\Models\User;
 use App\Exceptions\CartException;
-use App\Contracts\CheckoutCartValidatorInterface;
 use App\Enums\Settings\OrderSettings;
+use App\Contracts\CheckoutCartValidatorInterface;
 
 class MinOrderAmountValidator implements CheckoutCartValidatorInterface
 {
@@ -31,7 +32,7 @@ class MinOrderAmountValidator implements CheckoutCartValidatorInterface
         }
 
         foreach ($supplierTotals as $supplierId => $total) {
-            $supplier = \App\Models\User::find($supplierId);
+            $supplier = User::find($supplierId);
 
             if (!$supplier) continue;
 
