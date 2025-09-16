@@ -66,12 +66,15 @@ class ProductResource extends JsonResource
             'unit_type' => $this->unit_type->toResponse(),
             'category' => new CategoryResource($this->whenLoaded('category')),
             'supplier' => new SupplierResource($this->whenLoaded('supplier')),
-            $this->mergeWhen($user && $user->isBuyer() && $this->relationLoaded('cartProduct'), [
-                'cart_info' =>  [
-                    'in_cart' => ! is_null($this->cartProduct),
-                    'quantity' => $this->cartProduct ? $this->cartProduct->quantity : 0
-                ],
-            ])
+            $this->mergeWhen(
+                $user && $user->isBuyer() && $this->relationLoaded('cartProduct'),
+                fn () => [
+                    'cart_info' => [
+                        'in_cart' => ! is_null($this->cartProduct),
+                        'quantity' => $this->cartProduct ? $this->cartProduct->quantity : 0
+                    ],
+                ]
+            )
         ];
     }
 }
