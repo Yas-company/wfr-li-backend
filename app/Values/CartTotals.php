@@ -39,8 +39,8 @@ class CartTotals
         foreach ($products as $item) {
             $productsSum += $item->quantity;
             $totalProducts++;
-            $total += $item->quantity * $item->price;
-            $totalBeforeDiscount += $item->quantity * ($item->product->price_before_discount ?? $item->price);
+            $total += $item->quantity * $item->product->price;
+            $totalBeforeDiscount += $item->quantity * ($item->product->price_before_discount ?? $item->product->price);
             $totalAfterTaxes += $item->quantity * $item->product->price_after_taxes;
             $totalCountryTax += $item->quantity * $item->product->country_tax;
         }

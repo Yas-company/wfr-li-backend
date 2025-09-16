@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Product;
+namespace Tests\Feature\App\Services\Product;
 
 use App\Models\Tax;
 use Tests\TestCase;

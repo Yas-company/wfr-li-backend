@@ -13,7 +13,7 @@ if(! function_exists('to_base'))
 {
     function to_base(float $total)
     {
-        return $total * 100;
+        return round($total * 100, 2);
     }
 }
 
