@@ -34,15 +34,22 @@ class UpdateProductsPricingCommand extends Command
      */
     public function handle()
     {
-        Product::withoutSyncingToSearch(function()
-        {
-            Product::query()
-                ->lazyById(500, 'id')
-                ->each(function (Product $product) {
-                    $productPrices = $this->productPricingCalculatorService->calculate($product->base_price, $product->discount_rate);
-                    $product->update($productPrices->toArray());
-                });
+        Product::withoutEvents(function() {
+            Product::withoutSyncingToSearch(function () {
+                Product::query()
+                    ->select(['id', 'base_price', 'discount_rate'])
+                    ->chunkById(500, function ($products) {
+                        foreach ($products as $product) {
+                            $productPrices = $this->productPricingCalculatorService
+                                ->calculate($product->base_price, $product->discount_rate);
+
+                            $product->update($productPrices->toArray());
+                        }
+                    });
+            });
         });
+
+        $this->info('All product prices updated successfully.');
 
         Artisan::call('scout:import', ['model' => Product::class]);
     }

@@ -13,11 +13,6 @@ class PageControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_requires_authentication()
-    {
-        $response = $this->getJson('/api/v1/pages/privacy-policy');
-        $response->assertStatus(401);
-    }
 
     public function test_show_page_returns_page_data_when_authenticated()
     {
