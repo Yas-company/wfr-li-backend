@@ -86,6 +86,7 @@ class OrderResource extends JsonResource
             'user_id' => $this->user_id,
             'status' => $this->status->toResponse(),
             'total' => $this->total,
+            'total_taxes' => $this->total_taxes,
             'total_products' => $this->total_products,
             'total_discount' => $this->total_discount,
             'order_type' => $this->order_type,

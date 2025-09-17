@@ -244,7 +244,6 @@ class CartControllerTest extends TestCase
             'cart_id' => $cart->id,
             'product_id' => $product->id,
             'quantity' => 1,
-            'price' => $product->price,
         ]);
 
         $response = $this->actingAs($this->buyer)->postJson(route('cart.checkout'), [
@@ -309,7 +308,6 @@ class CartControllerTest extends TestCase
             'cart_id' => $this->buyer->cart->id,
             'product_id' => $product->id,
             'quantity' => 3,
-            'price' => $product->price,
         ]);
     }
 
@@ -335,7 +333,6 @@ class CartControllerTest extends TestCase
             'cart_id' => $cart->id,
             'product_id' => $product->id,
             'quantity' => 5,
-            'price' => $product->price,
         ]);
     }
 
@@ -362,7 +359,6 @@ class CartControllerTest extends TestCase
             'cart_id' => $cart->id,
             'product_id' => $product->id,
             'quantity' => 1,
-            'price' => $product->price,
         ]);
     }
 
@@ -430,6 +426,7 @@ class CartControllerTest extends TestCase
             'status' => ProductStatus::PUBLISHED,
             'is_active' => true,
             'price' => $originalPrice,
+            'price_after_taxes' => $originalPrice,
             'stock_qty' => 10,
         ]);
 
@@ -437,7 +434,7 @@ class CartControllerTest extends TestCase
         $this->addProductToCart($this->buyer, $product, 2);
 
         // Now, change the product's price in the database
-        $product->update(['price' => $newPrice]);
+        $product->update(['price' => $newPrice, 'price_after_taxes' => $newPrice]);
 
         // Get cart totals. It should still reflect the original price.
         $response = $this->actingAs($this->buyer)->getJson(route('cart.index'));
@@ -478,7 +475,6 @@ class CartControllerTest extends TestCase
             'cart_id' => $cart->id,
             'product_id' => $product->id,
             'quantity' => 0, // This is the edge case
-            'price' => $product->price,
         ]);
 
         // The cart index should calculate totals as if the item doesn't exist.
@@ -530,7 +526,6 @@ class CartControllerTest extends TestCase
             'cart_id' => $this->buyer->cart->id,
             'product_id' => $productB->id,
             'quantity' => 1,
-            'price' => $productB->price,
         ]);
     }
 
@@ -799,7 +794,6 @@ class CartControllerTest extends TestCase
             'cart_id' => $cart->id,
             'product_id' => $product->id,
             'quantity' => $quantity,
-            'price' => $product->price,
         ]);
     }
 

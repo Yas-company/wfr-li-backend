@@ -21,7 +21,6 @@ class CartProductManager
             'product_id' => $product->id,
         ], [
             'quantity' => $quantity,
-            'price' => $product->price,
         ]);
     }
 

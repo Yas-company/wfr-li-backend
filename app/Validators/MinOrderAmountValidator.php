@@ -28,7 +28,7 @@ class MinOrderAmountValidator implements CheckoutCartValidatorInterface
                 $supplierTotals[$supplierId] = 0;
             }
 
-            $supplierTotals[$supplierId] += $item->quantity * $item->price;
+            $supplierTotals[$supplierId] += $item->quantity * $item->product->price;
         }
 
         foreach ($supplierTotals as $supplierId => $total) {

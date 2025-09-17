@@ -9,7 +9,7 @@ class CartProduct extends Model
 {
     protected $table = 'cart_product';
 
-    protected $fillable = ['cart_id', 'product_id', 'quantity', 'price'];
+    protected $fillable = ['cart_id', 'product_id', 'quantity'];
 
     public function cart(): BelongsTo
     {
