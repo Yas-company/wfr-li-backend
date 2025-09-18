@@ -2,20 +2,21 @@
 
 namespace Tests\Feature\App\Http\Controllers\Api\V1\Product\Buyer;
 
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\Organization;
 use App\Enums\Organization\OrganizationRole;
-use Illuminate\Foundation\Testing\WithFaker;
 use App\Enums\Organization\OrganizationStatus;
+use App\Models\Organization;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
+use Tests\TestCase;
 
 class OrganizationControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
     protected User $supplier;
+
     protected User $buyer;
 
     protected function setUp(): void
@@ -102,7 +103,7 @@ class OrganizationControllerTest extends TestCase
             ->assertJson([
                 'errors' => [
                     'tax_number' => [
-                        "The tax number field must be 16 digits."
+                        'The tax number field must be 16 digits.',
                     ],
                 ],
             ]);
@@ -126,7 +127,7 @@ class OrganizationControllerTest extends TestCase
             ->assertJson([
                 'errors' => [
                     'tax_number' => [
-                        "The tax number field must start with one of the following: 3."
+                        'The tax number field must start with one of the following: 3.',
                     ],
                 ],
             ]);
@@ -153,7 +154,7 @@ class OrganizationControllerTest extends TestCase
             ->assertJson([
                 'errors' => [
                     'commercial_register_number' => [
-                        "The commercial register number field must be 7 digits."
+                        'The commercial register number field must be 7 digits.',
                     ],
                 ],
             ]);
@@ -187,7 +188,7 @@ class OrganizationControllerTest extends TestCase
             ->assertJson([
                 'errors' => [
                     'name' => [
-                        "The name has already been taken."
+                        'The name has already been taken.',
                     ],
                 ],
             ]);
@@ -221,7 +222,7 @@ class OrganizationControllerTest extends TestCase
             ->assertJson([
                 'errors' => [
                     'tax_number' => [
-                        "The tax number has already been taken."
+                        'The tax number has already been taken.',
                     ],
                 ],
             ]);
@@ -249,14 +250,13 @@ class OrganizationControllerTest extends TestCase
             'commercial_register_number' => '1212121',
         ]);
 
-
         $response->assertJsonValidationErrors('commercial_register_number');
 
         $response->assertStatus(422)
             ->assertJson([
                 'errors' => [
                     'commercial_register_number' => [
-                        "The commercial register number has already been taken."
+                        'The commercial register number has already been taken.',
                     ],
                 ],
             ]);
@@ -543,7 +543,6 @@ class OrganizationControllerTest extends TestCase
             'commercial_register_number' => '1212122',
         ]);
 
-
         $response->assertStatus(422);
     }
 
@@ -582,5 +581,119 @@ class OrganizationControllerTest extends TestCase
             'created_by' => $this->buyer->id,
             'status' => OrganizationStatus::PENDING,
         ]);
+    }
+
+    public function test_unauthenticated_user_cannot_check_organization_status()
+    {
+        $response = $this->getJson(route('buyer.organizations.check'));
+
+        $response->assertStatus(401);
+    }
+
+    public function test_supplier_cannot_check_organization_status()
+    {
+        $response = $this->actingAs($this->supplier)->getJson(route('buyer.organizations.check'));
+
+        $response->assertStatus(401);
+    }
+
+    public function test_buyer_without_organization_cannot_check_status()
+    {
+        $response = $this->actingAs($this->buyer)->getJson(route('buyer.organizations.check'));
+
+        $response->assertStatus(422);
+    }
+
+    public function test_buyer_with_pending_organization_can_check_status()
+    {
+        $organization = Organization::factory()->create([
+            'name' => 'Test Organization',
+            'tax_number' => '3212121212121212',
+            'commercial_register_number' => '1212121',
+            'status' => OrganizationStatus::PENDING,
+            'created_by' => $this->buyer->id,
+        ]);
+
+        // Add the buyer as a member of the organization
+        DB::table('organization_user')->insert([
+            'organization_id' => $organization->id,
+            'user_id' => $this->buyer->id,
+            'role' => OrganizationRole::OWNER,
+            'joined_at' => now(),
+        ]);
+
+        $response = $this->actingAs($this->buyer)->getJson(route('buyer.organizations.check'));
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'status' => [
+                        'value' => OrganizationStatus::PENDING->value,
+                    ],
+                ],
+            ]);
+    }
+
+    public function test_buyer_with_approved_organization_can_check_status()
+    {
+        $organization = Organization::factory()->create([
+            'name' => 'Approved Organization',
+            'tax_number' => '3212121212121212',
+            'commercial_register_number' => '1212121',
+            'status' => OrganizationStatus::APPROVED,
+            'created_by' => $this->buyer->id,
+        ]);
+
+        // Add the buyer as a member of the organization
+        DB::table('organization_user')->insert([
+            'organization_id' => $organization->id,
+            'user_id' => $this->buyer->id,
+            'role' => OrganizationRole::OWNER,
+            'joined_at' => now(),
+        ]);
+
+        $response = $this->actingAs($this->buyer)->getJson(route('buyer.organizations.check'));
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'status' => [
+                        'value' => OrganizationStatus::APPROVED->value,
+                    ],
+                ],
+            ]);
+    }
+
+    public function test_buyer_with_rejected_organization_can_check_status()
+    {
+        $organization = Organization::factory()->create([
+            'name' => 'Rejected Organization',
+            'tax_number' => '3212121212121212',
+            'commercial_register_number' => '1212121',
+            'status' => OrganizationStatus::REJECTED,
+            'created_by' => $this->buyer->id,
+        ]);
+
+        // Add the buyer as a member of the organization
+        DB::table('organization_user')->insert([
+            'organization_id' => $organization->id,
+            'user_id' => $this->buyer->id,
+            'role' => OrganizationRole::OWNER,
+            'joined_at' => now(),
+        ]);
+
+        $response = $this->actingAs($this->buyer)->getJson(route('buyer.organizations.check'));
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'status' => [
+                        'value' => OrganizationStatus::REJECTED->value,
+                    ],
+                ],
+            ]);
     }
 }
