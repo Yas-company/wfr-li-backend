@@ -74,4 +74,18 @@ class OrganizationService
 
         return $organization->load(['owner', 'users']);
     }
+
+    public function updateOrganization(Organization $organization, array $data, User $user): Organization
+    {
+        if ($organization->created_by !== $user->id) {
+            throw OrganizationException::userIsNotOwnerOfOrganization();
+        }
+
+        $organization->update($data);
+
+        $organization->status = OrganizationStatus::PENDING;
+        $organization->save();
+
+        return $organization->load(['owner', 'users']);
+    }
 }
