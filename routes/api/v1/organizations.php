@@ -8,4 +8,5 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:sanctum', RoleMiddleware::class.':'.UserRole::BUYER->value])->prefix('buyer/organizations')->group(function () {
     Route::post('/', [OrganizationController::class, 'store'])->name('buyer.organizations.store');
     Route::get('/check', [OrganizationController::class, 'checkOrganization'])->name('buyer.organizations.check');
+    Route::put('/{organization}', [OrganizationController::class, 'update'])->name('buyer.organizations.update');
 });
