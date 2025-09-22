@@ -1,0 +1,206 @@
+<!DOCTYPE html><html lang="ar" dir="rtl" data-astro-cid-sckkx6r4> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><!-- Multilingual Meta Tags --><title>شروط الاستخدام - وفر لي</title><!-- SEO Meta Tags --><meta name="description" content="شروط وأحكام استخدام تطبيق وفر لي."><meta name="keywords" content="وفر لي, مشتريات غذائية, موردي أغذية, مطاعم, متاجر, توصيل طعام, السعودية, مكة المكرمة"><meta name="author" content="وفر لي"><meta name="robots" content="index, follow"><!-- Hreflang Tags for SEO --><link rel="alternate" hreflang="ar" href="https://wfr.li"><link rel="alternate" hreflang="x-default" href="https://wfr.li"><!-- Devices.css for iPhone frame --><link rel="stylesheet" href="https://raw.githack.com/picturepan2/devices.css/master/dist/devices.min.css"><!-- Open Graph Meta Tags for WhatsApp and Social Media Sharing --><meta property="og:title" content="وفر لي - منصة العروض والتوفير"><meta property="og:description" content="منصة وفر لي تساعدك على اكتشاف أفضل العروض والتخفيضات والتوفير في مشترياتك."><meta property="og:type" content="website"><meta property="og:url" content="https://yas-company.github.io"><meta property="og:image" content="https://dummyimage.com/1200x630/009688/ffffff&text=WFR+LI"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:type" content="image/png"><meta property="og:locale" content="ar_SA"><meta property="og:site_name" content="وفر لي"><!-- WhatsApp Specific Meta Tags --><meta property="og:image:alt" content="وفر لي - منصة العروض والتوفير"><meta name="theme-color" content="#009688"><meta name="color-scheme" content="light"><!-- Twitter Card Meta Tags --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="وفر لي - منصة العروض والتوفير"><meta name="twitter:description" content="منصة وفر لي تساعدك على اكتشاف أفضل العروض والتخفيضات والتوفير في مشترياتك."><meta name="twitter:image" content="https://dummyimage.com/1200x630/009688/ffffff&text=WFR+LI"><!-- Favicon --><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/favicon.svg"><link rel="icon" type="image/png" sizes="32x32" href="/favicon.svg"><link rel="icon" type="image/png" sizes="16x16" href="/favicon.svg"><!-- Canonical URL --><link rel="canonical" href="https://wfr.li"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap" rel="stylesheet"><link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"><!-- <ViewTransitions /> --><link rel="stylesheet" href="/_astro/index.DGhmcA83.css">
+    <style>
+        /* Custom styles for dynamic content */
+        .prose {
+            color: #374151;
+            line-height: 1.75;
+        }
+        
+        .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+            color: #1f2937;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .prose h1 {
+            font-size: 2.25rem;
+            line-height: 2.5rem;
+        }
+        
+        .prose h2 {
+            font-size: 1.875rem;
+            line-height: 2.25rem;
+        }
+        
+        .prose h3 {
+            font-size: 1.5rem;
+            line-height: 2rem;
+        }
+        
+        .prose p {
+            margin-bottom: 1.25rem;
+        }
+        
+        .prose ul, .prose ol {
+            margin: 1.25rem 0;
+            padding-right: 1.625rem;
+        }
+        
+        .prose li {
+            margin: 0.5rem 0;
+        }
+        
+        .prose a {
+            color: #059669;
+            text-decoration: underline;
+        }
+        
+        .prose a:hover {
+            color: #047857;
+        }
+        
+        .prose strong {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .prose blockquote {
+            border-right: 4px solid #d1d5db;
+            padding-right: 1rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+            color: #6b7280;
+        }
+        
+        /* RTL specific styles */
+        [dir="rtl"] .prose ul, [dir="rtl"] .prose ol {
+            padding-right: 1.625rem;
+            padding-left: 0;
+        }
+        
+        [dir="rtl"] .prose blockquote {
+            border-right: none;
+            border-left: 4px solid #d1d5db;
+            padding-right: 0;
+            padding-left: 1rem;
+        }
+    </style>
+</head> <body class="bg-white font-sans" data-astro-cid-sckkx6r4>  <main class="max-w-4xl mx-auto px-4 py-16">
+        <!-- Content Container -->
+        <div id="content" class="hidden">
+            <!-- Arabic Content will be loaded here first -->
+            <div id="arabic-content"></div>
+            
+            <hr class="my-12">
+            
+            <!-- English Content will be loaded here second -->
+            <div id="english-content"></div>
+        </div>
+    </main>  <script>
+        // Configuration
+        const API_BASE_URL = window.location.origin; // Adjust this to your API base URL
+        const PAGE_SLUG = 'terms-and-conditions';
+        
+        // Function to fetch page content
+        async function fetchPageContent() {
+            try {
+                console.log('API Base URL:', API_BASE_URL);
+                console.log('Page Slug:', PAGE_SLUG);
+                
+                const apiUrl = `${API_BASE_URL}/api/v1/pages/${PAGE_SLUG}`;
+                console.log('Fetching from:', apiUrl);
+                
+                // Fetch Arabic content
+                console.log('Fetching Arabic content...');
+                const arabicResponse = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Accept-Language': 'ar'
+                    }
+                });
+                console.log('Arabic response status:', arabicResponse.status);
+
+                // Fetch English content
+                console.log('Fetching English content...');
+                const englishResponse = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Accept-Language': 'en'
+                    }
+                });
+                console.log('English response status:', englishResponse.status);
+
+                if (!arabicResponse.ok || !englishResponse.ok) {
+                    throw new Error(`HTTP error! Arabic: ${arabicResponse.status}, English: ${englishResponse.status}`);
+                }
+
+                const arabicData = await arabicResponse.json();
+                const englishData = await englishResponse.json();
+                
+                console.log('Arabic data:', arabicData);
+                console.log('English data:', englishData);
+
+                return {
+                    arabic: arabicData.data,
+                    english: englishData.data
+                };
+            } catch (error) {
+                console.error('Error fetching page content:', error);
+                throw error;
+            }
+        }
+
+        // Function to render content
+        function renderContent(data) {
+            const arabicContainer = document.getElementById('arabic-content');
+            const englishContainer = document.getElementById('english-content');
+
+            // Render Arabic content first
+            if (data.arabic) {
+                arabicContainer.innerHTML = `
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">${data.arabic.title}</h1>
+                    <div class="prose prose-lg max-w-none">
+                        ${data.arabic.content}
+                    </div>
+                `;
+            }
+
+            // Render English content second
+            if (data.english) {
+                englishContainer.innerHTML = `
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">${data.english.title}</h2>
+                    <div class="prose prose-lg max-w-none text-gray-700">
+                        ${data.english.content}
+                    </div>
+                `;
+            }
+        }
+
+        // Function to show content
+        function showContent() {
+            console.log('Showing content');
+            document.getElementById('content').classList.remove('hidden');
+        }
+
+        // Initialize page
+        async function initializePage() {
+            console.log('Initializing page...');
+            
+            try {
+                console.log('Fetching page content...');
+                const data = await fetchPageContent();
+                console.log('Data received:', data);
+                
+                renderContent(data);
+                showContent();
+                console.log('Content rendered successfully');
+            } catch (error) {
+                console.error('Error in initializePage:', error);
+                // Silently fail - no error message displayed
+            }
+        }
+
+        // Start when page loads
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+    
+    <script src="./script.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script defer src="https://unpkg.com/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script> </body> </html>

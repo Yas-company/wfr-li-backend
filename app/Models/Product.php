@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Enums\UnitType;
 use App\Traits\Rateable;
 use App\Enums\ProductStatus;
-use App\Values\ProductPrices;
 use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +13,6 @@ use Spatie\Translatable\HasTranslations;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use App\Services\Product\ProductPricingCalculatorService;
 
 class Product extends Model implements HasMedia
 {
@@ -37,6 +35,7 @@ class Product extends Model implements HasMedia
         'platform_tax',
         'country_tax',
         'other_tax',
+        'total_taxes',
         'description',
         'quantity',
         'min_order_quantity',
@@ -58,6 +57,7 @@ class Product extends Model implements HasMedia
         'other_tax' => 'decimal:2',
         'country_tax' => 'decimal:2',
         'platform_tax' => 'decimal:2',
+        'total_taxes' => 'decimal:2',
         'description' => 'array',
         'unit_type' => UnitType::class,
         'status' => ProductStatus::class,
@@ -78,10 +78,13 @@ class Product extends Model implements HasMedia
         $array = $this->toArray();
 
         return [
+            'id' => $array['id'],
             'name_ar' => $array['name']['ar'],
             'name_en' => $array['name']['en'],
             'description_ar' => $array['description']['ar'],
             'description_en' => $array['description']['en'],
+            'price_before_discount' => $array['price_before_discount'],
+            'price' => $array['price'],
             'supplier_name' => $array['supplier']['name'],
             'category_name_ar' => $array['category']['name']['ar'],
             'category_name_en' => $array['category']['name']['en'],
@@ -117,8 +120,8 @@ class Product extends Model implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('images')
-        ->useFallbackUrl('/images/logo.jpg')
-            ->useFallbackPath(public_path('/images/logo.jpg'));
+        ->useFallbackUrl(asset('images/product_default.jpeg'))
+        ->useFallbackPath(public_path('images/product_default.jpeg'));
     }
 
     public function favoritedByUsers()

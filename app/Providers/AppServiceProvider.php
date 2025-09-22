@@ -63,11 +63,11 @@ class AppServiceProvider extends ServiceProvider
                 new ProductStatusValidator(),
             ],
             checkoutValidators: [
-                new MinOrderAmountValidator(),
                 new EmptyCartValidator(),
-                new SingleSupplierCartValidator(),
-                new StockAvailabilityValidator(),
                 new ProductStatusValidator(),
+                new StockAvailabilityValidator(),
+                new SingleSupplierCartValidator(),
+                new MinOrderAmountValidator(),
             ]
         ));
 

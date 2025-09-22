@@ -41,7 +41,7 @@ class ProductStatusValidator implements AddToCartValidatorInterface, CheckoutCar
      *
      * @throws CartException
      */
-    private function validateProduct(Product $product): void
+    protected function validateProduct(Product $product): void
     {
         if (
             !$product->is_active ||

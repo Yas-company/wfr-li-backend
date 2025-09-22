@@ -3,10 +3,11 @@
 namespace App\Enums\Tax;
 
 use App\Traits\HasLabel;
+use App\Traits\HasOptions;
 
 enum TaxGroup: string
 {
-    use HasLabel;
+    use HasLabel, HasOptions;
 
     case PLATFORM = 'platform';
     case COUNTRY_VAT = 'country vat';

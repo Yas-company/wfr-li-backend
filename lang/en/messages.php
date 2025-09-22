@@ -39,6 +39,7 @@ return [
         'cannot_delete_last_address' => 'Cannot delete last address',
         'at_least_one_default_address_required' => 'At least one default address is required',
         'cannot_delete_address_attached_to_order' => 'Cannot delete address attached to order',
+        'supplier_setting_not_exists' => 'Supplier setting not found',
     ],
 
     'ratings' => [
@@ -201,11 +202,14 @@ return [
     'profile' => [
         'deleted' => 'Profile deleted successfully',
         'delete_failed' => 'Failed to delete profile',
+        'phone_updated' => 'Phone updated successfully',
+        'phone_update_failed' => 'Failed to update phone',
     ],
-
 
     'suppliers' => [
         'image_changed' => 'Supplier image changed successfully',
+        'settings_fetched' => 'Supplier settings fetched successfully',
+        'setting_updated' => 'Supplier setting updated successfully',
     ],
 
     'category' => [
@@ -227,5 +231,9 @@ return [
         'fetched_successfully' => 'Page fetched successfully',
         'slug_required' => 'The slug is required',
         'slug_not_found' => 'The slug is not found',
+    ],
+
+    'buyers' => [
+        'retrieved_successfully' => 'Related buyers retrieved successfully',
     ],
 ];

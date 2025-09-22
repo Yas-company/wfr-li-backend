@@ -13,6 +13,7 @@ class ProductPricingCalculatorService
 
     public function calculate(float $basePrice, float $discountRate = 0): ProductPrices
     {
+        $totalTaxes = 0;
         $discountRate = $this->normalizeDiscountRate($discountRate);
 
         $platformBefore = $this->calculateTaxes(TaxGroup::PLATFORM->value, $basePrice);
@@ -22,21 +23,27 @@ class ProductPricingCalculatorService
         $priceAfterDiscount = $priceBeforeDiscount - $totalDiscount;
 
         $platformAfter = $platformBefore * (1 - $discountRate);
+
+        $totalTaxes += $platformAfter;
+
         $country = $this->calculateTaxes(TaxGroup::COUNTRY_VAT->value, $priceAfterDiscount);
+        $totalTaxes += $country;
         $priceAfterCountry = $priceAfterDiscount + $country;
 
         $other = $this->calculateTaxes(TaxGroup::OTHER->value, $priceAfterCountry);
+        $totalTaxes += $other;
         $priceAfterTaxes = $priceAfterCountry + $other;
 
         return new ProductPrices(
-            $this->money($basePrice),
-            $this->money($priceBeforeDiscount),
-            $this->money($priceAfterDiscount),
-            $this->money($priceAfterTaxes),
-            $this->money($totalDiscount),
-            $this->money($platformAfter),
-            $this->money($country),
-            $this->money($other)
+            money($basePrice,2 ),
+            money($priceBeforeDiscount, 2),
+            money($priceAfterDiscount, 2),
+            money($priceAfterTaxes, 2),
+            money($totalDiscount, 2),
+            money($platformAfter, 2),
+            money($country, 2),
+            money($other, 2),
+            money($totalTaxes, 2)
         );
     }
 
@@ -62,10 +69,5 @@ class ProductPricingCalculatorService
             $this->taxes = Tax::forProducts()->active()->get()->groupBy('group');
         }
         return $this->taxes;
-    }
-
-    private function money(float $value): float
-    {
-        return round($value, 2);
     }
 }

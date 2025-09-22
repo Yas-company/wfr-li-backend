@@ -3,10 +3,11 @@
 namespace App\Enums\Tax;
 
 use App\Traits\HasLabel;
+use App\Traits\HasOptions;
 
 enum TaxApplyTo: string
 {
-    use HasLabel;
+    use HasLabel, HasOptions;
 
     case PRODUCT = 'product';
     case ORDER = 'order';

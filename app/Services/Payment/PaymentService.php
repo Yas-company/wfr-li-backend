@@ -15,7 +15,7 @@ class PaymentService
     protected string $apiKey;
     protected array $headers;
 
-    public function __construct( protected PaymentGatewayInterface $gateway)
+    public function __construct(protected PaymentGatewayInterface $gateway)
     {
         //
     }

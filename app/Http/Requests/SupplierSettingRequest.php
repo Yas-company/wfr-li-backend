@@ -22,7 +22,7 @@ class SupplierSettingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => 'required|boolean',
+            'is_open' => 'required|boolean',
         ];
     }
 }

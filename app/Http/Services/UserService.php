@@ -2,14 +2,20 @@
 
 namespace App\Http\Services;
 
+use App\Models\User;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Repositories\Suppliers\BuyerRepository;
 
 class UserService
 {
+    public function __construct(private BuyerRepository $buyerRepository)
+    {
+        //
+    }
+
     public function getSupplierFields(User $user)
     {
         return $user->fields;

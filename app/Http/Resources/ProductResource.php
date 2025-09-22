@@ -57,6 +57,7 @@ class ProductResource extends JsonResource
             'platform_tax' => $this->platform_tax,
             'country_tax' => $this->country_tax,
             'other_tax' => $this->other_tax,
+            'total_taxes' => $this->total_taxes,
             'quantity' => $this->quantity,
             'stock_qty' => $this->stock_qty,
             'nearly_out_of_stock_limit' => $this->nearly_out_of_stock_limit,
@@ -65,12 +66,15 @@ class ProductResource extends JsonResource
             'unit_type' => $this->unit_type->toResponse(),
             'category' => new CategoryResource($this->whenLoaded('category')),
             'supplier' => new SupplierResource($this->whenLoaded('supplier')),
-            $this->mergeWhen($user && $user->isBuyer() && $this->relationLoaded('cartProduct'), [
-                'cart_info' =>  [
-                    'in_cart' => ! is_null($this->cartProduct),
-                    'quantity' => $this->cartProduct ? $this->cartProduct->quantity : 0
-                ],
-            ])
+            $this->mergeWhen(
+                $user && $user->isBuyer() && $this->relationLoaded('cartProduct'),
+                fn () => [
+                    'cart_info' => [
+                        'in_cart' => ! is_null($this->cartProduct),
+                        'quantity' => $this->cartProduct ? $this->cartProduct->quantity : 0
+                    ],
+                ]
+            )
         ];
     }
 }

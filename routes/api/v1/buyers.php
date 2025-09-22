@@ -9,4 +9,5 @@ Route::middleware(['auth:sanctum', RoleMiddleware::class.':'.UserRole::BUYER->va
     Route::put('/buyers/profile', [ProfileController::class, 'updateBuyerProfile'])->name('buyers.profile.update');
     Route::post('/buyers/image', [ProfileController::class, 'changeBuyerImage'])->name('buyers.image.change');
     Route::delete('/buyers/profile', [ProfileController::class, 'destroy'])->name('buyers.profile.delete');
+    Route::put('/buyers/change-phone', [ProfileController::class, 'updateBuyerPhone'])->name('buyers.phone.update');
 });

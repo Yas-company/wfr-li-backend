@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 
@@ -55,7 +56,6 @@ class ProfileService
      * Change supplier image
      *
      * @param  array  $data
-     * @param  User  $user
      * @return User
      */
     public function changeSupplierImage($data, User $user)
@@ -72,5 +72,11 @@ class ProfileService
     public function deleteAccount(User $user)
     {
         $user->delete();
+    }
+
+    public function updatePhone($phone, User $user): void
+    {
+        $user->phone = $phone;
+        $user->save();
     }
 }

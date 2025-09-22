@@ -2,23 +2,18 @@
 
 namespace App\Services;
 
-use App\Models\User;
-use App\Models\Organization;
-use Illuminate\Support\Facades\DB;
 use App\Dtos\OrganizationCreationDto;
-use App\Exceptions\OrganizationException;
 use App\Enums\Organization\OrganizationRole;
 use App\Enums\Organization\OrganizationStatus;
+use App\Exceptions\OrganizationException;
+use App\Models\Organization;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class OrganizationService
 {
     /**
      * Create a new organization.
-     *
-     * @param OrganizationCreationDto $data
-     * @param User $user
-     *
-     * @return Organization
      */
     public function createOrganization(OrganizationCreationDto $data, User $user): Organization
     {
@@ -27,10 +22,9 @@ class OrganizationService
             ->where('status', '!=', OrganizationStatus::REJECTED)
             ->first();
 
-        if($organization) {
+        if ($organization) {
             throw OrganizationException::userAlreadyHasOrganization($organization->name);
         }
-
 
         try {
             DB::beginTransaction();
@@ -69,5 +63,15 @@ class OrganizationService
         }
 
         return $organization;
+    }
+
+    public function checkOrganization(User $user): ?Organization
+    {
+        $organization = $user->myOrganization;
+        if (! $organization) {
+            throw OrganizationException::userDoesNotHaveOrganization();
+        }
+
+        return $organization->load(['owner', 'users']);
     }
 }

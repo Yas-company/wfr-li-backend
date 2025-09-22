@@ -3,17 +3,16 @@
 namespace App\Models;
 
 use App\Enums\UserRole;
-use App\Traits\Rateable;
 use App\Enums\UserStatus;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Traits\Rateable;
 use Illuminate\Contracts\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
@@ -180,6 +179,11 @@ class User extends Authenticatable
         return $this->belongsToMany(Organization::class, 'organization_user')->approved()->withPivot(['role', 'joined_at']);
     }
 
+    public function myOrganization(): HasOne
+    {
+        return $this->hasOne(Organization::class, 'created_by');
+    }
+
     public function scopeRole(Builder $query, string $role): Builder
     {
         return $query->where('role', $role);
@@ -198,5 +202,17 @@ class User extends Authenticatable
     public function scopeApproved(Builder $query): Builder
     {
         return $query->where('status', UserStatus::APPROVED);
+    }
+
+    public function isOpen(): bool
+    {
+        return $this->supplier?->is_open ?? true;
+    }
+
+    public function scopeOpen(Builder $query): Builder
+    {
+        return $query->whereHas('supplier', function ($q) {
+            $q->where('is_open', true);
+        });
     }
 }

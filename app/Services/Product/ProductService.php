@@ -90,7 +90,11 @@ class ProductService implements ProductServiceInterface
 
         $data = array_merge($data, $productPrices->toArray());
 
-        return Product::create($data);
+        $product = Product::create($data);
+
+        $product->load(['media', 'category']);
+
+        return $product;
     }
 
     /**
@@ -103,7 +107,7 @@ class ProductService implements ProductServiceInterface
      */
     public function getProductById(int $id): Product
     {
-        return Product::with(['ratings', 'category', 'category.field', 'ratings.user'])->withCartInfo()->findOrFail($id);
+        return Product::with(['ratings', 'category', 'category.field', 'ratings.user', 'media'])->withCartInfo()->findOrFail($id);
     }
 
     /**
@@ -121,6 +125,7 @@ class ProductService implements ProductServiceInterface
         $data = array_merge($data, $productPrices->toArray());
 
         $product->update($data);
+        $product->load(['media', 'category']);
 
         return $product;
     }
@@ -185,6 +190,8 @@ class ProductService implements ProductServiceInterface
 
         $product->searchable();
 
+        $product->load(['media', 'category']);
+
         return $product;
     }
 
@@ -200,6 +207,8 @@ class ProductService implements ProductServiceInterface
     {
         $media->delete();
         $product->searchable();
+
+        $product->load(['media', 'category']);
 
         return $product;
     }

@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\api\v1\Organization\Buyer;
 
-use App\Traits\ApiResponse;
-use Illuminate\Http\JsonResponse;
-use App\Http\Controllers\Controller;
 use App\Dtos\OrganizationCreationDto;
-use App\Services\OrganizationService;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Organization\StoreRequest;
 use App\Http\Resources\Organization\OrganizationResource;
+use App\Services\OrganizationService;
+use App\Traits\ApiResponse;
+use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;
 
 /**
@@ -23,8 +23,6 @@ class OrganizationController extends Controller
 
     /**
      * OrganizationController constructor.
-     *
-     * @param OrganizationService $organizationService
      */
     public function __construct(protected OrganizationService $organizationService)
     {
@@ -40,10 +38,13 @@ class OrganizationController extends Controller
      *     description="Create a new organization for the authenticated buyer user",
      *     tags={"Organization"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(
      *             required={"name", "tax_number", "commercial_register_number"},
+     *
      *             @OA\Property(
      *                 property="name",
      *                 type="string",
@@ -67,10 +68,13 @@ class OrganizationController extends Controller
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=201,
      *         description="Organization created successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Organization created successfully"),
      *             @OA\Property(
@@ -80,10 +84,13 @@ class OrganizationController extends Controller
      *             @OA\Property(property="status_code", type="integer", example=201)
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=400,
      *         description="Bad request - Validation error",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="success", type="boolean", example=false),
      *             @OA\Property(property="message", type="string", example="Validation failed"),
      *             @OA\Property(
@@ -95,29 +102,31 @@ class OrganizationController extends Controller
      *             @OA\Property(property="status_code", type="integer", example=400)
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized - Invalid or missing authentication token",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="success", type="boolean", example=false),
      *             @OA\Property(property="message", type="string", example="Unauthenticated"),
      *             @OA\Property(property="status_code", type="integer", example=401)
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=422,
      *         description="Unprocessable Entity - Validation error",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="success", type="boolean", example=false),
      *             @OA\Property(property="message", type="string", example="The given data was invalid"),
      *             @OA\Property(property="status_code", type="integer", example=422)
      *         )
      *     )
      * )
-     *
-     * @param StoreRequest $request
-     *
-     * @return JsonResponse
      */
     public function store(StoreRequest $request): JsonResponse
     {
@@ -127,5 +136,16 @@ class OrganizationController extends Controller
         $organization = $this->organizationService->createOrganization($organizationCreationDto, $user);
 
         return $this->createdResponse(OrganizationResource::make($organization->load(['owner', 'users'])));
+    }
+
+    /**
+     * Check organization.
+     */
+    public function checkOrganization(): JsonResponse
+    {
+
+        $result = $this->organizationService->checkOrganization(auth()->user());
+
+        return $this->successResponse(new OrganizationResource($result));
     }
 }

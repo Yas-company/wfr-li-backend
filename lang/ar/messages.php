@@ -39,6 +39,7 @@ return [
         'cannot_delete_last_address' => 'لا يمكن حذف العنوان الأخير',
         'at_least_one_default_address_required' => 'يجب تحديد عنوان افتراضي واحد على الأقل',
         'cannot_delete_address_attached_to_order' => 'لا يمكن حذف العنوان المرتبط بالطلب',
+        'supplier_setting_not_exists' => 'لم يتم العثور على إعدادات المورد',
     ],
 
     'ratings' => [
@@ -199,6 +200,8 @@ return [
 
     'suppliers' => [
         'image_changed' => 'تم تحديث صورة المورد بنجاح',
+        'settings_fetched' => 'تم جلب إعدادات المورد بنجاح',
+        'setting_updated' => 'تم تحديث إعدادات المورد بنجاح',
     ],
 
     'category' => [
@@ -219,6 +222,8 @@ return [
     'profile' => [
         'deleted' => 'تم حذف الملف الشخصي بنجاح',
         'delete_failed' => 'فشل في حذف الملف الشخصي',
+        'phone_updated' => 'تم تحديث رقم الهاتف بنجاح',
+        'phone_update_failed' => 'فشل في تحديث رقم الهاتف',
     ],
 
     'buyer' => [
@@ -232,4 +237,7 @@ return [
         'slug_not_found' => 'لم يتم العثور على الصفحة',
     ],
 
+    'buyers' => [
+        'retrieved_successfully' => 'تم جلب المشترين المرتبطين بنجاح',
+    ],
 ];

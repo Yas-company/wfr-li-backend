@@ -18,7 +18,7 @@ class AddressSeeder extends Seeder
         $users = User::all();
 
         foreach ($users as $user) {
-            
+
 
             // Generate 3 addresses per user
             $this->createAddressesForUser($user);
@@ -46,8 +46,8 @@ class AddressSeeder extends Seeder
         for ($i = 0; $i < 3; $i++) {
             // Generate random coordinates within 50km radius
             $coordinates = $this->generateRandomCoordinatesWithinRadius(
-                $baseLatitude, 
-                $baseLongitude, 
+                $baseLatitude,
+                $baseLongitude,
                 50 // 50km radius
             );
 
@@ -160,7 +160,7 @@ class AddressSeeder extends Seeder
         // Kuwait mobile numbers typically start with +965 and then 8 digits
         $prefixes = ['9', '6', '5']; // Common Kuwait mobile prefixes
         $prefix = $prefixes[array_rand($prefixes)];
-        
+
         return '+965' . $prefix . str_pad(mt_rand(0, 9999999), 7, '0', STR_PAD_LEFT);
     }
-} 
+}

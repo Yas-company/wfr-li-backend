@@ -19,6 +19,7 @@ use OpenApi\Attributes as OA;
  *         @OA\Property(property="label", type="string", example="مشحون")
  *     ),
  *     @OA\Property(property="total", type="string", example="1445.00"),
+ *     @OA\Property(property="total", type="number", example="5"),
  *     @OA\Property(property="total_discount", type="string", example="200.63"),
  *     @OA\Property(property="order_type", type="string", example="1"),
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2025-08-10T16:24:46.000000Z"),
@@ -85,6 +86,8 @@ class OrderResource extends JsonResource
             'user_id' => $this->user_id,
             'status' => $this->status->toResponse(),
             'total' => $this->total,
+            'total_taxes' => $this->total_taxes,
+            'total_products' => $this->total_products,
             'total_discount' => $this->total_discount,
             'order_type' => $this->order_type,
             'created_at' => $this->created_at,
