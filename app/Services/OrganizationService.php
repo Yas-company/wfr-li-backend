@@ -76,13 +76,13 @@ class OrganizationService
         return $organization->load(['owner', 'users']);
     }
 
-    public function updateOrganization(Organization $organization, OrganizationCreationDto $data, User $user): Organization
+public function     updateOrganization(Organization $organization, array $data): Organization
     {
         if (! Gate::allows('update', $organization)) {
             throw OrganizationException::userIsNotOwnerOfOrganization();
         }
 
-        $organization->update($data->toArray());
+        $organization->update($data);
 
         $organization->status = OrganizationStatus::PENDING;
         $organization->save();

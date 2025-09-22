@@ -157,7 +157,7 @@ class OrganizationController extends Controller
     public function update(UpdateRequest $request, Organization $organization): JsonResponse
     {
         $organizationUpdateDto = OrganizationCreationDto::fromRequest($request);
-        $organization = $this->organizationService->updateOrganization($organization, data: $organizationUpdateDto, user: auth()->user());
+        $organization = $this->organizationService->updateOrganization($organization, $organizationUpdateDto->toArray());
 
         return $this->successResponse(new OrganizationResource($organization));
     }
