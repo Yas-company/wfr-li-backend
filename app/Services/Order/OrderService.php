@@ -2,6 +2,7 @@
 
 namespace App\Services\Order;
 
+use App\Dtos\OrderChartDto;
 use App\Models\User;
 use App\Models\Order;
 use App\Dtos\OrderFilterDto;
@@ -112,5 +113,126 @@ class OrderService
             'errors' => $errors,
             'succeeded_products' => $succeededProducts,
         ];
+    }
+
+    /**
+     * Get orders count grouped by time periods for chart visualization.
+     */
+    public function getOrdersTimeChart(int $supplierId, OrderChartDto $orderChartDto): array
+    {
+        // Get date range based on time filter
+        [$startDate, $endDate] = $this->getDateRange($orderChartDto->timeFilter);
+        
+        // Build query
+        $query = Order::query()
+            ->where('supplier_id', $supplierId)
+            ->whereBetween('created_at', [$startDate, $endDate]);
+
+        // Apply status filter if provided
+        if ($orderChartDto->status) {
+            $query->where('status', $orderChartDto->status);
+        }
+
+        // Get chart data based on time filter
+        return match ($orderChartDto->timeFilter) {
+            'weekly' => $this->getWeeklyChart($query, $startDate),
+            'yearly' => $this->getYearlyChart($query, $startDate),
+            default => $this->getMonthlyChart($query, $startDate),
+        };
+    }
+
+    /**
+     * Get date range based on time filter.
+     */
+    private function getDateRange(string $timeFilter): array
+    {
+        return match ($timeFilter) {
+            'weekly' => [now()->startOfWeek(), now()->endOfWeek()],
+            'monthly' => [now()->startOfMonth(), now()->endOfMonth()],
+            'yearly' => [now()->startOfYear(), now()->endOfYear()],
+            default => [now()->startOfMonth(), now()->endOfMonth()],
+        };
+    }
+
+    /**
+     * Get weekly chart data (current week by days).
+     */
+    private function getWeeklyChart($query, $startDate): array
+    {
+        $results = $query
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->keyBy('date');
+
+        $chartData = [];
+        for ($i = 0; $i < 7; $i++) {
+            $date = $startDate->copy()->addDays($i);
+            $dateKey = $date->format('Y-m-d');
+            
+            $chartData[] = [
+                'period' => $date->format('l'), 
+                'count' => $results->get($dateKey)?->count ?? 0,
+                'date' => $dateKey,
+            ];
+        }
+
+        return $chartData;
+    }
+
+    /**
+     * Get monthly chart data (current month by days).
+     */
+    private function getMonthlyChart($query, $startDate): array
+    {
+        $results = $query
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->keyBy('date');
+
+        $chartData = [];
+        $daysInMonth = $startDate->daysInMonth;
+        
+        for ($i = 1; $i <= $daysInMonth; $i++) {
+            $date = $startDate->copy()->day($i);
+            $dateKey = $date->format('Y-m-d');
+            
+            $chartData[] = [
+                'period' => $date->format('M j'), 
+                'count' => $results->get($dateKey)?->count ?? 0,
+                'date' => $dateKey,
+            ];
+        }
+
+        return $chartData;
+    }
+
+    /**
+     * Get yearly chart data (current year by months).
+     */
+    private function getYearlyChart($query, $startDate): array
+    {
+        $results = $query
+            ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get()
+            ->keyBy('month');
+
+        $chartData = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $date = $startDate->copy()->month($i);
+            
+            $chartData[] = [
+                'period' => $date->format('M'), 
+                'count' => $results->get($i)?->count ?? 0,
+                'date' => $date->format('Y-m-d'),
+            ];
+        }
+
+        return $chartData;
     }
 }

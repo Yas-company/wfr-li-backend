@@ -5,12 +5,14 @@ namespace App\Http\Controllers\api\v1\Order\Supplier;
 use App\Models\Order;
 use App\Traits\ApiResponse;
 use App\Dtos\OrderFilterDto;
+use App\Dtos\OrderChartDto;
 use App\Services\Order\OrderService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\OrderResource;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Order\FilterOrderRequest;
+use App\Http\Requests\OrdersTimeRequest;
 use App\Http\Resources\Order\SupplierOrderListingResource;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Annotations as OA;
@@ -201,5 +203,20 @@ class OrderController extends Controller
             ],
             statusCode: Response::HTTP_OK
         );
+    }
+
+    /**
+     * orders time chart.
+     */
+    public function getOrdersTimeChart(OrdersTimeRequest $request): JsonResponse
+    {
+        $orderChartDto = OrderChartDto::fromRequest($request);
+        
+        $result = $this->orderService->getOrdersTimeChart(
+            Auth::user()->id,
+            $orderChartDto
+        );
+
+        return $this->successResponse($result);
     }
 }

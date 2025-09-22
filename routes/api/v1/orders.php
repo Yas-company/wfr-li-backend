@@ -11,6 +11,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::prefix('supplier/orders')->middleware(RoleMiddleware::class.':'.UserRole::SUPPLIER->value)->group(function () {
         Route::get('/', [SupplierOrderController::class, 'index'])->name('supplier.orders.index');
+        Route::get('/charts/time', [SupplierOrderController::class, 'getOrdersTimeChart'])->name('supplier.orders.time-chart');
         Route::get('/{order}', [SupplierOrderController::class, 'show'])->name('supplier.orders.show');
         Route::post('/{order}/change-status', ChangeOrderStatusController::class)->name('supplier.orders.change-status');
     });
