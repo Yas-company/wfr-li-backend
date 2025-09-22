@@ -9,6 +9,7 @@ use App\Exceptions\OrganizationException;
 use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class OrganizationService
 {
@@ -75,13 +76,13 @@ class OrganizationService
         return $organization->load(['owner', 'users']);
     }
 
-    public function updateOrganization(Organization $organization, array $data, User $user): Organization
+    public function updateOrganization(Organization $organization, OrganizationCreationDto $data, User $user): Organization
     {
-        if ($organization->created_by !== $user->id) {
+        if (! Gate::allows('update', $organization)) {
             throw OrganizationException::userIsNotOwnerOfOrganization();
         }
 
-        $organization->update($data);
+        $organization->update($data->toArray());
 
         $organization->status = OrganizationStatus::PENDING;
         $organization->save();
