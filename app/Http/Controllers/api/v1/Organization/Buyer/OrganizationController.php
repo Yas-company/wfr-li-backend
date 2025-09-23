@@ -5,7 +5,9 @@ namespace App\Http\Controllers\api\v1\Organization\Buyer;
 use App\Dtos\OrganizationCreationDto;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Organization\StoreRequest;
+use App\Http\Requests\Organization\UpdateRequest;
 use App\Http\Resources\Organization\OrganizationResource;
+use App\Models\Organization;
 use App\Services\OrganizationService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -147,5 +149,18 @@ class OrganizationController extends Controller
         $result = $this->organizationService->checkOrganization(auth()->user());
 
         return $this->successResponse(new OrganizationResource($result));
+    }
+
+    /**
+     * update organization.
+     */
+    public function update(UpdateRequest $request, Organization $organization): JsonResponse
+    {
+        $this->authorize('update', $organization);
+
+        $organizationUpdateDto = OrganizationCreationDto::fromRequest($request);
+        $organization = $this->organizationService->updateOrganization($organization, $organizationUpdateDto->toArray());
+
+        return $this->successResponse(new OrganizationResource($organization));
     }
 }

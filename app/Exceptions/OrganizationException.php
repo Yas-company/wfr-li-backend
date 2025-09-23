@@ -16,4 +16,9 @@ class OrganizationException extends Exception
     {
         return new self('User does not have an organization', Response::HTTP_UNPROCESSABLE_ENTITY);
     }
+
+    public static function userIsNotOwnerOfOrganization(): self
+    {
+        return new self('User is not the owner of the organization', Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
 }
