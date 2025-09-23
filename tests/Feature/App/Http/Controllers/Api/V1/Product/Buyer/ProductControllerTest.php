@@ -743,19 +743,28 @@ class ProductControllerTest extends TestCase
                 'success',
                 'message',
                 'data' => [
-                    '*' => [
-                        'id',
-                        'name',
-                        'description',
-                        'price',
-                        'status',
-                        'is_favorite',
-                        'category',
-                    ]
+                    'products' => [
+                        '*' => [
+                            'id',
+                            'name',
+                            'description',
+                            'price',
+                            'status',
+                            'is_favorite',
+                            'category',
+                        ]
+                    ],
+                    'cart',
+                    'total',
+                    'total_discount',
+                    'total_products',
+                    'total_after_taxes',
+                    'total_country_tax',
+                    'supplier_requirements',
                 ]
             ]);
 
-        $responseData = $response->json('data');
+        $responseData = $response->json('data.products');
 
         // Should return similar products (category-based first, then supplier-based)
         $this->assertGreaterThanOrEqual(1, count($responseData));
@@ -817,7 +826,7 @@ class ProductControllerTest extends TestCase
 
         $response->assertStatus(200);
 
-        $responseData = $response->json('data');
+        $responseData = $response->json('data.products');
 
         // Should return supplier-based similar products
         $this->assertGreaterThanOrEqual(1, count($responseData));
@@ -861,7 +870,7 @@ class ProductControllerTest extends TestCase
 
         $response->assertStatus(200);
 
-        $responseData = $response->json('data');
+        $responseData = $response->json('data.products');
 
         // Should return empty array when no matches
         $this->assertCount(0, $responseData);
@@ -905,7 +914,7 @@ class ProductControllerTest extends TestCase
 
         $response->assertStatus(200);
 
-        $responseData = $response->json('data');
+        $responseData = $response->json('data.products');
 
         // Should return maximum 5 products
         $this->assertCount(5, $responseData);
@@ -934,13 +943,126 @@ class ProductControllerTest extends TestCase
 
         $response->assertStatus(200);
 
-        $responseData = $response->json('data');
+        $responseData = $response->json('data.products');
 
         // Should not include the current product
         $this->assertNotContains($mainProduct->id, collect($responseData)->pluck('id')->toArray());
 
         // Should include the similar product
         $this->assertContains($similarProduct->id, collect($responseData)->pluck('id')->toArray());
+    }
+
+    public function test_similar_products_response_includes_cart_information()
+    {
+        // Create a main product
+        $mainProduct = Product::factory()->create([
+            'supplier_id' => $this->supplier->id,
+            'category_id' => $this->category->id,
+            'is_active' => true,
+            'status' => ProductStatus::PUBLISHED,
+        ]);
+
+        // Create similar products
+        $similarProduct = Product::factory()->create([
+            'supplier_id' => $this->supplier->id,
+            'category_id' => $this->category->id,
+            'is_active' => true,
+            'status' => ProductStatus::PUBLISHED,
+        ]);
+
+        // Add some products to cart to have cart data
+        $cartProduct = Product::factory()->create([
+            'supplier_id' => $this->supplier->id,
+            'category_id' => $this->category->id,
+            'is_active' => true,
+            'status' => ProductStatus::PUBLISHED,
+            'price' => 100.00,
+        ]);
+
+        $this->actingAs($this->buyer)
+            ->postJson(route('cart.store'), [
+                'product_id' => $cartProduct->id,
+                'quantity' => 2
+            ]);
+
+        $response = $this->actingAs($this->buyer)
+            ->getJson(route('buyer.products.similar', $mainProduct));
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    'products' => [
+                        '*' => [
+                            'id',
+                            'name',
+                            'description',
+                            'price',
+                            'status',
+                            'is_favorite',
+                            'category',
+                        ]
+                    ],
+                    'cart' => [
+                        'id',
+                        'user_id',
+                        'products' => [
+                            '*' => [
+                                'id',
+                                'product_name',
+                                'product_image',
+                                'product_price',
+                                'price_before_discount',
+                                'quantity',
+                                'price',
+                                'total'
+                            ]
+                        ]
+                    ],
+                    'total',
+                    'total_discount',
+                    'total_products',
+                    'total_after_taxes',
+                    'total_country_tax',
+                    'supplier_requirements',
+                ]
+            ]);
+
+        $responseData = $response->json('data');
+
+        // Verify cart information is present
+        $this->assertNotNull($responseData['cart']);
+        $this->assertIsArray($responseData['cart']);
+        $this->assertArrayHasKey('id', $responseData['cart']);
+        $this->assertArrayHasKey('user_id', $responseData['cart']);
+        $this->assertArrayHasKey('products', $responseData['cart']);
+
+        // Verify totals information is present
+        $this->assertArrayHasKey('total', $responseData);
+        $this->assertArrayHasKey('total_discount', $responseData);
+        $this->assertArrayHasKey('total_products', $responseData);
+        $this->assertArrayHasKey('total_after_taxes', $responseData);
+        $this->assertArrayHasKey('total_country_tax', $responseData);
+        $this->assertArrayHasKey('supplier_requirements', $responseData);
+
+        // Verify the totals are numeric values
+        $this->assertIsNumeric($responseData['total']);
+        $this->assertIsNumeric($responseData['total_discount']);
+        $this->assertIsInt($responseData['total_products']);
+        $this->assertIsNumeric($responseData['total_after_taxes']);
+        $this->assertIsNumeric($responseData['total_country_tax']);
+
+        // Verify supplier requirements is an array
+        $this->assertIsArray($responseData['supplier_requirements']);
+
+        // Verify cart contains the added product
+        $cartProducts = collect($responseData['cart']['products']);
+        $this->assertTrue($cartProducts->contains('id', $cartProduct->id));
+        
+        // Verify the quantity is correct
+        $addedCartProduct = $cartProducts->firstWhere('id', $cartProduct->id);
+        $this->assertEquals(2, $addedCartProduct['quantity']);
     }
 
 }

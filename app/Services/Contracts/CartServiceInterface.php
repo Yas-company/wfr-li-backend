@@ -14,4 +14,6 @@ interface CartServiceInterface
     public function removeFromCart(User $user, int $productId): bool;
     public function clearCart(User $user): bool;
     public function checkout(User $user, CartCheckoutDto $checkoutData): Order;
+    public function getCartTotals(Cart $cart);
+    public function getSupplierRequirements(Cart $cart): array;
 }
