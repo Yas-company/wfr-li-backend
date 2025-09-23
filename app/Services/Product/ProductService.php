@@ -259,6 +259,7 @@ class ProductService implements ProductServiceInterface
     {
         $products = Product::query()
             ->forUsers()
+            ->withCartInfo()
             ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->with(['media', 'currentUserFavorite', 'category', 'category.field'])
@@ -269,6 +270,7 @@ class ProductService implements ProductServiceInterface
         if ($products->count() == 0) {
             $products = Product::query()
                 ->forUsers()
+                ->withCartInfo()
                 ->where('supplier_id', $product->supplier_id)
                 ->where('id', '!=', $product->id)
                 ->with(['media', 'currentUserFavorite', 'category', 'category.field', 'supplier'])
