@@ -9,6 +9,7 @@ use App\Exceptions\OrganizationException;
 use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class OrganizationService
 {
@@ -71,6 +72,16 @@ class OrganizationService
         if (! $organization) {
             throw OrganizationException::userDoesNotHaveOrganization();
         }
+
+        return $organization->load(['owner', 'users']);
+    }
+
+    public function updateOrganization(Organization $organization, array $data): Organization
+    {
+        $organization->update($data);
+
+        $organization->status = OrganizationStatus::PENDING;
+        $organization->save();
 
         return $organization->load(['owner', 'users']);
     }
