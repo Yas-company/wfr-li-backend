@@ -76,7 +76,7 @@ class OrganizationService
         return $organization->load(['owner', 'users']);
     }
 
-public function     updateOrganization(Organization $organization, array $data): Organization
+    public function updateOrganization(Organization $organization, array $data): Organization
     {
         if (! Gate::allows('update', $organization)) {
             throw OrganizationException::userIsNotOwnerOfOrganization();
