@@ -782,7 +782,7 @@ class OrganizationControllerTest extends TestCase
             'name' => 'Hacked Organization Name',
         ]);
 
-        $response->assertStatus(422);
+        $response->assertStatus(404);
 
         $this->assertDatabaseHas('organizations', [
             'id' => $organization->id,

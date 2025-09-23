@@ -78,10 +78,6 @@ class OrganizationService
 
     public function updateOrganization(Organization $organization, array $data): Organization
     {
-        if (! Gate::allows('update', $organization)) {
-            throw OrganizationException::userIsNotOwnerOfOrganization();
-        }
-
         $organization->update($data);
 
         $organization->status = OrganizationStatus::PENDING;
