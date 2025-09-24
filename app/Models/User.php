@@ -196,7 +196,7 @@ class User extends Authenticatable
 
     public function isOrganization(): bool
     {
-        return $this->organizations()->approved()->exists();
+        return $this->organizations()->exists();
     }
 
     public function scopeApproved(Builder $query): Builder
