@@ -38,6 +38,14 @@ return [
         ],
     ],
 
+    'payment' => [
+        'default_payment_gateway' => 'tap',
+        'tap' => [
+            'base_url' => env('TAP_BASE_URL'),
+            'api_key' => env('TAP_API_KEY'),
+        ],
+    ],
+
     'algolia' => [
         'id' => env('ALGOLIA_APP_ID', ''),
         'secret' => env('ALGOLIA_SECRET', ''),

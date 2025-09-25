@@ -15,6 +15,8 @@ enum OrderStatus: string
     case SHIPPED = 'shipped';
     case DELIVERED = 'delivered';
     case CANCELLED = 'cancelled';
+    case FAILED = 'failed';
+    case PENDING_PAYMENT = 'pending_payment';
 
     public function color(): string
     {
@@ -26,6 +28,8 @@ enum OrderStatus: string
             self::SHIPPED => 'primary',
             self::DELIVERED => 'success',
             self::CANCELLED => 'danger',
+            self::FAILED => 'danger',
+            self::PENDING_PAYMENT => 'warning',
         };
     }
 

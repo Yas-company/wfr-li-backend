@@ -18,6 +18,7 @@ use App\Services\OrderTrackingService;
 use App\Values\CartSupplierRequirement;
 use App\Contracts\CartValidatorInterface;
 use App\Services\Contracts\CartServiceInterface;
+use App\Services\Payment\PaymentService;
 
 class CartService implements CartServiceInterface
 {
@@ -194,9 +195,9 @@ class CartService implements CartServiceInterface
      * @param User $user
      * @param CartCheckoutDto $cartCheckoutDto
      *
-     * @return Order
+     * @return array
      */
-    public function checkout(User $user, CartCheckoutDto $cartCheckoutDto): Order
+    public function checkout(User $user, CartCheckoutDto $cartCheckoutDto, PaymentService $paymentService): array
     {
         if(
             OrderType::tryFrom($cartCheckoutDto->orderType) === OrderType::ORGANIZATION &&
@@ -208,7 +209,7 @@ class CartService implements CartServiceInterface
         $cart = $this->getCart($user);
         $this->cartValidator->validateCheckout($cart);
 
-        return DB::transaction(function() use ($cart, $user, $cartCheckoutDto) {
+        return DB::transaction(function() use ($cart, $user, $cartCheckoutDto, $paymentService) {
 
             $totals = $this->getCartTotals($cart);
             $supplierId = $cart->products->first()->product->supplier_id;
@@ -225,7 +226,7 @@ class CartService implements CartServiceInterface
                 'total_other_taxes' => $totals->totalOtherTaxes,
                 'total_products' => $totals->productsSum,
                 'total_discount' => $totals->discount,
-                'status' => OrderStatus::PENDING,
+                'status' => OrderStatus::PENDING_PAYMENT,
                 'supplier_id' => $supplierId,
                 'order_type' => $cartCheckoutDto->orderType,
             ]);
@@ -250,8 +251,12 @@ class CartService implements CartServiceInterface
             $order->products()->createMany($orderProducts);
 
             $this->cartProductManager->clear($cart);
+            $paymentUrl = $paymentService->initiatePayment($order);
 
-            return $order->load(['products', 'orderDetail']);
+            return [
+                'order' => $order->load(['products', 'orderDetail']),
+                'payment_url' => $paymentUrl,
+            ];
         });
     }
 }

@@ -24,6 +24,11 @@ class ProductStatusValidator implements AddToCartValidatorInterface, CheckoutCar
         $this->validateProduct($product);
     }
 
+    /**
+     * @param Cart $cart
+     *
+     * @throws CartException
+     */
     public function validateCheckout(Cart $cart): void
     {
         foreach ($cart->products as $item) {
@@ -31,6 +36,11 @@ class ProductStatusValidator implements AddToCartValidatorInterface, CheckoutCar
         }
     }
 
+    /**
+     * @param Product $product
+     *
+     * @throws CartException
+     */
     protected function validateProduct(Product $product): void
     {
         if (

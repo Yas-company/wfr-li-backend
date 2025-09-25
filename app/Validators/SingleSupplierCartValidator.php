@@ -31,6 +31,11 @@ class SingleSupplierCartValidator implements AddToCartValidatorInterface, Checko
         }
     }
 
+    /**
+     * @param Cart $cart
+     *
+     * @throws CartException
+     */
     public function validateCheckout(Cart $cart): void
     {
         $currentSupplierId = $cart->products->first()->product->supplier_id;

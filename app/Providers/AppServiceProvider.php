@@ -2,37 +2,38 @@
 
 namespace App\Providers;
 
-use App\Contracts\CartValidatorInterface;
-use App\Http\Services\Contracts\PaymentServiceInterface;
-use App\Http\Services\Contracts\SupplierServiceInterface;
-use App\Http\Services\Payment\PaymentService;
-use App\Http\Services\SupplierService;
-use App\Models\Address;
-use App\Models\Order;
-use App\Models\Organization;
 use App\Models\Page;
-use App\Models\Product;
-use App\Models\Rating;
 use App\Models\User;
-use App\Policies\AddressPolicy;
+use App\Models\Order;
+use App\Models\Rating;
+use App\Models\Address;
+use App\Models\Product;
+use App\Models\Organization;
 use App\Policies\OrderPolicy;
-use App\Policies\OrganizationPolicy;
-use App\Policies\ProductPolicy;
 use App\Policies\RatingPolicy;
+use App\Policies\AddressPolicy;
+use App\Policies\ProductPolicy;
 use App\Services\Cart\CartService;
-use App\Services\Contracts\CartServiceInterface;
-use App\Services\Contracts\ProductServiceInterface;
-use App\Services\Product\ProductService;
-use App\Validators\CompositeCartValidator;
-use App\Validators\EmptyCartValidator;
-use App\Validators\MinOrderAmountValidator;
-use App\Validators\ProductStatusValidator;
-use App\Validators\SingleSupplierCartValidator;
-use App\Validators\StockAvailabilityValidator;
-use Illuminate\Database\Eloquent\Relations\Relation;
+use App\Policies\OrganizationPolicy;
 use Illuminate\Support\Facades\Gate;
+use App\Enums\Payment\PaymentGateway;
 use Illuminate\Support\Facades\Route;
+use App\Http\Services\SupplierService;
+use App\Validators\EmptyCartValidator;
 use Illuminate\Support\ServiceProvider;
+use App\Services\Product\ProductService;
+use App\Contracts\CartValidatorInterface;
+use App\Validators\CompositeCartValidator;
+use App\Validators\ProductStatusValidator;
+use App\Services\Payment\TapPaymentService;
+use App\Validators\MinOrderAmountValidator;
+use App\Validators\StockAvailabilityValidator;
+use App\Validators\SingleSupplierCartValidator;
+use App\Services\Contracts\CartServiceInterface;
+use App\Services\Contracts\PaymentGatewayInterface;
+use App\Services\Contracts\ProductServiceInterface;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use App\Http\Services\Contracts\SupplierServiceInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -56,7 +57,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ProductServiceInterface::class, ProductService::class);
         $this->app->bind(CartServiceInterface::class, CartService::class);
         $this->app->bind(SupplierServiceInterface::class, SupplierService::class);
-        $this->app->bind(PaymentServiceInterface::class, PaymentService::class);
 
         $this->app->bind(CartValidatorInterface::class, fn () => new CompositeCartValidator(
             addToCartValidators: [
@@ -72,6 +72,15 @@ class AppServiceProvider extends ServiceProvider
                 new MinOrderAmountValidator,
             ]
         ));
+
+        $this->app->bind(PaymentGatewayInterface::class, function () {
+            $gateway = config('services.payment.default_payment_gateway');
+
+            return match ($gateway) {
+                PaymentGateway::TAP->value => new TapPaymentService(),
+                default => throw new \Exception('Unsupported payment gateway')
+            };
+        });
 
         Gate::policy(Address::class, AddressPolicy::class);
         Gate::policy(Order::class, OrderPolicy::class);

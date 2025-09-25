@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Enums;
+namespace App\Enums\Payment\Tap;
 
 use App\Traits\HasLabel;
 
-enum TapPaymentMethod: string
+enum TapPaymentSource: string
 {
     use HasLabel;
+
     case ALL = 'src_all';
     case MADA = 'src_sa.mada';
     case CARD = 'src_card';
-    case APPLE_PAY = 'src_applepay';
 }

@@ -20,11 +20,17 @@ class StockAvailabilityValidator implements AddToCartValidatorInterface, Checkou
      */
     public function validateAdd(Cart $cart, Product $product, ?int $quantity = null): void
     {
+
         if ($product->stock_qty < $quantity) {
             throw CartException::insufficientStock();
         }
     }
 
+    /**
+     * @param Cart $cart
+     *
+     * @throws CartException
+     */
     public function validateCheckout(Cart $cart): void
     {
         foreach ($cart->products as $item) {

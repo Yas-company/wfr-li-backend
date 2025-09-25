@@ -37,7 +37,6 @@ class CartTotals
         $totalProducts = 0;
         $productsSum = 0;
         $total = 0;
-        $supplierTotal = 0;
         $totalTaxes = 0;
         $totalBeforeDiscount = 0;
         $totalAfterTaxes = 0;
