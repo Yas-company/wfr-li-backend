@@ -3,6 +3,7 @@
 namespace Tests\Feature\App\Http\Controllers\Api\V1\Buyer;
 
 use App\Models\Category;
+use App\Models\Field;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -14,7 +15,12 @@ class BuyerHomeControllerTest extends TestCase
     use RefreshDatabase, WithFaker;
 
     protected User $buyer;
+
     protected User $supplier;
+
+    protected Field $field;
+
+    protected Category $category;
 
     protected function setUp(): void
     {
@@ -25,7 +31,12 @@ class BuyerHomeControllerTest extends TestCase
         ]);
 
         $this->buyer = User::factory()->buyer()->create();
+        $this->field = Field::factory()->create();
+        $this->category = Category::factory()->create(['field_id' => $this->field->id]);
         $this->supplier = User::factory()->supplier()->create();
+
+        // Associate supplier with field
+        $this->supplier->fields()->attach($this->field->id);
     }
 
     public function test_buyer_can_get_suppliers_and_products()
@@ -69,7 +80,7 @@ class BuyerHomeControllerTest extends TestCase
                                 'is_favorite',
                                 'unit_type',
                                 'category',
-                                'cart_info'
+                                'cart_info',
                             ],
                         ],
                     ],
@@ -141,8 +152,7 @@ class BuyerHomeControllerTest extends TestCase
         }
     }
 
-
-    public function test_buyer_can_get_suppliers_with_products_ordered_by_latest()
+    public function test_buyer_can_get_suppliers_with_products_ordered_by_oldest()
     {
         $category = Category::factory()->create([]);
 
@@ -169,9 +179,9 @@ class BuyerHomeControllerTest extends TestCase
         $supplierData = collect($responseData)->firstWhere('id', $this->supplier->id);
 
         if ($supplierData && count($supplierData['products']) >= 2) {
-            // The newest product should be first (latest() ordering in products relationship)
+            // The oldest product should be first (oldest() ordering in products relationship)
             $firstProduct = $supplierData['products'][0];
-            $this->assertEquals($newProduct->id, $firstProduct['id']);
+            $this->assertEquals($oldProduct->id, $firstProduct['id']);
         }
     }
 
@@ -260,11 +270,145 @@ class BuyerHomeControllerTest extends TestCase
                 'id', 'name', 'description', 'images', 'image', 'price',
                 'price_before_discount', 'quantity', 'stock_qty',
                 'nearly_out_of_stock_limit', 'status', 'is_favorite',
-                'unit_type', 'category'
+                'unit_type', 'category',
             ];
 
             foreach ($requiredFields as $field) {
                 $this->assertArrayHasKey($field, $productData, "Product should have '{$field}' field");
+            }
+        }
+    }
+
+    public function test_buyer_can_filter_by_category_id()
+    {
+        // Create another field and category
+        $otherField = Field::factory()->create();
+        $otherCategory = Category::factory()->create(['field_id' => $otherField->id]);
+
+        // Create suppliers for both fields
+        $supplierInSameField = User::factory()->supplier()->create();
+        $supplierInOtherField = User::factory()->supplier()->create();
+
+        $supplierInSameField->fields()->attach($this->field->id);
+        $supplierInOtherField->fields()->attach($otherField->id);
+
+        // Create products in both categories
+        Product::factory()->create([
+            'supplier_id' => $supplierInSameField->id,
+            'category_id' => $this->category->id,
+            'is_active' => true,
+        ]);
+
+        Product::factory()->create([
+            'supplier_id' => $supplierInOtherField->id,
+            'category_id' => $otherCategory->id,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($this->buyer)
+            ->getJson(route('home.suppliers-and-products', ['category_id' => $this->category->id]));
+
+        $response->assertStatus(200);
+
+        $responseData = $response->json('data');
+
+        // Should only return suppliers from the same field as the category
+        foreach ($responseData as $supplierData) {
+            if (count($supplierData['products']) > 0) {
+                // All products should be from the specified category
+                foreach ($supplierData['products'] as $productData) {
+                    $this->assertEquals($this->category->id, $productData['category']['id']);
+                }
+            }
+        }
+    }
+
+    public function test_buyer_gets_empty_result_when_no_suppliers_in_category_field()
+    {
+        // Create a category in a field with no suppliers
+        $emptyField = Field::factory()->create();
+        $emptyCategoryField = Category::factory()->create(['field_id' => $emptyField->id]);
+
+        $response = $this->actingAs($this->buyer)
+            ->getJson(route('home.suppliers-and-products', ['category_id' => $emptyCategoryField->id]));
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'data' => [],
+            ]);
+    }
+
+    public function test_buyer_gets_422_for_nonexistent_category()
+    {
+        $response = $this->actingAs($this->buyer)
+            ->getJson(route('home.suppliers-and-products', ['category_id' => 99999]));
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['category_id'])
+            ->assertJson([
+                'message' => 'The selected category id is invalid.',
+                'errors' => [
+                    'category_id' => [
+                        'The selected category id is invalid.',
+                    ],
+                ],
+            ]);
+    }
+
+    public function test_buyer_can_get_suppliers_without_category_filter()
+    {
+        // Create products for the existing supplier
+        Product::factory()->count(3)->create([
+            'supplier_id' => $this->supplier->id,
+            'category_id' => $this->category->id,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($this->buyer)
+            ->getJson(route('home.suppliers-and-products'));
+
+        $response->assertStatus(200);
+
+        $responseData = $response->json('data');
+        $this->assertNotEmpty($responseData);
+
+        // Should include our supplier
+        $supplierFound = collect($responseData)->contains('id', $this->supplier->id);
+        $this->assertTrue($supplierFound);
+    }
+
+    public function test_category_filter_only_returns_products_from_specified_category()
+    {
+        // Create multiple categories in the same field
+        $category2 = Category::factory()->create(['field_id' => $this->field->id]);
+
+        // Create products in both categories for the same supplier
+        $productInCategory1 = Product::factory()->create([
+            'supplier_id' => $this->supplier->id,
+            'category_id' => $this->category->id,
+            'is_active' => true,
+        ]);
+
+        $productInCategory2 = Product::factory()->create([
+            'supplier_id' => $this->supplier->id,
+            'category_id' => $category2->id,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($this->buyer)
+            ->getJson(route('home.suppliers-and-products', ['category_id' => $this->category->id]));
+
+        $response->assertStatus(200);
+
+        $responseData = $response->json('data');
+        $supplierData = collect($responseData)->firstWhere('id', $this->supplier->id);
+
+        if ($supplierData) {
+            // Should only have products from category 1
+            foreach ($supplierData['products'] as $productData) {
+                $this->assertEquals($this->category->id, $productData['category']['id']);
+                $this->assertNotEquals($category2->id, $productData['category']['id']);
             }
         }
     }

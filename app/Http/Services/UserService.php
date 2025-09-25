@@ -2,12 +2,13 @@
 
 namespace App\Http\Services;
 
-use App\Models\User;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
+use App\Exceptions\UserException;
+use App\Models\User;
 use App\Repositories\Suppliers\BuyerRepository;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UserService
 {
@@ -104,13 +105,12 @@ class UserService
         return $suppliers;
     }
 
-    public function show(int $user_id)
+    public function show(User $user)
     {
-        $user = User::find($user_id);
-        if (! $user || $user->role !== UserRole::SUPPLIER || $user->status !== UserStatus::APPROVED) {
-            return ['error' => 'Supplier not found'];
+        if (! $user->isSupplier() || ! $user->isApproved()) {
+            throw UserException::supplierNotApproved();
         }
-        $user->load(['fields']);
+        $user->load(['fields', 'fields.categories']);
 
         return $user;
     }
