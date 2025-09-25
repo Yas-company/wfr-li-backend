@@ -8,7 +8,6 @@ enum TapPaymentStatus: string
 {
     use HasLabel;
 
-    case PENDING = 'pending';
-    case CAPTURED = 'captured';
-    case FAILED = 'failed';
+    case CAPTURED = 'CAPTURED';
+    case FAILED = 'FAILED';
 }

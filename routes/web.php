@@ -1,8 +1,9 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\api\v1\HomeController;
 use App\Http\Controllers\api\v1\InterestController;
-use Illuminate\Support\Facades\Route;
 
 // Landing page route
 Route::get('/', function () {
@@ -16,3 +17,9 @@ Route::get('/', function () {
 Route::get('/app', [HomeController::class, 'index'])->name('home');
 Route::get('/category/{category}/products', [HomeController::class, 'categoryProducts'])->name('category.products');
 Route::get('/pages/{slug}', [HomeController::class, 'page'])->name('page.show');
+
+
+Route::prefix('payments')->group(function () {
+    Route::get('success', [PaymentController::class, 'success'])->name('payment.success');
+    Route::get('fail', [PaymentController::class, 'fail'])->name('payment.fail');
+});

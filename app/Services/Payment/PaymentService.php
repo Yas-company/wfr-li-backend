@@ -72,8 +72,8 @@ class PaymentService
      *
      * @return array
      */
-    public function webhook(Request $request): array
+    public function callback(Request $request): array
     {
-        return $this->gateway->webhook($request);
+        return $this->gateway->callback($request);
     }
 }
