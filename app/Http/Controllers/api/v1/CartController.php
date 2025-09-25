@@ -80,6 +80,7 @@ class CartController extends Controller
             data:[
                 'cart' => CartResource::make($cart),
                 'total' => $totals->total,
+                'total_before_discount' => $totals->totalBeforeDiscount,
                 'total_discount' => $totals->discount,
                 'total_products' => $totals->totalProducts,
                 'total_after_taxes' => $totals->totalAfterTaxes,
