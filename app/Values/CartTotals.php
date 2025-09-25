@@ -22,6 +22,7 @@ class CartTotals
         public float $totalCountryTax,
         public float $totalPlatformTaxes,
         public float $totalOtherTaxes,
+        public float $totalBeforeDiscount,
     ) {}
 
     /**
@@ -66,7 +67,8 @@ class CartTotals
             totalAfterTaxes: money($totalAfterTaxes, 2),
             totalCountryTax: money($totalCountryTax, 2),
             totalPlatformTaxes: money($totalPlatformTaxes, 2),
-            totalOtherTaxes: $totalOtherTaxes
+            totalOtherTaxes: $totalOtherTaxes,
+            totalBeforeDiscount: money($totalBeforeDiscount, 2)
         );
     }
 }
