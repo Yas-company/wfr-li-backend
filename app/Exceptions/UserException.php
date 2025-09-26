@@ -26,4 +26,9 @@ class UserException extends Exception
     {
         return new static(__('messages.users.supplier_setting_not_exists'), Response::HTTP_UNPROCESSABLE_ENTITY);
     }
+
+    public static function supplierNotApproved()
+    {
+        return new static(__('messages.users.supplier_not_approved'), Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
 }
