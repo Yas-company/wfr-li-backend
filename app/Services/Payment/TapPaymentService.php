@@ -3,6 +3,7 @@
 namespace App\Services\Payment;
 
 use App\Models\Order;
+use App\Events\PaymentSuccessful;
 use Illuminate\Http\Request;
 use App\Enums\Order\OrderStatus;
 use App\Enums\Payment\Tap\TapPaymentSource;
@@ -159,6 +160,8 @@ class TapPaymentService extends PaymentService implements PaymentGatewayInterfac
                         'stock_qty' => $product->stock_qty - $item->quantity,
                     ]);
                 }
+
+                PaymentSuccessful::dispatch($order, $order->user);
 
                 DB::commit();
                 Log::channel('payments')->info('payment.callback.fulfilled', [

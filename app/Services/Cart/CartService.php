@@ -224,7 +224,7 @@ class CartService implements CartServiceInterface
                 'total_platform_taxes' => $totals->totalPlatformTaxes,
                 'total_country_taxes' => $totals->totalCountryTax,
                 'total_other_taxes' => $totals->totalOtherTaxes,
-                'total_products' => $totals->productsSum,
+                'total_products' => $totals->totalProducts,
                 'total_discount' => $totals->discount,
                 'status' => OrderStatus::PENDING_PAYMENT,
                 'supplier_id' => $supplierId,
@@ -250,7 +250,6 @@ class CartService implements CartServiceInterface
 
             $order->products()->createMany($orderProducts);
 
-            $this->cartProductManager->clear($cart);
             $paymentUrl = $paymentService->initiatePayment($order);
 
             return [
