@@ -48,12 +48,12 @@ class CartTotals
             $productsSum += $item->quantity;
             $totalProducts++;
             $total += $item->quantity * $item->product->price;
-            $totalTaxes += $item->quantity * $item->product->total_taxes;
             $totalBeforeDiscount += $item->quantity * ($item->product->price_before_discount ?? $item->product->price);
             $totalAfterTaxes += $item->quantity * $item->product->price_after_taxes;
             $totalCountryTax += $item->quantity * $item->product->country_tax;
             $totalPlatformTaxes += $item->quantity * $item->product->platform_tax;
             $totalOtherTaxes += $item->quantity * $item->product->other_tax;
+            $totalTaxes = $totalCountryTax + $totalPlatformTaxes + $totalOtherTaxes;
         }
 
         return new static(
