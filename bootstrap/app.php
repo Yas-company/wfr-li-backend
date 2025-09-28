@@ -1,15 +1,14 @@
 <?php
 
-use App\Models\Organization;
 use App\Exceptions\CartException;
 use App\Exceptions\OrderException;
+use App\Exceptions\OrganizationException;
 use App\Exceptions\UserException;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
-use App\Exceptions\OrganizationException;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -31,7 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ], $e->getCode());
         });
 
-        $exceptions->render(function(HttpException $e) {
+        $exceptions->render(function (HttpException $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),

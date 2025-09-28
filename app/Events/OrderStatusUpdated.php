@@ -24,8 +24,6 @@ class OrderStatusUpdated implements ShouldBroadcast
 
     /**
      * Get the channels the event should broadcast on.
-     *
-     * @return Channel
      */
     public function broadcastOn(): Channel
     {
@@ -34,8 +32,6 @@ class OrderStatusUpdated implements ShouldBroadcast
 
     /**
      * Get the data to broadcast.
-     *
-     * @return array
      */
     public function broadcastWith(): array
     {
@@ -49,8 +45,6 @@ class OrderStatusUpdated implements ShouldBroadcast
 
     /**
      * Get the event name.
-     *
-     * @return string
      */
     public function broadcastAs(): string
     {
