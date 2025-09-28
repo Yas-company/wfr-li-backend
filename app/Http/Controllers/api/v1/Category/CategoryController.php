@@ -5,11 +5,9 @@ namespace App\Http\Controllers\api\v1\Category;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Category\IndexCategoryRequest;
 use App\Http\Resources\Category\CategoryResource;
-use App\Http\Resources\Category\CategorySelectResource;
 use App\Models\Category;
 use App\Services\CategoryService;
 use App\Traits\ApiResponse;
-use Illuminate\Support\Facades\Auth;
 use OpenApi\Annotations as OA;
 
 class CategoryController extends Controller
@@ -248,15 +246,5 @@ class CategoryController extends Controller
         $result = $this->categoryService->show($category);
 
         return $this->successResponse(new CategoryResource($result), __('messages.category.retrieved_successfully'), 200);
-    }
-
-    /**
-     * get categories related to a supplier
-     */
-    public function getSupplierCategories()
-    {
-        $result = $this->categoryService->getSupplierCategories(Auth::user());
-
-        return $this->successResponse(CategorySelectResource::collection($result), __('messages.categories.retrieved_successfully'), statusCode: 200);
     }
 }
