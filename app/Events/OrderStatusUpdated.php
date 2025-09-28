@@ -3,6 +3,7 @@
 namespace App\Events;
 
 use App\Models\Order;
+use App\Enums\Order\OrderStatus;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -17,7 +18,7 @@ class OrderStatusUpdated implements ShouldBroadcast
     /**
      * Create a new event instance.
      */
-    public function __construct(public Order $order, public string $newStatus)
+    public function __construct(public Order $order, public OrderStatus $newStatus)
     {
         //
     }
@@ -37,7 +38,7 @@ class OrderStatusUpdated implements ShouldBroadcast
     {
         return [
             'order_id' => $this->order->id,
-            'status' => $this->newStatus,
+            'status' => $this->newStatus->value,
             'user_id' => $this->order->user_id,
             'updated_at' => $this->order->updated_at->toDateTimeString(),
         ];
