@@ -12,6 +12,7 @@ use App\Services\Order\OrderStatusService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Annotations as OA;
+use App\Events\OrderStatusUpdated;
 
 /**
  * @OA\Tag(
@@ -134,6 +135,8 @@ class ChangeOrderStatusController extends Controller
         $newStatus = OrderStatus::tryFrom($request->validated('status'));
 
         $order = $orderStatusService->changeOrderStatus($order, $newStatus);
+
+        broadcast(new OrderStatusUpdated($order, $newStatus));
 
         return $this->successResponse(
             data: [
