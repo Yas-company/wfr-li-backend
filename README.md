@@ -59,3 +59,45 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Reverb Setup
+
+### Environment Setup
+
+Add the following variables to your `.env` file:
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://yourdomain.com
+BROADCAST_CONNECTION=reverb
+QUEUE_CONNECTION=database
+REVERB_APP_ID=your-app-id
+REVERB_APP_KEY=your-app-key
+REVERB_APP_SECRET=your-app-secret
+REVERB_HOST=yourdomain.com
+REVERB_PORT=443
+REVERB_SCHEME=https
+REVERB_SERVER_PORT=8080
+```
+
+### Start Queue Worker
+
+Run the following command to start the queue worker:
+
+```bash
+php artisan queue:work
+```
+
+### Start Reverb Server
+
+To start the Reverb server, run:
+
+```bash
+php artisan reverb:start
+```
+
+### Channel and Event Information
+
+- Channel name: `buyer.<user_id>`
+- Event name: `order.status.updated`
