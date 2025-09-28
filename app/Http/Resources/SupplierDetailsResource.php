@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Category\CategoryResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use OpenApi\Annotations as OA;
@@ -11,6 +12,7 @@ use OpenApi\Annotations as OA;
  *     schema="SupplierDetailsResource",
  *     title="Supplier Details Resource",
  *     description="Detailed supplier information with fields, categories, and rating",
+ *
  *     @OA\Property(property="id", type="integer", example=1),
  *     @OA\Property(property="name", type="string", example="ABC Company Ltd"),
  *     @OA\Property(property="image", type="string", example="https://example.com/supplier-image.jpg"),
@@ -34,6 +36,7 @@ class SupplierDetailsResource extends JsonResource
             'image' => $this->image ? asset('storage/'.$this->image) : null,
             'rating' => 4.7,
             'fields' => FieldResource::collection($this->whenLoaded('fields')),
+            'categories' => CategoryResource::collection($this->whenLoaded('fields', fn () => $this->fields->flatMap->categories->values(), collect())),
             'supplier_status' => $this->supplier->is_open,
         ];
     }

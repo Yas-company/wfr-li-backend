@@ -1,10 +1,11 @@
 <?php
 
 use App\Enums\UserRole;
-use Illuminate\Support\Facades\Route;
-use App\Http\Middleware\RoleMiddleware;
 use App\Http\Controllers\api\v1\Category\CategoryController;
 use App\Http\Controllers\api\v1\Category\Supplier\GetAllCategoriesController;
+use App\Http\Controllers\api\v1\Category\Supplier\GetSupplierCategoriesController;
+use App\Http\Middleware\RoleMiddleware;
+use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
 
@@ -13,7 +14,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::middleware(RoleMiddleware::class.':'.UserRole::SUPPLIER->value)->prefix('supplier')->group(function () {
         Route::get('/categories', GetAllCategoriesController::class)->name('supplier.categories.index');
+        Route::get('/supplier-categories', GetSupplierCategoriesController::class)->name('supplier.categories.supplier');
     });
 });
-
-
