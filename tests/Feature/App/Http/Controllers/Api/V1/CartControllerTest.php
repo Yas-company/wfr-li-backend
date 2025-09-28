@@ -21,6 +21,8 @@ use App\Enums\Organization\OrganizationRole;
 use Illuminate\Foundation\Testing\WithFaker;
 use App\Enums\Organization\OrganizationStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Services\Payment\PaymentService;
+use Mockery;
 
 class CartControllerTest extends TestCase
 {
@@ -38,6 +40,18 @@ class CartControllerTest extends TestCase
         $this->buyer = $this->createUser(UserRole::BUYER);
         $this->supplier = $this->createUser(UserRole::SUPPLIER);
         $this->shippingAddress = Address::factory()->create(['user_id' => $this->buyer->id]);
+
+        // Mock PaymentService to prevent TapPaymentService from being called
+        $this->mockPaymentService();
+    }
+
+    protected function mockPaymentService(): void
+    {
+        $mockPaymentService = Mockery::mock(PaymentService::class);
+        $mockPaymentService->shouldReceive('initiatePayment')
+            ->andReturn(['success' => true, 'url' => 'https://mock-payment-url.com']);
+
+        $this->app->instance(PaymentService::class, $mockPaymentService);
     }
 
     public function test_unauthenticated_cannot_access_cart_index()
