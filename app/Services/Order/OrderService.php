@@ -60,6 +60,7 @@ class OrderService
                 'orders.supplier_id',
                 'orders.total',
                 'orders.total_discount',
+                'orders.currency',
                 'orders.created_at',
                 'order_details.shipping_method',
                 'order_details.payment_status',

@@ -118,6 +118,10 @@ class TapPaymentService extends PaymentService implements PaymentGatewayInterfac
 
         $order = Order::find($orderId);
 
+        if(!$this->validateCharge($providerAmount, $providerCurrency, $chargeId, $order)) {
+            return ['success'=>false, 'message'=>'Charge validation failed'];
+        }
+
         if (!$order) {
             Log::channel('payments')->warning('payment.callback.order_not_found', [
                 'gateway' => 'tap',
@@ -144,6 +148,7 @@ class TapPaymentService extends PaymentService implements PaymentGatewayInterfac
 
                 $order->update([
                     'status' => OrderStatus::PAID,
+                    'charge_id' => $chargeId,
                 ]);
 
                 $items = $order->products;
@@ -176,13 +181,19 @@ class TapPaymentService extends PaymentService implements PaymentGatewayInterfac
                 ];
             } catch(\Exception $e) {
                 DB::rollBack();
+                $order->update([
+                    'status' => OrderStatus::FAILED,
+                ]);
                 Log::channel('payments')->error('payment.callback.error', [
                     'gateway' => 'tap',
                     'tap_id' => $chargeId,
                     'order_id' => $order->id,
                     'error' => $e->getMessage(),
                 ]);
-                throw $e;
+                return [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ];
             }
         }
 
@@ -216,5 +227,35 @@ class TapPaymentService extends PaymentService implements PaymentGatewayInterfac
         $response = $this->performRequest('GET', $this->baseUrl . $chargeId);
 
         return $response->getData(true);
+    }
+
+    protected function validateCharge(float $amount, string $currency, string $chargeId, Order $order)
+    {
+        $amount = (float) $amount;
+        $orderTotal = (float) $order->total;
+
+        if($amount !== $orderTotal) {
+            Log::channel('payments')->error('payment.callback.charge_amount_mismatch', [
+                'gateway' => 'tap',
+                'charge_id' => $chargeId,
+                'order_id' => $order->id,
+                'charge_amount' => $amount,
+                'order_amount' => $orderTotal,
+            ]);
+            return false;
+        }
+
+        if($currency !== $order->currency) {
+            Log::channel('payments')->error('payment.callback.charge_currency_mismatch', [
+                'gateway' => 'tap',
+                'charge_id' => $chargeId,
+                'order_id' => $order->id,
+                'charge_currency' => $currency,
+                'order_currency' => $order->currency,
+            ]);
+            return false;
+        }
+
+        return true;
     }
 }

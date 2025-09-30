@@ -46,6 +46,7 @@ class BuyerOrderListingResource extends JsonResource
             'total' => $this->total,
             'total_products' => $this->total_products,
             'total_discount' => $this->total_discount,
+            'currency' => $this->currency,
             'tracking_number' => $this->tracking_number,
             'shipping_method' => $this->shipping_method,
             'payment_status' => $this->payment_status,

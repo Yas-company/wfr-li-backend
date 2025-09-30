@@ -26,7 +26,9 @@ class Order extends Model
         'total_other_taxes',
         'total_products',
         'total_discount',
+        'currency',
         'status',
+        'charge_id',
         'supplier_id',
         'order_type',
     ];

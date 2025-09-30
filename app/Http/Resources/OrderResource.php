@@ -89,6 +89,7 @@ class OrderResource extends JsonResource
             'total_taxes' => $this->total_taxes,
             'total_products' => $this->total_products,
             'total_discount' => $this->total_discount,
+            'currency' => $this->currency,
             'order_type' => $this->order_type,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

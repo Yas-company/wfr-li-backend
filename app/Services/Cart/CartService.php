@@ -226,6 +226,7 @@ class CartService implements CartServiceInterface
                 'total_other_taxes' => $totals->totalOtherTaxes,
                 'total_products' => $totals->totalProducts,
                 'total_discount' => $totals->discount,
+                'currency' => config('app.currency'),
                 'status' => OrderStatus::PENDING_PAYMENT,
                 'supplier_id' => $supplierId,
                 'order_type' => $cartCheckoutDto->orderType,

@@ -42,6 +42,7 @@ class SupplierOrderListingResource extends JsonResource
             'created_at' => $this->created_at,
             'buyer_name' => $this->buyer_name,
             'products_count' => $this->products_count,
+            'currency' => $this->currency,
             'tracking_number' => $this->tracking_number,
             'shipping_method' => $this->shipping_method,
             'payment_status' => $this->payment_status,
