@@ -31,6 +31,7 @@ class FavoriteService
 
         $products = Product::whereIn('id', $favoriteProductIds)
             ->isActive()
+            ->withCartInfo()
             ->with(['category', 'ratings', 'category.field', 'ratings.user', 'media'])
             ->latest()
             ->paginate(10);
