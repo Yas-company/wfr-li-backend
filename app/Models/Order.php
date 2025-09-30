@@ -28,6 +28,7 @@ class Order extends Model
         'total_discount',
         'currency',
         'status',
+        'charge_id',
         'supplier_id',
         'order_type',
     ];
