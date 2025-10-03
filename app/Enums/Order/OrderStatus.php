@@ -17,6 +17,7 @@ enum OrderStatus: string
     case CANCELLED = 'cancelled';
     case FAILED = 'failed';
     case PENDING_PAYMENT = 'pending_payment';
+    case EXPIRED = 'expired';
 
     public function color(): string
     {
@@ -30,6 +31,7 @@ enum OrderStatus: string
             self::CANCELLED => 'danger',
             self::FAILED => 'danger',
             self::PENDING_PAYMENT => 'warning',
+            self::EXPIRED => 'danger',
         };
     }
 
