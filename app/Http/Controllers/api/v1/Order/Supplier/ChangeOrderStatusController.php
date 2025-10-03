@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\api\v1\Order\Supplier;
 
-use App\Models\Order;
 use App\Enums\Order\OrderStatus;
+use App\Events\OrderStatusUpdated;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\OrderResource;
-use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Order\ChangeOrderStatusRequest;
+use App\Http\Resources\OrderResource;
+use App\Models\Order;
 use App\Services\Order\OrderStatusService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Annotations as OA;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @OA\Tag(
@@ -32,17 +33,22 @@ class ChangeOrderStatusController extends Controller
      *     description="Update the status of a specific order for the authenticated supplier",
      *     tags={"Supplier Orders"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="order",
      *         in="path",
      *         description="Order ID to update status",
      *         required=true,
+     *
      *         @OA\Schema(type="integer", example=111)
      *     ),
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(
      *             required={"status"},
+     *
      *             @OA\Property(
      *                 property="status",
      *                 type="string",
@@ -52,10 +58,13 @@ class ChangeOrderStatusController extends Controller
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Order status updated successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="تم تحديث حالة الطلب بنجاح"),
      *             @OA\Property(
@@ -83,49 +92,55 @@ class ChangeOrderStatusController extends Controller
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=400,
      *         description="Bad request - Invalid status value",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="success", type="boolean", example=false),
      *             @OA\Property(property="message", type="string", example="Invalid order status"),
      *             @OA\Property(property="status_code", type="integer", example=400)
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized - Invalid or missing authentication token",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="success", type="boolean", example=false),
      *             @OA\Property(property="message", type="string", example="Unauthenticated"),
      *             @OA\Property(property="status_code", type="integer", example=401)
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden - User is not authorized to update this order",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="success", type="boolean", example=false),
      *             @OA\Property(property="message", type="string", example="You are not authorized to update this order"),
      *             @OA\Property(property="status_code", type="integer", example=403)
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=404,
      *         description="Order not found",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="success", type="boolean", example=false),
      *             @OA\Property(property="message", type="string", example="Order not found"),
      *             @OA\Property(property="status_code", type="integer", example=404)
      *         )
      *     )
      * )
-     *
-     * @param ChangeOrderStatusRequest $request
-     * @param Order $order
-     * @param OrderStatusService $orderStatusService
-     *
-     * @return JsonResponse
      */
     public function __invoke(ChangeOrderStatusRequest $request, Order $order, OrderStatusService $orderStatusService): JsonResponse
     {
@@ -134,6 +149,8 @@ class ChangeOrderStatusController extends Controller
         $newStatus = OrderStatus::tryFrom($request->validated('status'));
 
         $order = $orderStatusService->changeOrderStatus($order, $newStatus);
+
+        broadcast(new OrderStatusUpdated($order, $newStatus));
 
         return $this->successResponse(
             data: [
