@@ -48,6 +48,8 @@ class TapPaymentService extends PaymentService implements PaymentGatewayInterfac
         $data['redirect']['url'] = route('payment.callback');
         $data['reference']['order'] = $order->id;
         $data['reference']['idempotent'] = 'txn_' . $order->id;
+        $data['transaction']['expiry']['period'] = 10;
+        $data['transaction']['expiry']['type'] = 'MINUTE';
 
         Log::channel('payments')->info('payment.initiate.request', [
             'gateway' => 'tap',
@@ -100,6 +102,7 @@ class TapPaymentService extends PaymentService implements PaymentGatewayInterfac
             'method' => $request->method(),
             'ip' => $request->ip(),
         ]);
+
         $response = $this->retrievePayment($chargeId);
 
         $orderId = $response['data']['reference']['order'] ?? null;
@@ -116,7 +119,7 @@ class TapPaymentService extends PaymentService implements PaymentGatewayInterfac
             'currency' => $providerCurrency,
         ]);
 
-        $order = Order::find($orderId);
+        $order = Order::where('status', OrderStatus::PENDING_PAYMENT)->find($orderId);
 
         if(!$this->validateCharge($providerAmount, $providerCurrency, $chargeId, $order)) {
             return ['success'=>false, 'message'=>'Charge validation failed'];
@@ -131,16 +134,6 @@ class TapPaymentService extends PaymentService implements PaymentGatewayInterfac
             return ['success'=>false, 'message'=>'Order not found'];
         }
 
-        if($order->status !== OrderStatus::PENDING_PAYMENT) {
-            Log::channel('payments')->info('payment.callback.order_already_processed', [
-                'gateway' => 'tap',
-                'tap_id' => $chargeId,
-                'order_id' => $order->id,
-                'current_status' => $order->status->value,
-            ]);
-            return ['success'=>false, 'message'=>'Order not pending payment'];
-        }
-
         if($response['success'] && $providerStatus === TapPaymentStatus::CAPTURED->value)
         {
             try{
@@ -151,24 +144,11 @@ class TapPaymentService extends PaymentService implements PaymentGatewayInterfac
                     'charge_id' => $chargeId,
                 ]);
 
-                $items = $order->products;
-
-                foreach($items as $item) {
-
-                    $product = DB::table('products')->lockForUpdate()->find($item->product_id);
-
-                    if($product->stock_qty < $item->quantity) {
-                        throw new \Exception('Product out of stock');
-                    }
-
-                    DB::table('products')->where('id', $item->product_id)->update([
-                        'stock_qty' => $product->stock_qty - $item->quantity,
-                    ]);
-                }
-
                 PaymentSuccessful::dispatch($order, $order->user);
+                $order->reservedStock()->delete();
 
                 DB::commit();
+
                 Log::channel('payments')->info('payment.callback.fulfilled', [
                     'gateway' => 'tap',
                     'tap_id' => $chargeId,

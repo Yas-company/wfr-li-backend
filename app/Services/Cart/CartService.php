@@ -213,8 +213,6 @@ class CartService implements CartServiceInterface
 
             $totals = $this->getCartTotals($cart);
             $supplierId = $cart->products->first()->product->supplier_id;
-            $cartProductIds = $cart->products->pluck('product_id')->toArray();
-            Product::whereIn('id', $cartProductIds)->get();
 
             $order = Order::create([
                 'user_id' => $user->id,
@@ -230,6 +228,7 @@ class CartService implements CartServiceInterface
                 'status' => OrderStatus::PENDING_PAYMENT,
                 'supplier_id' => $supplierId,
                 'order_type' => $cartCheckoutDto->orderType,
+                'expires_at' => now()->addMinutes(10),
             ]);
 
             OrderDetail::create([
@@ -249,7 +248,26 @@ class CartService implements CartServiceInterface
                 ]
             ])->toArray();
 
+            $reservedStock = $cart->products->map(fn($item) => [
+                'product_id' => $item->product_id,
+                'quantity'   => $item->quantity,
+                'reserved_at' => now(),
+                'expires_at' => $order->expires_at,
+            ])->values()->toArray();
+
             $order->products()->createMany($orderProducts);
+
+            $order->reservedStock()->createMany($reservedStock);
+
+            foreach ($cart->products as $item) {
+                $product = Product::where('id', $item->product_id)
+                    ->where('stock_qty', '>=', $item->quantity)
+                    ->lockForUpdate()
+                    ->first();
+
+                $product->stock_qty -= $item->quantity;
+                $product->save();
+            }
 
             $paymentUrl = $paymentService->initiatePayment($order);
 

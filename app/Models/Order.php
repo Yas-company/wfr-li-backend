@@ -31,11 +31,14 @@ class Order extends Model
         'charge_id',
         'supplier_id',
         'order_type',
+        'expires_at',
+        'is_expired',
     ];
 
 
     protected $casts = [
-        'status' => OrderStatus::class
+        'status' => OrderStatus::class,
+        'expires_at' => 'datetime',
     ];
 
     public function user(): BelongsTo
@@ -56,6 +59,11 @@ class Order extends Model
     public function orderDetail(): HasOne
     {
         return $this->hasOne(OrderDetail::class);
+    }
+
+    public function reservedStock(): HasMany
+    {
+        return $this->hasMany(ReservedStock::class);
     }
 
     public function scopeForBuyer(Builder $query, int $userId): Builder
