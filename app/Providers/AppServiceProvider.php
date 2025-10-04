@@ -13,6 +13,7 @@ use App\Policies\OrderPolicy;
 use App\Policies\RatingPolicy;
 use App\Policies\AddressPolicy;
 use App\Policies\ProductPolicy;
+use App\Observers\OrderObserver;
 use App\Services\Cart\CartService;
 use App\Policies\OrganizationPolicy;
 use Illuminate\Support\Facades\Gate;
@@ -100,5 +101,8 @@ class AppServiceProvider extends ServiceProvider
                 ->where('slug', $value)
                 ->firstOrFail();
         });
+
+
+        Order::observe(OrderObserver::class);
     }
 }

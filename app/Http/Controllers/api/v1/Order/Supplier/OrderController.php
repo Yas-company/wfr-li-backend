@@ -217,7 +217,7 @@ class OrderController extends Controller
         $this->authorize('viewAsSupplier', $order);
 
         $order->load(['user', 'supplier', 'products', 'orderDetail', 'products.product.category',
-            'products.product.media'])->loadCount('products');
+            'products.product.media', 'statusHistories', 'statusHistories.user'])->loadCount('products');
 
         return $this->successResponse(
             data: [
