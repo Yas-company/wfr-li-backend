@@ -66,6 +66,11 @@ class Order extends Model
         return $this->hasMany(ReservedStock::class);
     }
 
+    public function statusHistories(): HasMany
+    {
+        return $this->hasMany(OrderStatusHistory::class);
+    }
+
     public function scopeForBuyer(Builder $query, int $userId): Builder
     {
         return $query->where('user_id', $userId);

@@ -9,7 +9,7 @@ use App\Models\Order;
 class OrderStatusService
 {
     protected array $allowedTransitions = [
-        OrderStatus::ACCEPTED->value => [OrderStatus::SHIPPED],
+        OrderStatus::PAID->value => [OrderStatus::SHIPPED, OrderStatus::REJECTED],
         OrderStatus::SHIPPED->value => [OrderStatus::DELIVERED],
     ];
 

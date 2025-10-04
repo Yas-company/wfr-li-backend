@@ -94,6 +94,7 @@ class OrderResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'deleted_at' => $this->deleted_at,
+            'status_histories' => OrderStatusHistoryResource::collection($this->whenLoaded('statusHistories')),
             'receipt' => $this->whenLoaded('receipt'),
             'user' => new UserResource($this->whenLoaded('user')),
             'orderDetail' => OrderDetailResource::make($this->whenLoaded('orderDetail')),
